@@ -1,0 +1,47 @@
+{
+ "env": {
+  "n_props": 1876,
+  "base_rate_critical": 0.10728402032749859,
+  "n_filings": 903,
+  "n_news": 14465
+ },
+ "certification": [
+  {
+   "k_c": 1,
+   "n_certified": 1771,
+   "certified_frac": 1.0,
+   "precision": 0.10728402032749859,
+   "lift_over_base": 1.0,
+   "recall_of_critical": 1.0
+  },
+  {
+   "k_c": 2,
+   "n_certified": 432,
+   "certified_frac": 0.24392998306041785,
+   "precision": 0.06712962962962964,
+   "lift_over_base": 0.6257188109161794,
+   "recall_of_critical": 0.15263157894736842
+  },
+  {
+   "k_c": 3,
+   "n_certified": 143,
+   "certified_frac": 0.08074534161490683,
+   "precision": 0.06993006993006994,
+   "lift_over_base": 0.6518218623481782,
+   "recall_of_critical": 0.05263157894736842
+  }
+ ],
+ "omega": {
+  "with_public": 0.16766910914590438,
+  "without_public": 0.06626312454968486,
+  "gamma": 0.2,
+  "theory_floor": 0.11111111111111112,
+  "floor_holds": true,
+  "n_agents": 500,
+  "n_pairs": 2000,
+  "omega_ci95": [
+   0.12406015037593984,
+   0.2584745762711864
+  ]
+ }
+}

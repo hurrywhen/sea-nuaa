@@ -1,0 +1,223 @@
+{
+ "d_prime_real_features": 0.7707023551798048,
+ "d_prime_proxy_rho0.4": 1.2323091651019296,
+ "d_prime_required_for_95pct": 4.39,
+ "budgets": {
+  "1": {
+   "quota_channel1": 18.0,
+   "nu_hat": 1.6094379124341003,
+   "arms": {
+    "topN-cite(50)": {
+     "list_size": 50,
+     "supply_per_day": 1.6,
+     "p_min_hat": 0.019230769230769232,
+     "recall": 0.019230769230769232,
+     "recall_wl_covered": 0.0,
+     "alarm": true
+    },
+    "topN-inst(50)": {
+     "list_size": 50,
+     "supply_per_day": 13.633333333333333,
+     "p_min_hat": 0.36538461538461536,
+     "recall": 0.019230769230769232,
+     "recall_wl_covered": 0.05263157894736842,
+     "alarm": true
+    },
+    "greedy-setcover": {
+     "list_size": 15,
+     "supply_per_day": 0.8666666666666667,
+     "p_min_hat": 0.0,
+     "recall": 0.0,
+     "recall_wl_covered": NaN,
+     "alarm": true
+    },
+    "greedy-prob": {
+     "list_size": 19,
+     "supply_per_day": 0.4666666666666667,
+     "p_min_hat": 0.0,
+     "recall": 0.0,
+     "recall_wl_covered": NaN,
+     "alarm": false
+    },
+    "pandora-quota": {
+     "list_size": 19,
+     "supply_per_day": 0.4666666666666667,
+     "p_min_hat": 0.0,
+     "recall": 0.0,
+     "recall_wl_covered": NaN,
+     "alarm": false
+    },
+    "S2c(realfeat,无清单)": {
+     "list_size": 0,
+     "supply_per_day": 0.0,
+     "p_min_hat": 0.0,
+     "recall": 0.019230769230769232,
+     "recall_wl_covered": NaN,
+     "alarm": false
+    }
+   }
+  },
+  "2": {
+   "quota_channel1": 36.0,
+   "nu_hat": 1.791759469228055,
+   "arms": {
+    "topN-cite(50)": {
+     "list_size": 50,
+     "supply_per_day": 1.6,
+     "p_min_hat": 0.019230769230769232,
+     "recall": 0.038461538461538464,
+     "recall_wl_covered": 0.0,
+     "alarm": true
+    },
+    "topN-inst(50)": {
+     "list_size": 50,
+     "supply_per_day": 13.633333333333333,
+     "p_min_hat": 0.36538461538461536,
+     "recall": 0.038461538461538464,
+     "recall_wl_covered": 0.10526315789473684,
+     "alarm": true
+    },
+    "greedy-setcover": {
+     "list_size": 19,
+     "supply_per_day": 2.1,
+     "p_min_hat": 0.038461538461538464,
+     "recall": 0.057692307692307696,
+     "recall_wl_covered": 1.0,
+     "alarm": true
+    },
+    "greedy-prob": {
+     "list_size": 25,
+     "supply_per_day": 1.4,
+     "p_min_hat": 0.0,
+     "recall": 0.019230769230769232,
+     "recall_wl_covered": NaN,
+     "alarm": true
+    },
+    "pandora-quota": {
+     "list_size": 24,
+     "supply_per_day": 1.1666666666666667,
+     "p_min_hat": 0.019230769230769232,
+     "recall": 0.038461538461538464,
+     "recall_wl_covered": 1.0,
+     "alarm": false
+    },
+    "S2c(realfeat,无清单)": {
+     "list_size": 0,
+     "supply_per_day": 0.0,
+     "p_min_hat": 0.0,
+     "recall": 0.038461538461538464,
+     "recall_wl_covered": NaN,
+     "alarm": false
+    }
+   }
+  },
+  "3": {
+   "quota_channel1": 53.99999999999999,
+   "nu_hat": 1.0986122886681096,
+   "arms": {
+    "topN-cite(50)": {
+     "list_size": 50,
+     "supply_per_day": 1.6,
+     "p_min_hat": 0.019230769230769232,
+     "recall": 0.07692307692307693,
+     "recall_wl_covered": 1.0,
+     "alarm": false
+    },
+    "topN-inst(50)": {
+     "list_size": 50,
+     "supply_per_day": 13.633333333333333,
+     "p_min_hat": 0.36538461538461536,
+     "recall": 0.057692307692307696,
+     "recall_wl_covered": 0.15789473684210525,
+     "alarm": true
+    },
+    "greedy-setcover": {
+     "list_size": 21,
+     "supply_per_day": 2.466666666666667,
+     "p_min_hat": 0.057692307692307696,
+     "recall": 0.07692307692307693,
+     "recall_wl_covered": 0.6666666666666666,
+     "alarm": true
+    },
+    "greedy-prob": {
+     "list_size": 28,
+     "supply_per_day": 2.3,
+     "p_min_hat": 0.038461538461538464,
+     "recall": 0.07692307692307693,
+     "recall_wl_covered": 1.0,
+     "alarm": true
+    },
+    "pandora-quota": {
+     "list_size": 27,
+     "supply_per_day": 2.1666666666666665,
+     "p_min_hat": 0.038461538461538464,
+     "recall": 0.057692307692307696,
+     "recall_wl_covered": 1.0,
+     "alarm": true
+    },
+    "S2c(realfeat,无清单)": {
+     "list_size": 0,
+     "supply_per_day": 0.0,
+     "p_min_hat": 0.0,
+     "recall": 0.07692307692307693,
+     "recall_wl_covered": NaN,
+     "alarm": false
+    }
+   }
+  },
+  "4": {
+   "quota_channel1": 72.0,
+   "nu_hat": 3.5263605246161616,
+   "arms": {
+    "topN-cite(50)": {
+     "list_size": 50,
+     "supply_per_day": 1.6,
+     "p_min_hat": 0.019230769230769232,
+     "recall": 0.07692307692307693,
+     "recall_wl_covered": 1.0,
+     "alarm": false
+    },
+    "topN-inst(50)": {
+     "list_size": 50,
+     "supply_per_day": 13.633333333333333,
+     "p_min_hat": 0.36538461538461536,
+     "recall": 0.1346153846153846,
+     "recall_wl_covered": 0.3157894736842105,
+     "alarm": true
+    },
+    "greedy-setcover": {
+     "list_size": 21,
+     "supply_per_day": 4.4,
+     "p_min_hat": 0.1346153846153846,
+     "recall": 0.11538461538461539,
+     "recall_wl_covered": 0.7142857142857143,
+     "alarm": true
+    },
+    "greedy-prob": {
+     "list_size": 30,
+     "supply_per_day": 3.3,
+     "p_min_hat": 0.09615384615384616,
+     "recall": 0.11538461538461539,
+     "recall_wl_covered": 1.0,
+     "alarm": true
+    },
+    "pandora-quota": {
+     "list_size": 21,
+     "supply_per_day": 2.5,
+     "p_min_hat": 0.07692307692307693,
+     "recall": 0.09615384615384616,
+     "recall_wl_covered": 1.0,
+     "alarm": true
+    },
+    "S2c(realfeat,无清单)": {
+     "list_size": 0,
+     "supply_per_day": 0.0,
+     "p_min_hat": 0.0,
+     "recall": 0.09615384615384616,
+     "recall_wl_covered": NaN,
+     "alarm": false
+    }
+   }
+  }
+ }
+}

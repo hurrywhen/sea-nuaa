@@ -1,0 +1,14 @@
+{
+ "tag": "ga_r05a",
+ "backend": "openai-compat:gemma4c4k",
+ "records": 478,
+ "valid_days": 476,
+ "recall_llm": 0.5347222222222222,
+ "recall_param": 0.4837962962962963,
+ "value_llm_mean": 7.98680093050385,
+ "value_param_mean": 8.431285845854106,
+ "impulse_injected": 667,
+ "impulse_consumed": 269,
+ "n_crit_opportunities": 432,
+ "impulse_rate": 0.4032983508245877
+}

@@ -1,0 +1,96 @@
+{
+ "domain": "P3-arXiv-2019-09",
+ "n_universe": 2576,
+ "n_critical": 52,
+ "base_rate": 0.020186335403726708,
+ "rho_c": 1.0,
+ "n_source_classes": 1,
+ "T1_identity": {
+  "n_props": 2576,
+  "n_universe": 2576,
+  "rho_c": 1.0,
+  "match": true,
+  "pass": true
+ },
+ "T2_certify_degenerate": {
+  "n_events": 1773,
+  "max_nclass": 1,
+  "n_certified_kc2": 0,
+  "applicable": false,
+  "pass": true
+ },
+ "T3_greedy": {
+  "n_insts_with_crit": 36,
+  "k": 15,
+  "greedy_cov_at_k": 25,
+  "random_cov_at_k_mean": 14.98,
+  "greedy_cov_at_50": 27,
+  "actual_watchlist_cov": 19,
+  "greedy_beats_random": true,
+  "greedy_beats_actual": true,
+  "pass": true
+ },
+ "T4_rolling": {
+  "jaccard_half_month": 0.16666666666666666,
+  "added": 21,
+  "dropped": 9,
+  "pass": true
+ },
+ "T5_planner": {
+  "hits": {
+   "eig": 7,
+   "random": 0,
+   "freq": 10
+  },
+  "per100": {
+   "eig": 2.8,
+   "random": 0.0,
+   "freq": 4.0
+  },
+  "pass": true
+ },
+ "T6_scheduler": {
+  "hits": {
+   "z_order": 2,
+   "random": 1,
+   "n_auth": 6
+  },
+  "n_selected": 75,
+  "hit_rate": {
+   "z_order": 0.02666666666666667,
+   "random": 0.013333333333333334,
+   "n_auth": 0.08
+  },
+  "pass": true
+ },
+ "T7_allocator": {
+  "hits_fixed": 16,
+  "hits_adaptive": 12,
+  "wasted_fixed": 0,
+  "wasted_adaptive": 0,
+  "alloc_days_varied": 30,
+  "n_days": 30,
+  "adaptive_ge_fixed": false,
+  "pass": true
+ },
+ "T8_firewall": {
+  "rows": [
+   {
+    "impulse_p": 0.08,
+    "no_fw": {
+     "crit_recall": 0.4561666666666666,
+     "consumed": 7.265,
+     "recovered": 0.0,
+     "useful": 1.42
+    },
+    "fw": {
+     "crit_recall": 0.48916666666666664,
+     "consumed": 7.155,
+     "recovered": 1.37,
+     "useful": 1.41
+    }
+   }
+  ],
+  "pass": true
+ }
+}

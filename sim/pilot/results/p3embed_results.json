@@ -1,0 +1,8 @@
+{
+ "d_prime_embed_title_novelty": 0.7255637208480707,
+ "d_prime_tfidf_reference": 0.77,
+ "d_prime_proxy_rho04_reference": 1.23,
+ "d_prime_required_95pct": 4.39,
+ "n_titles": 6606,
+ "embedding_model": "nomic-embed-text-v2-moe:latest"
+}

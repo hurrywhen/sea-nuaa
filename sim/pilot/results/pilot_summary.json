@@ -1,0 +1,157 @@
+{
+ "corpus_stats": {
+  "raw_records_dedup": 8211,
+  "rho_c_documents_per_proposition": 1.0,
+  "universe_n": 2576,
+  "universe_by_day_mean": 85.86666666666666,
+  "critical_n": 52,
+  "pi_critical_frac": 0.020186335403726708,
+  "cit_median": 2,
+  "cit_max": 4076,
+  "prior_window_records_ai_slice": 4030,
+  "watchlists": {
+   "freq": {
+    "kind": "author",
+    "size": 50,
+    "papers_in_universe": 45,
+    "p_min_hat_coverage_of_critical": 0.019230769230769232,
+    "critical_covered_n": 1
+   },
+   "cite": {
+    "kind": "author",
+    "size": 50,
+    "papers_in_universe": 48,
+    "p_min_hat_coverage_of_critical": 0.019230769230769232,
+    "critical_covered_n": 1
+   },
+   "inst": {
+    "kind": "inst",
+    "size": 50,
+    "papers_in_universe": 409,
+    "p_min_hat_coverage_of_critical": 0.36538461538461536,
+    "critical_covered_n": 19
+   },
+   "inst10": {
+    "kind": "inst",
+    "size": 10,
+    "papers_in_universe": 124,
+    "p_min_hat_coverage_of_critical": 0.17307692307692307,
+    "critical_covered_n": 9
+   }
+  },
+  "inst_watchlist_capacity_curve": [
+   {
+    "size": 10,
+    "coverage_of_critical": 0.17307692307692307,
+    "papers_in_universe_frac": 0.04813664596273292
+   },
+   {
+    "size": 20,
+    "coverage_of_critical": 0.21153846153846154,
+    "papers_in_universe_frac": 0.08579192546583851
+   },
+   {
+    "size": 50,
+    "coverage_of_critical": 0.36538461538461536,
+    "papers_in_universe_frac": 0.15877329192546583
+   },
+   {
+    "size": 100,
+    "coverage_of_critical": 0.40384615384615385,
+    "papers_in_universe_frac": 0.22399068322981366
+   },
+   {
+    "size": 200,
+    "coverage_of_critical": 0.4423076923076923,
+    "papers_in_universe_frac": 0.30201863354037267
+   },
+   {
+    "size": 400,
+    "coverage_of_critical": 0.46153846153846156,
+    "papers_in_universe_frac": 0.3513198757763975
+   }
+  ]
+ },
+ "config": {
+  "n_agents": 30,
+  "arms": [
+   "S0",
+   "S1",
+   "S2",
+   "S2c"
+  ],
+  "wl_variants": [
+   "freq",
+   "cite",
+   "inst",
+   "inst10"
+  ],
+  "rho_sweep": [
+   0.2,
+   0.4,
+   0.6
+  ],
+  "budgets_per_day": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "sim_days": 30,
+  "critical_quantile": 0.98,
+  "watchlist_size": 50,
+  "replay_month": [
+   "2019-09-01",
+   "2019-09-30"
+  ],
+  "prior_window": [
+   "2019-07-01",
+   "2019-08-31"
+  ],
+  "seed": 20260926
+ },
+ "theory_checks": {
+  "P3_gaussian_identity_mae": 0.03257808058950644,
+  "P3_gaussian_identity_corr": 0.9684358801727562,
+  "P2_distortion_bound_holds_all_runs": true,
+  "theorem61_ii_cap_holds_all_runs": true,
+  "dprime_by_rho_agent0": {
+   "0.2": 0.5963769101685328,
+   "0.4": 1.1967737048512272,
+   "0.6": 2.0254950462693437
+  },
+  "capacity_cap_by_budget": {
+   "1": 0.5769230769230769,
+   "2": 1.0,
+   "3": 1.0,
+   "4": 1.0
+  }
+ },
+ "H4prime_headline_rho0.4": {
+  "S2[freq]": 0.13846153846153844,
+  "S2[freq]_wl_covered_part": 1.0,
+  "S2[freq]_not_wl_part": 0.12156862745098039,
+  "gap_S2[freq]_minus_S2c": -0.07435897435897437,
+  "S2[cite]": 0.13525641025641025,
+  "S2[cite]_wl_covered_part": 1.0,
+  "S2[cite]_not_wl_part": 0.11830065359477124,
+  "gap_S2[cite]_minus_S2c": -0.07756410256410257,
+  "S2[inst]": 0.2185897435897436,
+  "S2[inst]_wl_covered_part": 0.35087719298245607,
+  "S2[inst]_not_wl_part": 0.14242424242424243,
+  "gap_S2[inst]_minus_S2c": 0.0057692307692307765,
+  "S2[inst10]": 0.2173076923076923,
+  "S2[inst10]_wl_covered_part": 0.711111111111111,
+  "S2[inst10]_not_wl_part": 0.11395348837209303,
+  "gap_S2[inst10]_minus_S2c": 0.004487179487179499,
+  "S2c": 0.2128205128205128,
+  "S1": 0.11282051282051282,
+  "S0": 0.0
+ },
+ "budget_alarms_S2": {
+  "freq": 48,
+  "cite": 48,
+  "inst": 90,
+  "inst10": 90
+ }
+}

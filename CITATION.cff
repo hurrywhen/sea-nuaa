@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this code or data, please cite the paper and the software release as follows."
+type: software
+title: "Sovereign Epistemic Acquisition (SEA): simulation code, frozen experiment records, and consistency-audit tooling"
+version: 1.7.0
+date-released: 2026-10-23
+license: MIT
+authors:
+  - family-names: Hu
+    given-names: Wen
+    email: huwen@nuaa.edu.cn
+    affiliation: "Nanjing University of Aeronautics and Astronautics"
+  - family-names: Wang
+    given-names: Xutong
+  - family-names: Yu
+    given-names: Ya
+preferred-citation:
+  type: article
+  title: "Sovereign Epistemic Acquisition: A Conditional Framework for Active Information Acquisition and Sovereign Filtering under Bounded Agency, with Preliminary Validation"
+  authors:
+    - family-names: Hu
+      given-names: Wen
+    - family-names: Wang
+      given-names: Xutong
+    - family-names: Yu
+      given-names: Ya
+  year: 2026
+  license: CC-BY-4.0
+  notes: "Manuscript version 1.7 (113 pp. English review PDF); preprint submission in preparation. Framework/synthesis paper: all human-side claims are falsifiable predictions; no human-subject data collected to date."

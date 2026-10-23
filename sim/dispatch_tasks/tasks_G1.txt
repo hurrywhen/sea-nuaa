@@ -1,0 +1,6 @@
+# Lane G1 任务清单（5 条）——由 make_dispatch_tasks.py 生成
+sea_pilot.run_llm_replay --days 30 --agents 15 --agent-start 0 --seed 1 --tag g_r01a
+sea_pilot.run_llm_replay --days 30 --agents 15 --agent-start 0 --seed 2 --tag g_r02a
+sea_pilot.run_llm_replay --days 30 --agents 15 --agent-start 0 --seed 3 --tag g_r03a
+sea_pilot.h8_battery_v2 --model-tag g90_h8 --n-a 20 --n-b 10 --n-c 20
+sea_pilot.h9_calibration --tag g90_h9

@@ -1,0 +1,23 @@
+{
+ "backend": "openai-compat:ornith-1.5-35b",
+ "days": 8,
+ "agents": 2,
+ "runs": [
+  {
+   "agent": 0,
+   "recall_llm": 0.6,
+   "recall_param": 0.4,
+   "value_llm": 56.83,
+   "value_param": 58.55,
+   "impulse_hits": 5
+  },
+  {
+   "agent": 1,
+   "recall_llm": 0.6,
+   "recall_param": 0.4,
+   "value_llm": 62.11,
+   "value_param": 58.55,
+   "impulse_hits": 4
+  }
+ ]
+}

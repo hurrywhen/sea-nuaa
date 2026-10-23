@@ -1,0 +1,14 @@
+{
+ "tag": "qc_r03",
+ "backend": "openai-compat:qwen/qwen3.8-27b",
+ "records": 959,
+ "valid_days": 954,
+ "recall_llm": 0.4969915764139591,
+ "recall_param": 0.31889290012033694,
+ "value_llm_mean": 8.683325218813515,
+ "value_param_mean": 8.42840705550168,
+ "impulse_injected": 1366,
+ "impulse_consumed": 406,
+ "n_crit_opportunities": 831,
+ "impulse_rate": 0.2972181551976574
+}

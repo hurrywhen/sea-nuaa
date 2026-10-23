@@ -1,0 +1,23 @@
+# Lane O2 任务清单（22 条）——由 make_dispatch_tasks.py 生成
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 1 --tag o_r01b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 2 --tag o_r02b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 3 --tag o_r03b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 4 --tag o_r04b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 5 --tag o_r05b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 6 --tag o_r06b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 7 --tag o_r07b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 8 --tag o_r08b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 9 --tag o_r09b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 10 --tag o_r10b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 11 --tag o_r11b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 12 --tag o_r12b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 13 --tag o_r13b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 14 --tag o_r14b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 15 --tag o_r15b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 16 --tag o_r16b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 17 --tag o_r17b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 18 --tag o_r18b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 19 --tag o_r19b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 20 --tag o_r20b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 21 --tag o_r21b
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 10 --seed 22 --tag o_r22b
