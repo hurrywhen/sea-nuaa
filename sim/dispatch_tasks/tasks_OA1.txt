@@ -1,0 +1,7 @@
+# Lane OA1 任务清单（6 条）——由 make_dispatch_tasks.py 生成
+sea_pilot.run_llm_replay --days 30 --agents 15 --agent-start 0 --seed 23 --tag oa_r23a
+sea_pilot.run_llm_replay --days 30 --agents 15 --agent-start 0 --seed 24 --tag oa_r24a
+sea_pilot.run_llm_replay --days 30 --agents 15 --agent-start 0 --seed 25 --tag oa_r25a
+sea_pilot.run_llm_replay --days 30 --agents 15 --agent-start 0 --seed 26 --tag oa_r26a
+sea_pilot.run_llm_replay --days 30 --agents 15 --agent-start 0 --seed 27 --tag oa_r27a
+sea_pilot.run_llm_replay --days 30 --agents 15 --agent-start 0 --seed 28 --tag oa_r28a

@@ -1,0 +1,14 @@
+{
+ "tag": "od_r29b",
+ "backend": "openai-compat:ornith-1.5:35b",
+ "records": 462,
+ "valid_days": 461,
+ "recall_llm": 0.41452991452991456,
+ "recall_param": 0.3974358974358974,
+ "value_llm_mean": 8.298268272761929,
+ "value_param_mean": 8.764450241599983,
+ "impulse_injected": 657,
+ "impulse_consumed": 309,
+ "n_crit_opportunities": 468,
+ "impulse_rate": 0.4703196347031963
+}

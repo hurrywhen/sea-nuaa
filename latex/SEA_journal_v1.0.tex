@@ -1,0 +1,1016 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+  11pt]{article}
+\usepackage{xcolor}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+\usepackage{etoolbox}
+\usepackage{hyperref}
+\ifPDFTeX\else
+  \setmainfont{DejaVuSerif.ttf}[BoldFont=DejaVuSerif-Bold.ttf,ItalicFont=DejaVuSerif-Italic.ttf,BoldItalicFont=DejaVuSerif-BoldItalic.ttf]
+  \setsansfont{DejaVuSans.ttf}[BoldFont=DejaVuSans-Bold.ttf,ItalicFont=DejaVuSans-Oblique.ttf,BoldItalicFont=DejaVuSans-BoldOblique.ttf]
+  \setmonofont{DejaVuSansMono.ttf}[BoldFont=DejaVuSansMono-Bold.ttf,ItalicFont=DejaVuSansMono-Oblique.ttf,BoldItalicFont=DejaVuSansMono-BoldOblique.ttf]
+\fi
+\setcounter{secnumdepth}{0}
+\setcounter{tocdepth}{1}
+\sloppy
+\setlength{\emergencystretch}{2em}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue,urlcolor=NavyBlue,citecolor=NavyBlue,pdftitle={SEA_journal_v1.0 (generic journal submission form)},pdfsubject={Generic journal submission form, v1.0},pdfkeywords={SEA; epistemic sovereignty; information acquisition; journal}}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf,skip=4pt}
+\AtBeginEnvironment{longtable}{\footnotesize}
+\linespread{1.10}\selectfont
+\setlength{\parskip}{3pt}
+\setlength{\parindent}{0pt}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Sovereign Acquisition under Bounded Attention: Unifying Push--Pull Filtering, Coverage, and Value of Information},
+  pdfauthor={Wen Hu\^{}\{1,2\}, Xutong Wang\^{}\{1\}, and Ya Yu\^{}\{1\}},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Sovereign Acquisition under Bounded Attention: Unifying Push--Pull Filtering, Coverage, and Value of Information}
+\author{Wen Hu\(^{1,2}\), Xutong Wang\(^{1}\), and Ya Yu\(^{1}\)}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+Bounded agents must acquire information from candidate streams whose volume greatly exceeds their cognitive capacity, yet active retrieval and passive filtering are usually optimized separately and platform objectives often displace the agent's own ends. We formulate the \textbf{Sovereign Acquisition Problem (SAP)}, a finite-horizon stochastic control problem in which monitoring, retrieval, push filtering, delivery, and reflection share one attention budget and are constrained by four sovereignty conditions: inspectability, authorized writes, non-capturability, and auditability. A decision-theoretic decomposition expresses expected realized information value in terms of relevance, credibility-weighted value of information, timeliness, and misspecification harm; the five-feature scoring summary is exact only under decision homogeneity together with explicit feature-sufficiency and harm-calibration conditions. For push filtering, a budget--separability--recall identity shows that 95\% recall at a representative proposition-level budget requires Gaussian score separability \(d'\geq4.39\). This bottleneck motivates a dual-channel architecture combining proposition collapse and structurally guaranteed pass-through with scored discovery. Under explicit coverage and independence assumptions, miss probability is bounded by \((1-p_{\min})^{k_{\mathrm{eff}}}\), with a tight arbitrary-dependence extension. For pull acquisition, an attention no-arbitrage \textbf{unification theorem} places exploration, dwelling, query selection, push consumption, and reflection under a common shadow price; conditional expected-information-gain submodularity yields greedy query guarantees. Selected goal-capture bounds connect detection, exposure caps, and write isolation. Completed two-domain pilots and an 80-run, four-family agent replay are used only for validation and boundary mapping, not population-level confirmation. No human-side efficacy claim or global approximation ratio for layered SAP is made.
+\end{abstract}
+
+\textbf{Keywords:} epistemic sovereignty; active information acquisition; information filtering; value of information; attention allocation; redundancy coverage; adversarial robustness
+
+\textbf{Affiliations:} 1 College of Electronic and Information Engineering, Nanjing University of Aeronautics and Astronautics, Nanjing, China; 2 Jiangsu Yunhefeng Intelligent Technology Co., Ltd., Jiangsu, China. Corresponding author: Wen Hu (huwen@nuaa.edu.cn).
+
+\section{1. Introduction}\label{introduction}
+
+A wealth of information creates a poverty of attention {[}1{]}. The constraint is quantitative rather than rhetorical. If an agent has \(T=45\) minutes per day, a substantive item requires at least \(\underline\tau\approx4\) minutes, and subscriptions, notifications, search results, and social streams jointly supply \(N\sim10^4\) candidates, then only about ten items can be consumed. The discarded fraction must therefore be on the order of 99.8--99.9\%. Working-memory and context-window limits reinforce the same conclusion for human and artificial agents {[}2{]}. Filtering is unavoidable; the scientific questions are who controls it, what it should acquire, and when aggressive selection remains safe.
+
+This article addresses three disconnections in the prevailing treatment of those questions. First, a recommender or delivery system can optimize an observable proxy while failing to optimize the agent's reflectively endorsed ends. We distinguish first-order impulses \(g^{(1)}\) from second-order goals \(g^{(2)}\), following the hierarchical conception of agency {[}3{]}. The distinction is empirically motivated by divergences between revealed digital consumption and welfare {[}4,5{]}, but its role here is normative: the authority to write the acquisition objective belongs to the agent's reflective layer, not to a platform or to the content stream. Second, push and pull are often separated. Filtering ranks what arrives, whereas retrieval, source exploration, and monitoring reshape what can arrive. Both consume the same minutes and both change subsequent decisions; separate objectives leave their marginal values unpriced relative to one another. Third, high recall is often pursued solely through better scores. At extreme admission rates, however, separability and capacity impose limits that no amount of ranking rhetoric can remove.
+
+We call the resulting formulation \textbf{Sovereign Epistemic Acquisition (SEA)} and its optimization core the \textbf{Sovereign Acquisition Problem (SAP)}. SAP treats monitoring, active acquisition, push selection, delivery, and reflection as one constrained stochastic control problem. Sovereignty is not another reward term that can be traded away. It restricts the feasible policy space through four conditions: \textbf{S1 inspectability}, \textbf{S2 authorized write access}, \textbf{S3 non-capturability by third-party objectives}, and \textbf{S4 auditability}. These conditions complement work on values in recommendation and on the difficulty of inferring coherent user objectives from engagement {[}6,7{]}, but change the locus of control rather than merely proposing a better platform-side objective.
+
+The article makes five theory-led contributions.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{A unified problem and a conditional value decomposition.} SAP assigns push, pull, and reflection to a common budget under S1--S4. Expected realized decision value is decomposed over data-generating true/false branches, allowing ordinary Blackwell value of information and negative value under misspecified updating to coexist without contradiction. The familiar five-feature score is proved to be an exact summary only under decision-homogeneity and feature-sufficiency assumptions.
+\item
+  \textbf{A filtering bottleneck and an architectural response.} A budget--separability--recall identity gives both a distribution-free capacity ceiling and a Gaussian separability requirement. At a representative proposition-level operating point, 95\% recall requires \(d'\geq4.39\), approximately AUC \(0.999\). Proposition collapse and a dual-channel design therefore carry recall structurally instead of asking a scorer to be nearly omniscient.
+\item
+  \textbf{Conditional redundancy-coverage guarantees.} Independent source classes yield \(P(\mathrm{miss})\leq(1-p_{\min})^k\). An independent-subset construction replaces \(k\) by \(k_{\mathrm{eff}}\) under arbitrary dependence and is tight without further assumptions. Watchlist pass-through, monitoring allocation, and a two-channel total-recall bound complete the architecture. Every numerical guarantee remains conditional on the provenance and calibration of \(p_{\min}\).
+\item
+  \textbf{A common price for active and passive acquisition.} The attention no-arbitrage result is explicitly a \textbf{unification theorem}, not a claim of new KKT mathematics. It organizes Pandora exploration, marginal-value dwelling, push thresholds, query batches, and reflection around one shadow price. Expected information gain supplies a monotone and, under conditional independence, submodular query objective.
+\item
+  \textbf{Explicit limits and scoped validation.} A selected goal-capture extension bounds effective-score drift through detector recall, exposure caps, and bounded item impact. Completed academic and financial pilots and a four-family judgment-layer replay then test mechanisms and map failures. They do not establish human efficacy, complete the full P1--P12 program, or supply a global approximation ratio for the coupled SAP.
+\end{enumerate}
+
+The emphasis deliberately differs from a companion six-page empirical conference paper and from the full monograph {[}55{]}: the present article is organized around assumptions, theorem chains, proofs, and applicability boundaries. Experimental comparisons are compressed into Section 10 as validation and falsification mapping rather than presented as the main contribution.
+
+\section{2. Related Work and Positioning}\label{related-work-and-positioning}
+
+\subsection{2.1 Dynamic acquisition and attention allocation}\label{dynamic-acquisition-and-attention-allocation}
+
+The pull side draws on several mature traditions. The economics of search prices additional inspection against its expected return {[}9{]}; Pandora's rule gives an index policy for costly inspection of independent alternatives {[}10{]}; optimal foraging and information foraging connect patch departure to marginal intake rates {[}11,12{]}. Rational inattention instead charges for information processing and yields endogenous stochastic choice {[}13--15{]}. Sequential experimental design and active learning select observations for their expected decision or information gain {[}16--20{]}, while Gittins and restless-bandit formulations address continuing allocation among evolving sources {[}21,22{]}. The general restless problem is computationally hard {[}23{]}.
+
+Zhong's optimal dynamic information acquisition is the closest formal ancestor on the pull side {[}8{]}. The relationship can be made precise. Restrict SAP to (i) pull only, with zero push and reflection budgets; (ii) no adversarial branch, so realized value reduces to nonnegative VOI; (iii) inactive sovereignty restrictions; and (iv) a fixed \(g^{(2)}\). The result is sequential choice of an information structure under an acquisition budget. SEA's distinct content lies in the complement: per-period push selection, structural recall, negative realized value under misspecified updating, and authorized control of the objective itself. We do not claim a converse reduction or priority over dynamic acquisition indexation.
+
+Our no-arbitrage result likewise does not discover marginal equalization. Its contribution is to show that exploration admission, patch departure, push consumption, query effort, monitoring rotation, and reflection can be audited against the same budget shadow price. This unification matters operationally: an additional ten minutes need not be assigned by habit to either search or feed consumption when their marginal values can be compared.
+
+\subsection{2.2 Value, filtering, and coverage}\label{value-filtering-and-coverage}
+
+Blackwell's experiment ordering and information-value theory provide the nonnegative value-of-information baseline {[}24,25{]}. Signal-detection theory supplies the separability measure \(d'\) used to price imperfect criticality scores {[}26{]}. Submodular welfare and coverage results supply classical greedy guarantees {[}27--30{]}, and heavy-tailed value models motivate explicit distortion bounds {[}31{]}. These tools are standard. The synthesis is to use the separability result as an impossibility boundary for pure scoring and the coverage result as a conditional architectural guarantee, rather than treating score quality and source structure as interchangeable.
+
+This distinction also separates SEA from retrieval evaluations that report only rank quality. A ranker can improve while remaining incapable of meeting a recall target at a fixed tiny admission rate. Conversely, a source portfolio can possess substantial redundant coverage while its items remain poorly ranked. The two quantities require separate measurements.
+
+\subsection{2.3 Misinformation, recommendation, and provenance}\label{misinformation-recommendation-and-provenance}
+
+Ex post corrections are useful but incomplete {[}40,41{]}, making ex ante exposure control a reasonable complement rather than a substitute for correction. Exposure to opposing views can backfire when imposed without regard to tolerance and trust {[}42{]}, and epistemic bubbles are not identical to echo chambers {[}43{]}. Accordingly, the framework does not equate sovereignty with maximal personalization or random ``bubble bursting.'' Exposure-diversity and feed-governance literature provides public-facing alternatives and complements {[}44--47{]}, but this article's public-layer extension is intentionally out of scope.
+
+Finally, testimony cannot be eliminated from belief formation; its provenance can only be chosen and audited {[}48,49{]}. Source identity, ownership, paraphrase chains, and, where available, content credentials {[}50{]} therefore enter the formal model. They are not cosmetic metadata: coverage independence and watchlist guarantees depend on them.
+
+\section{3. Premises and Sovereignty Constraints}\label{premises-and-sovereignty-constraints}
+
+\subsection{3.1 Status of the premises}\label{status-of-the-premises}
+
+SEA separates empirical assumptions from normative commitments and design stances. This separation prevents a value position from silently entering a probability bound.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\caption{Table 1. Premise status: empirical assumptions, normative commitments, and design stances.}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Premise
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Status and operational content
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Premise
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Status and operational content
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Boundedness & Empirical: finite time, working memory, context, or inference budget. \\
+Excess supply & Empirical: candidate arrival cost greatly exceeds available attention. \\
+Goal stratification & Normative: reflectively endorsed \(g^{(2)}\) has authority over \(g^{(1)}\). \\
+Testimonial dependence & Empirical: consequential beliefs rely on mediated sources. \\
+Adversariality & Design stance: content may attempt unauthorized belief or goal writes. \\
+Correctability & Design stance: performance is measurable and rollback remains available. \\
+\end{longtable}
+
+The premises imply design requirements, not unconditional empirical facts. In particular, procedural endorsement does not prove that \(g^{(2)}\) is authentic or immune to adaptive-preference formation {[}51{]}. The defensible requirement is narrower: goal formation and parameter changes should be inspectable, logged, reversible, and open to non-degenerate information inputs.
+
+\subsection{3.2 S1--S4 as restrictions on feasible policies}\label{s1s4-as-restrictions-on-feasible-policies}
+
+Let \(R\) denote the reflective layer: the person for a human agent, or the legitimate authorization configuration of the principal for an AI agent. A system \((\pi,U)\) is sovereign when it satisfies the following conditions.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\caption{Table 2. Sovereignty conditions as restrictions on feasible acquisition policies.}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Condition
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Formal and operational requirement
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Condition
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Formal and operational requirement
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+S1 Inspectability & \(U\), \(g^{(2)}\), and weights are readable; the declared scoring representation has a bounded number of interpretable terms. \\
+S2 Write right & Changes to goals, weights, thresholds, or monitoring lists require explicit authorization \(\sigma_R\); behavior may measure but not silently write. \\
+S3 Non-capturability & No third-party revenue term enters \(U\); counterfactual ranking probes test invariance to platform-side variables. \\
+S4 Auditability & Admissions, rankings, parameter writes, and deliveries leave explanations and append-only, tamper-evident records. \\
+\end{longtable}
+
+S1 does not assert that a short representation is always a sufficient statistic; Section 5 proves otherwise outside decision homogeneity. S2 is the crucial separation between the content channel and the parameter channel. Content may update knowledge \(K\), but it cannot directly modify the objective. S3 is an ownership condition, not a claim that platforms never produce useful information. S4 supplies the evidence needed to contest or roll back a decision.
+
+Formally, S1--S4 define a restricted policy class \(\Pi_S\subseteq\Pi\). They do not add a ``sovereignty bonus'' to utility. This prevents an optimizer from purchasing engagement or short-term VOI by surrendering control. Every parameter modification must also be historically traceable and reversible; switching costs imposed by migration barriers or default inertia violate the design even when the written objective looks benign.
+
+\section{4. Information Environment and the Sovereign Acquisition Problem}\label{information-environment-and-the-sovereign-acquisition-problem}
+
+\subsection{4.1 Items, propositions, and agents}\label{items-propositions-and-agents}
+
+An information item is \[
+x_i=(\mathrm{content}_i,\mathrm{prov}_i,\tau_i),
+\] where \(\mathrm{prov}_i\) records source and transmission provenance and \(\tau_i>0\) is consumption time. Latent attributes include expected realized decision value \(v_i^*\in\mathbb R\), manipulation intensity \(m_i\in[0,1]\), and stance \(s_i\). The benefit-only values \(v_e\) used later in coverage and distortion utilities are nonnegative; realized value can instead be negative under misspecified updating. Observable features are state-dependent: \[
+\phi(x_i;K,D)=(\mathrm{relevance},\mathrm{novelty},\mathrm{durability},
+\mathrm{actionability},\mathrm{credibility})_i\in[0,1]^5.
+\] Novelty depends on current knowledge \(K\), and relevance and actionability depend on the declared decision set \(D\); hence \(\phi\) is not an item-only function.
+
+Documents are collapsed to underlying propositions by \(\kappa:X\to E\). Each proposition \(e\) has a document set \(D_e\) and a provenance tree whose root is a primary source and whose branches contain paraphrase and commentary. The collapse ratio is \(\rho_c=|X|/|E|\). Sources are partitioned into classes \(\mathcal C_1,\ldots,\mathcal C_K\) using ownership, geography, type, and upstream wire dependence. For class \(i\), the coverage event is \[
+Z_i(e)=\mathbf 1\{\exists x\in D_e:\mathrm{source}(x)\in\mathcal C_i\}.
+\] This construction is intended to reduce, not assume away, cross-class dependence.
+
+The agent is \(\mathcal A=(C,G,K,\theta,R)\), where \(C=(T,W)\) denotes capacity, \(G=(g^{(1)},g^{(2)})\) goals, \(K\) beliefs and consumed-proposition memory, \(\theta\) a slow cognitive-state projection, and \(R\) the reflective layer. Each decision \(d\in D\) has utility \(u_d(a,\omega)\) and deadline \(h_d\). A proposition is \textbf{critical} when information about it has nonzero probability of changing an active decision by more than a declared amount. Criticality is therefore subject-relative, not a universal newsworthiness label.
+
+A policy is \(\pi=(\pi_{\mathrm{mon}},\pi_{\mathrm{pull}},\pi_{\mathrm{push}},\pi_{\mathrm{del}},\pi_{\mathrm{esc}})\): monitoring, active acquisition, push selection, delivery, and pre-authorized escalation. Its budget identity is \[
+T=T_{\mathrm{pull}}+T_{\mathrm{push}}+T_{\mathrm{ref}}.
+\] Reflection is not free residual time; it is a competing use with its own marginal value.
+
+\subsection{4.2 SAP and the scope of optimization}\label{sap-and-the-scope-of-optimization}
+
+For horizon \(H\) and discount \(\beta\in(0,1]\), SAP is \[
+\max_{\pi\in\Pi_S}\ \mathbb E_\pi\!\left[\sum_{t=1}^{H}\beta^t
+\big(\mathrm{VOI}_t(A_t)+\zeta\Delta\theta_t-\mathrm{Harm}_t(A_t)\big)\right]
+\tag{1}
+\] subject, in each period, to \[
+\sum_{i\in A_t}\tau_i+c(\pi_{\mathrm{pull},t})+c_{\mathrm{ref}}\leq T,
+\tag{2}
+\] as well as declared manipulation-exposure, tolerance-band, sovereignty, and emergency-structure constraints. VOI and harm use the same decision-utility units. The exchange rate \(\zeta\) is a declared slow-timescale weight, not an estimated universal constant. This article analyzes the acquisition and filtering core; it does not claim convergence of human virtue dynamics.
+
+\textbf{Proposition 4.1 (finite-horizon existence).} \emph{Assume finite \(H\), bounded per-period rewards, a finite candidate pool and finite pull-operator combinations in every period, closed constraints, and a nonempty null action. Then an optimal deterministic Markov policy exists.}
+
+\textbf{Proof.} Let \(s_t\) contain \(K_t,\theta_t\), remaining budget, and monitoring state. Set \(V_{H+1}=0\) and recursively define \[
+V_t(s_t)=\max_{a_t\in\mathcal A_t(s_t)}
+\{r_t(s_t,a_t)+\beta\mathbb E[V_{t+1}(s_{t+1})\mid s_t,a_t]\}.
+\] Every action set is finite, so each maximum is attained. Backward induction therefore produces an optimal action rule at every state and period; concatenating these rules gives an optimal policy. S1--S4 only remove actions from the finite feasible sets and do not change the argument. \(\square\)
+
+Existence is not tractability. SAP contains restless-bandit special cases, and no general globally efficient solution is claimed. Subsequent sections derive layer-specific characterizations and guarantees. Their approximation ratios and error bounds \textbf{do not automatically compose} through the shared budget and knowledge state. In particular, this article makes no global approximation-ratio claim for layered SAP; strongly coupled composition remains open.
+
+\section{5. Expected Realized Value and the Limits of Feature Scoring}\label{expected-realized-value-and-the-limits-of-feature-scoring}
+
+\subsection{5.1 Correct and misspecified updating}\label{correct-and-misspecified-updating}
+
+For a correctly specified experiment \(\sigma\), define \[
+\mathrm{VOI}(\sigma)=\mathbb E_y\!\left[\max_a\mathbb E[u(a,\omega)\mid y]\right]
+-\max_a\mathbb E[u(a,\omega)].
+\]
+
+\textbf{Lemma 5.1 (nonnegative Blackwell value).} \emph{With the correct likelihood, \(\mathrm{VOI}(\sigma)\geq0\).}
+
+\textbf{Proof.} The prior-optimal action \(a_0\) remains available after every observation. Thus, for each \(y\), \[
+\max_a\mathbb E[u(a,\omega)\mid y]\geq \mathbb E[u(a_0,\omega)\mid y].
+\] Taking expectations over \(y\) and using the law of total expectation gives \(\mathrm{VOI}(\sigma)\geq0\). Equivalently, the maximum is convex in the posterior and Jensen's inequality applies. \(\square\)
+
+Adversarial content does not contradict this lemma when it causes updating with a wrong likelihood. Let \(z\) have true distribution \(Q_z\), while the agent uses likelihood \(\ell\), forms posterior \(\mu_K^\ell(\cdot\mid z)\), and chooses \(\hat a(z)\in\arg\max_a\mathbb E_{\mu_K^\ell}[u_d(a,\omega)]\). Expected realized value is \[
+W_d(z;\ell)=\mathbb E_{z\sim Q_z}\mathbb E_{\omega\sim P(\cdot\mid z)}
+[u_d(\hat a(z),\omega)]-\max_a\mathbb E_{\mu_K}[u_d(a,\omega)].
+\tag{3}
+\] Correct updating gives \(W_d=\mathrm{VOI}_d\geq0\); misspecified updating can give \(W_d<0\). The expectation in (3) is over the true joint distribution, not the agent's possibly mistaken predictive distribution.
+
+\subsection{5.2 Decomposition assumptions}\label{decomposition-assumptions}
+
+The decomposition uses six explicit conditions.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{V1 Decision relevance.} Item value enters through active decisions in \(D\), with relevance--activity weight \(\pi_d(i)\).
+\item
+  \textbf{V2 Two-branch bounded harm.} With probability \(c_i\), a genuine signal is updated correctly; with probability \(1-c_i\), an adversarial signal is treated as genuine, producing realized harm in \([0,\mathrm{Harm}_{\max}]\).
+\item
+  \textbf{V3 Timeliness.} True-branch value for decision \(d\) is discounted by \(e^{-h_i/\lambda_d}\).
+\item
+  \textbf{V4 Decision homogeneity.} Decisions share \(\lambda_d=\lambda\), and their value and harm profiles differ only by item-independent weights \(a_d\): \(\mathrm{VOI}_i^{(d)}=a_dV_i\), \(\mathrm{Harm}_i^{(d)}=a_dH_i\).
+\item
+  \textbf{V5 Branch--update consistency.} The data-generating branch indicator corresponds to the updating rule in V2.
+\item
+  \textbf{V6 Feature sufficiency and harm calibration.} The feature map determines \(A_i,V_i,h_i,c_i\), and \(H_i\) is either a calibrated item-independent constant \(H\), or an additional coordinate of an augmented feature map \(\tilde\phi\). Exactness for the five base features requires the common-\(H\) case; item-varying harm requires the augmented map.
+\end{itemize}
+
+V5 is substantive. The following is a total expectation over branches, not a linearization of VOI over posterior mixtures.
+
+\textbf{Theorem 5.1 (expected realized-value decomposition and conditional exact summary).} \emph{Under V1--V3 and V5,} \[
+v_i^*=\sum_{d\in D}\pi_d(i)\left[
+ c_i\mathrm{VOI}_i^{(d)}(y_i)e^{-h_i/\lambda_d}
+ -(1-c_i)\mathrm{Harm}_i^{(d)}\right].
+\tag{4}
+\] \emph{If V4 also holds and \(A_i=\sum_d\pi_d(i)a_d\), then the aggregate factorization is} \[
+v_i^*=A_i\left[c_iV_ie^{-h_i/\lambda}-(1-c_i)H_i\right].
+\tag{5}
+\] \emph{If V6 also holds, then an item-independent \(F\) exists such that \(v_i^*=F(\tilde\phi(x_i;K,D))\). In the common-harm case \(\tilde\phi=\phi\); otherwise \(\tilde\phi\) includes \(H_i\) as a coordinate. Thus V4 yields an aggregate factorization, while an exact feature summary requires V4 and V6.}
+
+\textbf{Proof.} V1 gives \(v_i^*=\sum_d\pi_d(i)W_i^{(d)}\). Condition on the data-generating branch. By V2 and V5, the true branch contributes \(\mathrm{VOI}_i^{(d)}\) with probability \(c_i\), and the false branch contributes \(-\mathrm{Harm}_i^{(d)}\) with probability \(1-c_i\). The law of total expectation yields \[
+W_i^{(d)}=c_i\mathrm{VOI}_i^{(d)}-(1-c_i)\mathrm{Harm}_i^{(d)}.
+\] V3 multiplies only true-branch value by \(e^{-h_i/\lambda_d}\); substitution proves (4). Under V4, substitute \(a_dV_i\), \(a_dH_i\), and \(\lambda\), then factor \(a_d\) out of the summand: \[
+\sum_d\pi_d(i)a_d[c_iV_ie^{-h_i/\lambda}-(1-c_i)H_i]
+=A_i[c_iV_ie^{-h_i/\lambda}-(1-c_i)H_i].
+\] This proves (5). Under V6, every remaining item-dependent argument is determined by the declared feature map. In the common-\(H\) case the base map suffices; otherwise the augmented map includes \(H_i\). The fixed parameters \(\lambda,\{a_d\}\), and the calibrated harm specification then define an item-independent \(F\). \(\square\)
+
+Two qualifications prevent overreading. First, (4) is not the Blackwell VOI of one mixed experiment: correct and incorrect likelihoods apply in different branches, so realized value can be negative. Second, V4 cannot be dropped from the aggregate factorization (5), and V6 cannot be dropped from the exact-summary reading. If item \(i\) affects only an urgent decision with small \(\lambda_1\), item \(j\) affects only a durable decision with large \(\lambda_2\), and their aggregate five features are identical, their values are proportional to \(e^{-h/\lambda_1}\) and \(e^{-h/\lambda_2}\), respectively. Equal features need not imply equal value. Even under V4, identical base features can correspond to different \(H_i\) unless harm is calibrated or included in the feature map.
+
+When V6 holds, the exact \(F\) is multiplicative, not generally the linear score \(\langle w,\phi\rangle\). Logarithmic benefit features can make the positive term additive, but the harm term does not share that log space. SEA therefore assigns harm primarily to hard exposure constraints and a firewall. Outside V4 and V6, no exact feature summary or approximation bound between linear scoring and \(F\) is claimed; measured separability prices the resulting ranking error.
+
+\subsection{5.3 A closed-form anchor}\label{a-closed-form-anchor}
+
+\textbf{Corollary 5.1 (Gaussian--quadratic VOI).} \emph{Let \(\omega_d\sim\mathcal N(\hat\omega,\sigma_0^2)\), \(y_i=\omega_d+\epsilon\), \(\epsilon\sim\mathcal N(0,\sigma_i^2)\), independently, and \(u_d(a,\omega_d)=-(a-\omega_d)^2\). Then} \[
+\mathrm{VOI}_i^{(d)}=\sigma_0^2-
+\frac{\sigma_0^2\sigma_i^2}{\sigma_0^2+\sigma_i^2}
+=\frac{\sigma_0^4}{\sigma_0^2+\sigma_i^2}.
+\tag{6}
+\]
+
+\textbf{Proof.} Under squared error, optimal expected utility is minus posterior variance. Gaussian conditioning gives posterior variance \(\sigma_0^2\sigma_i^2/(\sigma_0^2+\sigma_i^2)\), independent of the observed value. VOI is prior minus expected posterior variance, yielding (6). \(\square\)
+
+Here novelty corresponds to precision gain, while source calibration changes effective noise. This is a closed-form interpretation, not evidence that real decisions are Gaussian or quadratic.
+
+\section{6. Push Filtering: Capacity, Separability, and Architecture}\label{push-filtering-capacity-separability-and-architecture}
+
+\subsection{6.1 Capacity and distortion}\label{capacity-and-distortion}
+
+\textbf{Proposition 6.1 (filtering arithmetic).} \emph{If \(N\) candidates arrive, \(\tau_i\geq\underline\tau>0\), and the consumption budget is \(T\), any policy consumes \(m\leq T/\underline\tau\) items and discards a fraction at least \(1-T/(\underline\tau N)\).}
+
+\textbf{Proof.} For consumed set \(A\), \(m\underline\tau\leq\sum_{i\in A}\tau_i\leq T\). Division by \(N\) gives the discarded fraction. \(\square\)
+
+Let \(E^*\) contain \(K^*\) critical propositions with values \(v_e\), and define leakage \[
+\mathcal D(\pi)=\mathbb E\!\left[\sum_{e\in E^*}v_e\mathbf 1\{e\text{ not consumed}\}\right].
+\]
+
+\textbf{Proposition 6.2 (optimal-distortion lower bound).} \emph{If the budget accommodates at most \(m\) distinct propositions and \(V_{(1)}\geq\cdots\geq V_{(K^*)}\) is the decreasing value rearrangement, then} \[
+\mathcal D(\pi)\geq\mathcal D^*
+=\mathbb E\!\left[\sum_{r>m}V_{(r)}\right].
+\tag{7}
+\] \emph{Perfect value ranking and full allocation to critical propositions attain equality.}
+
+\textbf{Proof.} Any policy consumes at most \(m\) critical values, so consumed critical value is at most \(\sum_{r\leq m}V_{(r)}\). Subtracting from total critical value gives (7); top-\(m\) selection attains it. \(\square\)
+
+If values are i.i.d. Pareto with tail \(P(V>v)=(v/v_{\min})^{-\alpha}\), \(\alpha>1\), the usual order-statistic integral approximation gives \[
+\frac{\mathcal D^*}{\mathbb E[\sum_ev_e]}
+\approx1-\left(\frac{m}{K^*}\right)^{(\alpha-1)/\alpha}.
+\tag{8}
+\] Indeed, the expected top-\(m\) sum is approximately \[
+K^*v_{\min}\int_0^{m/K^*}u^{-1/\alpha}\,du
+=K^*v_{\min}\frac{\alpha}{\alpha-1}(m/K^*)^{(\alpha-1)/\alpha},
+\] while the expected total is \(K^*v_{\min}\alpha/(\alpha-1)\). Equation (8) is a first-order large-sample approximation, not an exact finite-sample identity; exact gamma-function order statistics should be used for small \(m\) or \(K^*\) {[}31{]}.
+
+\subsection{6.2 The score-separability bottleneck}\label{the-score-separability-bottleneck}
+
+Suppose a fraction \(0<\pi<1\) of \(M\) propositions is critical and the filter admits the top fraction \(0<\beta<1\), where \(\beta=m/M\). Noncritical scores are \(\mu_0+\sigma Z\), while critical scores are \(\mu_0+d'\sigma+\sigma Z\), with \(Z\sim\mathcal N(0,1)\). Let \(\bar\Phi=1-\Phi\).
+
+\textbf{Theorem 6.1 (budget--separability--recall identity).}
+
+\emph{(i) The threshold \(z=(\tau-\mu_0)/\sigma\) and recall \(R\) satisfy} \[
+(1-\pi)\bar\Phi(z)+\pi\bar\Phi(z-d')=\beta,
+\qquad R=\bar\Phi(z-d').
+\tag{9}
+\]
+
+\emph{(ii) Distribution-free capacity ceiling:} \(R\leq\min\{1,\beta/\pi\}\).
+
+\emph{(iii) A target \(R\) is feasible only if \(\beta\geq\pi R\). For \(\pi R<\beta<1\), the Gaussian model requires the following separability; boundary cases follow by continuity in the extended real line:} \[
+d'\geq\underline d'(\beta,\pi,R)=
+\Phi^{-1}\!\left(1-\frac{\beta-\pi R}{1-\pi}\right)+\Phi^{-1}(R).
+\tag{10}
+\]
+
+\emph{(iv) At \(\pi=0.01\), \(\beta=0.0125\), and \(R=0.95\), \(\underline d'\approx4.39\) and \(\mathrm{AUC}=\Phi(d'/\sqrt2)\approx0.999\).}
+
+\textbf{Proof.} (i) The admitted fraction is the mixture tail probability above \(\tau\), yielding the first equation. Conditional on criticality, the standardized threshold is \(z-d'\), yielding the second.
+
+\begin{enumerate}
+\def\labelenumi{(\roman{enumi})}
+\setcounter{enumi}{1}
+\item
+  At most \(\beta M\) items are admitted. Recalled critical items cannot exceed either admitted items or all \(\pi M\) critical items, so \(R\pi M\leq\min\{\beta M,\pi M\}\).
+\item
+  Necessity follows from \(\pi R\leq\beta\). For equality at the minimum required \(d'\), (9) implies \[
+  \bar\Phi(z)=\frac{\beta-\pi R}{1-\pi},
+  \qquad
+  z=\Phi^{-1}\!\left(1-\frac{\beta-\pi R}{1-\pi}\right).
+  \] Also \(R=\bar\Phi(z-d')\) gives \(z-d'=-\Phi^{-1}(R)\). Subtraction yields (10).
+\end{enumerate}
+
+For sufficiency and monotonicity, define \[
+F(z,d')=(1-\pi)\bar\Phi(z)+\pi\bar\Phi(z-d')-\beta.
+\] For each \(d'\), \(F\) is continuous and strictly decreasing in \(z\), so a unique threshold \(z(d')\) exists. Writing \(\varphi\) for the normal density, implicit differentiation gives \[
+\frac{dz}{dd'}=-\frac{F_{d'}}{F_z}
+=\frac{\pi\varphi(z-d')}{(1-\pi)\varphi(z)+\pi\varphi(z-d')}\in(0,1).
+\] Consequently, \[
+\frac{dR}{dd'}=-\varphi(z-d')\left(\frac{dz}{dd'}-1\right)>0.
+\] Recall therefore increases strictly with \(d'\) at fixed \(\beta\), and every \(d'\) above the boundary in (10) attains at least the target.
+
+\begin{enumerate}
+\def\labelenumi{(\roman{enumi})}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  Substitution gives \[
+  \underline d'=\Phi^{-1}(0.99697)+\Phi^{-1}(0.95)
+  \approx2.74+1.645=4.39.
+  \] For independent critical and noncritical scores, their difference has variance \(2\sigma^2\), hence \(\mathrm{AUC}=\Phi(d'/\sqrt2)\), approximately \(0.999\). \(\square\)
+\end{enumerate}
+
+Only part (iv) is numerically Gaussian. The counting ceiling is distribution-free, and another location family can be substituted into (9) after recalibrating its tails. Score correlation does not change the marginal identity, although duplicate crowding still wastes slots.
+
+\subsection{6.3 Proposition collapse and the dual-channel principle}\label{proposition-collapse-and-the-dual-channel-principle}
+
+At document granularity, \(\beta_d=m/N\) and \(\pi_d=K^*\bar r/N\), where \(\bar r\) is mean critical-document redundancy. Thus \(R_{\mathrm{doc}}\leq m/(K^*\bar r)\). After collapse, \(M=N/\rho_c\) and \(\beta_p=\rho_c\beta_d\). If critical redundancy \(\bar r\) is comparable to \(\rho_c\), then \(\pi_p\approx\pi_d\), so the feasibility condition \(\beta\geq\pi R\) is relaxed by approximately \(\rho_c\). Moreover, \(\underline d'\) decreases as \(\beta\) increases. Collapse also prevents several copies of one proposition from consuming several slots. These are capacity improvements, not a promise that an imperfect scorer attains the counting ceiling.
+
+Numerically, with \(m=10\), \(N=10^4\), and \(\pi_d=0.01\), document-level selection has \(\beta_d=0.001\) and hence \(R_{\mathrm{doc}}\leq0.1\) even with perfect scores. If \(\rho_c=12.5\), collapse gives approximately \(M=800\) propositions and \(\beta_p=0.0125\); with \(K^*=8\), this is precisely the operating point in Theorem 6.1(iv). Collapse therefore moves the problem from a counting impossibility to a demanding but analyzable separability requirement.
+
+This leads to two parallel channels.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\caption{Table 3. Division of labor in the dual-channel acquisition architecture.}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Channel
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Function and guarantee
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Channel
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Function and guarantee
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+I: guarantee/pass-through & Monitored classes and verified watchlist items bypass competitive scores after deduplication; recall derives from coverage structure. \\
+II: discovery/scoring & Remaining propositions compete for residual slots; recall is priced by \(\beta,\pi,d'\) and value ranking. \\
+\end{longtable}
+
+\textbf{Architecture principle.} \emph{When \(d'<\underline d'(\beta,\pi,R)\), no pure scoring channel can meet target \(R\); a guarantee must come from additional acquisition or pass-through structure.} This is a direct consequence of Theorem 6.1, not a claim that scoring is unnecessary. Channel II discovers unmonitored critical items and ranks value when the budget binds.
+
+A feasibility audit must precede delivery. Ignoring public or emergency reserves for simplicity, expected critical recall \(R\) requires approximately \(R\mathbb E|E^*|\leq m\). With reserves \(m_{\mathrm{pub}}\) and \(m_{\mathrm{slack}}\), the necessary condition is \[
+R\mathbb E|E^*|\leq m-m_{\mathrm{pub}}-m_{\mathrm{slack}}.
+\tag{11}
+\] Violation requires more budget, a smaller explicitly declared critical set, or a lower target; silently diluting recall violates S4.
+
+\subsection{6.4 Selection algorithms and online thresholds}\label{selection-algorithms-and-online-thresholds}
+
+After hard harm screening, consider the nonnegative selection objective \[
+U(A)=U_{\mathrm{cov}}(A)+\mu U_{\mathrm{div}}(A),
+\] where \[
+U_{\mathrm{cov}}(A)=\sum_ev_e\mathbf 1\{A\cap D_e\neq\varnothing\},
+\quad
+U_{\mathrm{div}}(A)=\sum_{\sigma\in\mathcal S}\max_{i\in A}\mathrm{sim}(\sigma,i),
+\] with \(\mu,\mathrm{sim}\geq0\) and \(\sum_{i\in A}\tau_i\leq T_{\mathrm{push}}\).
+
+\textbf{Theorem 6.2 (monotone submodularity of the screened objective).} \emph{\(U\) is monotone submodular.}
+
+\textbf{Proof.} Adding an item cannot remove proposition coverage or reduce a maximum, so both terms are monotone. For \(A\subseteq B\) and \(i\notin B\), \[
+U_{\mathrm{cov}}(A\cup i)-U_{\mathrm{cov}}(A)
+=\sum_{e:i\in D_e,A\cap D_e=\varnothing}v_e
+\geq\sum_{e:i\in D_e,B\cap D_e=\varnothing}v_e
+=U_{\mathrm{cov}}(B\cup i)-U_{\mathrm{cov}}(B),
+\] because \(B\cap D_e=\varnothing\) implies \(A\cap D_e=\varnothing\). For each stance \(\sigma\), write \(m_A=\max_{j\in A}\mathrm{sim}(\sigma,j)\). Then \(m_A\leq m_B\), and the marginal-gain difference is \[
+(\mathrm{sim}(\sigma,i)-m_A)^+-(\mathrm{sim}(\sigma,i)-m_B)^+\geq0.
+\] Summing over stances and adding coverage preserves the inequality. \(\square\)
+
+\textbf{Proposition 6.3 (classical greedy selection guarantees).} \emph{For the screened monotone-submodular objective in Theorem 6.2, cardinality-constrained greedy attains \(1-1/e\) of optimum. Under unequal costs, the better of density greedy and the best singleton attains \(\tfrac12(1-1/e)\); partial enumeration plus density greedy attains \(1-1/e\).}
+
+\textbf{Proof.} These are direct applications of the classical cardinality, knapsack-density, and partial-enumeration guarantees {[}27--30{]}, with budgeted maximum coverage as a special case {[}29{]}. Theorem 6.2 verifies the objective structure required by those results. They guarantee only this selection subproblem, not joint SAP. \(\square\)
+
+For online arrivals, let \(W_i(b)\) be optimal continuation value with \(i\) periods and \(b\) equal-cost slots remaining. An item with score \(s\sim F\) yields increasing continuous reward \(r(s)\).
+
+\textbf{Proposition 6.4 (threshold optimality).} \emph{The Bellman equation and optimal decision are} \[
+W_i(b)=\mathbb E_s\max\{r(s)+W_{i-1}(b-1),W_{i-1}(b)\},
+\] \[
+\text{consume iff }r(s)\geq\tau_i(b):=W_{i-1}(b)-W_{i-1}(b-1).
+\] \emph{\(W_i\) is concave in \(b\), so the threshold is nonincreasing in remaining slots and nondecreasing in remaining periods.}
+
+\textbf{Proof.} The Bellman equation compares consuming and discarding; rearrangement immediately gives the threshold. Let \(\Delta_i(b)=W_i(b)-W_i(b-1)\) and \(g(\tau)=\mathbb E[(r(s)-\tau)^+]\). Then \[
+W_i(b)=W_{i-1}(b)+g(\Delta_{i-1}(b)),
+\] so \[
+\Delta_i(b)=\Delta_{i-1}(b)+g(\Delta_{i-1}(b))-g(\Delta_{i-1}(b-1)).
+\tag{12}
+\] The function \(g\) is nonnegative, nonincreasing, and 1-Lipschitz because \(t\mapsto(c-t)^+\) has these properties pointwise. Assume inductively that \(\Delta_{i-1}\) is nonincreasing and set \[
+x=\Delta_{i-1}(b-2)\geq y=\Delta_{i-1}(b-1)\geq z=\Delta_{i-1}(b).
+\] Equation (12) implies \[
+\Delta_i(b-1)-\Delta_i(b)
+=(y-z)+[g(y)-g(x)]+[g(y)-g(z)].
+\] Monotonicity gives \(g(y)-g(x)\geq0\); 1-Lipschitz continuity gives \((y-z)+g(y)-g(z)\geq0\). Thus \(\Delta_i\) is nonincreasing, starting from \(\Delta_0=0\). The same recursion gives \(\Delta_i(b)\geq\Delta_{i-1}(b)\geq0\), establishing both stated threshold monotonicities. \(\square\)
+
+The threshold is the opportunity cost of a slot. Section 8 identifies it with the common attention shadow price under the separable concave allocation model.
+
+\section{7. Redundancy Coverage and Conditional Recall Guarantees}\label{redundancy-coverage-and-conditional-recall-guarantees}
+
+\subsection{7.1 Assumptions and independent-subset bounds}\label{assumptions-and-independent-subset-bounds}
+
+Channel I uses three assumptions.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{R1 Coverage floor:} for every relevant critical \(e\) and monitored class \(i\), \(P(Z_i(e)=1)\geq p_{\min}\).
+\item
+  \textbf{R2 Conditional independence:} given criticality, coverage events are mutually independent across classes.
+\item
+  \textbf{R3 Pass-through:} verified content from explicitly watchlisted entities bypasses scoring and arrives after deduplication, subject to a budget-feasibility alarm.
+\end{itemize}
+
+\textbf{Theorem 7.1 (independent redundancy coverage).} \emph{Under R1--R2, direct pass-through from \(k\) monitored classes gives, for each critical \(e\),} \[
+P(\mathrm{miss}\,e)\leq(1-p_{\min})^k.
+\tag{13}
+\]
+
+\textbf{Proof.} A filtering miss occurs only if every monitored class fails to cover \(e\). Therefore \[
+P(\mathrm{miss}\,e)=P\!\left(\bigcap_{i=1}^k\{Z_i(e)=0\}\right)
+=\prod_iP(Z_i(e)=0)\leq(1-p_{\min})^k.
+\] The equality uses R2 and the inequality R1. \(\square\)
+
+For example, \(p_{\min}=0.7,k=5\) gives a miss bound of \(0.00243\). This arithmetic is illustrative only: R1 is a universal per-critical-proposition assumption, not an estimated average reporting rate.
+
+To handle arbitrary dependence, call \(S\) \(e\)-independent when \(\{Z_i(e)\}_{i\in S}\) are mutually independent, and define \[
+k_{\mathrm{eff}}(e)=\max\{|S|:S\text{ is }e\text{-independent}\},
+\qquad k_{\mathrm{eff}}=\min_{e\in E^*}k_{\mathrm{eff}}(e).
+\]
+
+\textbf{Theorem 7.2 (correlated-case coverage).} \emph{Under R1 alone,} \[
+P(\mathrm{miss}\,e)\leq(1-p_{\min})^{k_{\mathrm{eff}}(e)}
+\leq(1-p_{\min})^{k_{\mathrm{eff}}}.
+\tag{14}
+\]
+
+\textbf{Proof.} Choose a maximum \(e\)-independent set \(S^*\). Failure of all \(k\) classes implies failure of all classes in \(S^*\). Event inclusion, independence on \(S^*\), and R1 give \[
+P(\mathrm{miss}\,e)\leq P\!\left(\bigcap_{i\in S^*}\{Z_i(e)=0\}\right)
+=\prod_{i\in S^*}P(Z_i(e)=0)
+\leq(1-p_{\min})^{|S^*|}.
+\] The second inequality follows because \(k_{\mathrm{eff}}(e)\geq k_{\mathrm{eff}}\) and \(1-p_{\min}\in[0,1]\). \(\square\)
+
+\textbf{Proposition 7.1 (tightness).} \emph{For every \(0<p_{\min}<1\) and feasible \(k_{\mathrm{eff}}\), (14) cannot be improved uniformly without additional dependence assumptions.}
+
+\textbf{Proof.} Partition classes into \(k_{\mathrm{eff}}\) nonempty groups. Within each group let every \(Z_i\) equal one Bernoulli\((p_{\min})\) variable; make group variables mutually independent. R1 holds, no two distinct classes in a group are independent, and the maximum independent subset contains one class per group. All classes fail exactly when all group variables fail, an event of probability \((1-p_{\min})^{k_{\mathrm{eff}}}\). \(\square\)
+
+The engineering implication is limited but useful: ownership and upstream-aware class design can increase defensible \(k_{\mathrm{eff}}\). Pairwise correlation thresholds are diagnostics, not proofs of mutual independence. Astroturfing specifically attacks this structure by manufacturing nominally independent sources with a common root.
+
+\subsection{7.2 Watchlists, monitoring allocation, and total recall}\label{watchlists-monitoring-allocation-and-total-recall}
+
+\textbf{Proposition 7.2 (watchlist filtering guarantee).} \emph{Under R3, if a verified watchlisted entity publishes content about \(e\) and the pass-through budget is feasible, the filtering-stage miss probability is zero.}
+
+\textbf{Proof.} R3 makes admission deterministic after provenance verification and deduplication. No score threshold can reject the item. The guarantee excludes upstream silence, impersonation that defeats verification, and an infeasible pass-through quota; the latter must trigger an alarm rather than silent loss. \(\square\)
+
+For known classes, let \(p_i(e)=P(Z_i(e)=1)\), \(w_e\geq0\), and define \[
+U_{\mathrm{mon}}(S)=\sum_ew_e\left(1-\prod_{i\in S}(1-p_i(e))\right).
+\tag{15}
+\] The product form assumes R2.
+
+\textbf{Theorem 7.3 (monitoring submodularity).} \emph{Under R2, \(U_{\mathrm{mon}}\) is monotone submodular; the classical cardinality and knapsack greedy guarantees apply.}
+
+\textbf{Proof.} Monotonicity follows because adding a class can only reduce the product of non-coverage probabilities. Fix \(e\), write \(q_i=1-p_i(e)\in[0,1]\), and \(f_e(S)=1-\prod_{i\in S}q_i\). For \(A\subseteq B\) and \(j\notin B\), \[
+f_e(A\cup j)-f_e(A)=(1-q_j)\prod_{i\in A}q_i
+\geq(1-q_j)\prod_{i\in B}q_i
+=f_e(B\cup j)-f_e(B),
+\] because \(0\leq q_i\leq1\). Nonnegative summation over \(e\) preserves submodularity. The approximation statements are the standard consequences {[}27--30{]}. \(\square\)
+
+Under positive cross-class correlation, (15) can overestimate coverage. Optimization should then use defensible independent groups or directly estimated joint coverage, not pretend that the independence formula remains exact.
+
+Finally, let \(R_{\mathrm{II}}=P(\text{Channel II recovers }e\mid\text{Channel I fails})\) for a non-watchlist proposition.
+
+\textbf{Theorem 7.4 (two-channel filtering miss bound).} \emph{Under R1 and R3, for non-watchlist \(e\),} \[
+P(\mathrm{miss}\,e)\leq(1-p_{\min})^{k_{\mathrm{eff}}}(1-R_{\mathrm{II}}),
+\tag{16}
+\] \emph{and hence \(P(\mathrm{miss}\,e)\leq(1-p_{\min})^{k_{\mathrm{eff}}}\). Verified, feasible watchlist pass-through has zero filtering-stage miss under Proposition 7.2.}
+
+\textbf{Proof.} Both channels must fail for a miss. The chain rule gives \[
+P(\mathrm{miss})=P(\mathrm{I\ fails})P(\mathrm{II\ fails}\mid\mathrm{I\ fails})
+=P(\mathrm{I\ fails})(1-R_{\mathrm{II}}).
+\] Theorem 7.2 bounds the first factor, proving (16). No independence between channels is assumed. Dropping \(1-R_{\mathrm{II}}\leq1\) gives the unconditional bound. \(\square\)
+
+The \(R_{\mathrm{II}}\) term is conditional on a selected, difficult subset: Channel I failures may have low redundancy and weak observable features. It cannot generally be replaced by the scorer's unconditional recall from Theorem 6.1. Theorem-level deployment therefore relies on the final, coarser bound unless conditional recovery is measured.
+
+\subsection{7.3 Applicability domain}\label{applicability-domain}
+
+Three boundaries are essential. First, \(p_{\min}\) is partly a \textbf{design variable}: list granularity and capacity can change it substantially. Second, it can have an \textbf{institutional provenance}, such as mandatory primary-source disclosure, but that provenance is supplied by the institution rather than by SEA. Third, quota matching is part of the guarantee: direct pass-through cannot protect recall if admitted supply exceeds its reserved capacity and excess items are silently discarded.
+
+Consequently, ``95\% critical recall'' is not a universal property of the architecture. It is a conditional target requiring (i) a defensible coverage floor on the declared \(E^*\), (ii) adequate effective independence, (iii) quota feasibility, and (iv) a decision set compatible with the cognitive budget. Low-redundancy, undeclared, non-public, and scorer-invisible propositions remain an irreducible audit category.
+
+\section{8. Pull Acquisition and Attention No-Arbitrage}\label{pull-acquisition-and-attention-no-arbitrage}
+
+\subsection{8.1 Pull operators and a common shadow price}\label{pull-operators-and-a-common-shadow-price}
+
+Active acquisition comprises: \textbf{exploration}, which samples an unknown source at cost \(c_e\); \textbf{querying}, which retrieves an observation \(Y_q\) relevant to \(D\) at cost \(c_q\); and \textbf{dwelling}, which spends time \(t\) in a source with cumulative value \(G_s(t)\). These operations change the candidate pool rather than merely rank an exogenous stream.
+
+For the allocation theorem, divide \(T\) among uses \(u\), including push, pull operations, and reflection. Use \(u\) receives \(x_u\geq0\) minutes and yields \(V_u(x_u)\). Assume \textbf{A1 (concavity):} each \(V_u\) is increasing, concave, continuously differentiable, and non-satiated at the optimum; \textbf{A2 (separability):} \(V(x)=\sum_uV_u(x_u)\). Separability is an idealization because retrieval can change push novelty and reflection can change both.
+
+\textbf{Theorem 8.1 (attention no-arbitrage; a unification theorem).} \emph{Under A1--A2, \(x^*\) with \(\sum_ux_u^*=T\) is optimal if and only if some \(\nu>0\) satisfies} \[
+V_u'(x_u^*)=\nu\quad(x_u^*>0),
+\qquad
+V_u'(0)\leq\nu\quad(x_u^*=0).
+\tag{17}
+\]
+
+\textbf{Proof.} For necessity, suppose two interior uses have \(V_u'(x_u^*)>V_{u'}'(x_{u'}^*)\). Move \(\epsilon>0\) minutes from \(u'\) to \(u\). Feasibility is preserved for sufficiently small \(\epsilon\), and differentiability gives \[
+V(x')-V(x^*)=\epsilon(V_u'(x_u^*)-V_{u'}'(x_{u'}^*))+o(\epsilon)>0,
+\] contradicting optimality. If an inactive use has derivative above the common marginal value of an active use, moving a small allocation into it gives the same contradiction.
+
+For sufficiency, concavity gives \[
+V_u(x_u)\leq V_u(x_u^*)+V_u'(x_u^*)(x_u-x_u^*).
+\] For any feasible \(x\), sum over \(u\). Active-use derivatives equal \(\nu\); at inactive corners \(V_u'(0)(x_u-x_u^*)=V_u'(0)x_u\leq\nu x_u\). Hence \[
+V(x)-V(x^*)\leq\nu\sum_u(x_u-x_u^*)=\nu(T-T)=0.
+\] Thus \(x^*\) is globally optimal. Full budget use follows from non-satiation. \(\square\)
+
+The mathematical content is the concave KKT variational principle. The unification is the case list: one \(\nu\) is the push opportunity threshold, the stopping comparator for exploration and query effort, the patch departure rate, the monitoring-slot opportunity cost, and the price of reflection time. Pandora and marginal-value rules are classical special cases {[}10,11{]}, not new corollaries claimed here.
+
+\subsection{8.2 Exploration and dwelling}\label{exploration-and-dwelling}
+
+For independent Pandora boxes, box \(i\) has random reward \(X_i\sim F_i\), inspection cost \(c_i\) in utility units, and reservation index \[
+\mathbb E[(X_i-z_i)^+]=c_i.
+\tag{18}
+\] The left side is continuous and strictly decreasing from arbitrarily large values to zero, so a unique index exists under the usual support conditions. Weitzman's optimal rule opens boxes in descending index order and stops when the best realized reward exceeds every remaining index {[}10{]}.
+
+\textbf{Proposition 8.1 (source exploration and monitoring admission).} \emph{Let exploration cost \(c_e^{\mathrm{time}}\) be converted to utility by \(c_e=\nu c_e^{\mathrm{time}}\). A candidate source is worth exploring when its reservation index exceeds the best outside-option reward; revealed source value justifies monitoring only when it exceeds the opportunity value of the displaced slot. Under the unit-horizon normalization in which both are written \(\nu\), these conditions are \(z_s\geq\nu\) for exploration and \(X_s\geq\nu\) for admission.}
+
+\textbf{Proof.} Add a deterministic outside-option box whose reward is \(b\). With inspection cost \(c>0\), (18) gives its index \(z_c=b-c\); the zero-cost limit therefore assigns reservation value \(b\). At exactly zero cost, the positive-part equation alone has a flat zero region and does not determine a unique index, so this limit (or direct definition of the outside-option reservation value) is required. Weitzman's rule then opens no box with \(z_s<b\) and takes no revealed reward below \(b\). For monitoring, the relevant outside option is the value displaced by occupying the slot; persistent estimated value below it triggers rotation review. With \(b\) and slot opportunity value normalized to \(\nu\), the displayed criteria follow. \(\square\)
+
+The unit-horizon notation should not obscure dimensions: in general, minutes must be converted through the shadow price and a common monitoring horizon. Monitoring admission must also respect marginal coverage and quota feasibility; a high-VOI but perfectly redundant source may have less incremental value than (18) suggests.
+
+For dwelling, let \(G_s(t)\) be increasing and concave, and let \(c_{\mathrm{sw}}\) denote \textbf{utility-equivalent} switching cost (if switching takes \(t_{\mathrm{sw}}\) minutes, \(c_{\mathrm{sw}}=\nu t_{\mathrm{sw}}\)). The average intake rate is \[
+R_s(t)=\frac{G_s(t)-c_{\mathrm{sw}}}{t}.
+\]
+
+\textbf{Proposition 8.2 (marginal-value dwelling rule).} \emph{At an interior optimum \(t^*\),} \[
+G_s'(t^*)=R_s(t^*)
+\quad\Longleftrightarrow\quad
+G_s'(t^*)t^*=G_s(t^*)-c_{\mathrm{sw}},
+\tag{19}
+\] \emph{and cross-patch equilibrium has \(R_s(t^*)=\nu\).}
+
+\textbf{Proof.} Differentiation gives \[
+R_s'(t)=\frac{G_s'(t)t-[G_s(t)-c_{\mathrm{sw}}]}{t^2}.
+\] Setting the numerator to zero yields (19). Concavity makes \(G_s'\) nonincreasing and \(G_s(t)-tG_s'(t)\) nondecreasing, so the stationary point is the global maximum when an interior solution exists; otherwise the optimum is at a boundary, including non-entry or indefinite dwelling. If another active use has marginal value \(\nu<R_s(t^*)\), reallocating time to the patch is profitable until Theorem 8.1's equality is restored. \(\square\)
+
+\subsection{8.3 Query batches and expected information gain}\label{query-batches-and-expected-information-gain}
+
+Let \(Q\) be a query batch and \(Y_Q\) its observations. Define \(I(Q)=I(Y_Q;\omega\mid K)\), the expected information gain about decision-relevant state given current knowledge.
+
+\textbf{Theorem 8.2 (EIG structure).} \emph{(i) \(I(Q)\) is monotone. (ii) If \(Y_q\) are conditionally independent given \((\omega,K)\), \(I(Q)\) is submodular. (iii) Consequently, equal-cost greedy attains \(1-1/e\); the density-greedy/best-singleton rule attains \(\tfrac12(1-1/e)\) under costs, and partial enumeration restores \(1-1/e\).}
+
+\textbf{Proof.} By the chain rule and nonnegativity of conditional mutual information, \[
+I(Q\cup q)-I(Q)=I(Y_q;\omega\mid Y_Q,K)\geq0,
+\] which proves monotonicity. Under conditional independence given \((\omega,K)\), \[
+\Delta(Q,q)=I(Y_q;\omega\mid Y_Q,K)
+=H(Y_q\mid Y_Q,K)-H(Y_q\mid\omega,K).
+\] For \(Q'\subseteq Q\), conditioning on more observations cannot increase entropy: \[
+H(Y_q\mid Y_Q,K)\leq H(Y_q\mid Y_{Q'},K).
+\] The subtracted term is unchanged, so \(\Delta(Q,q)\leq\Delta(Q',q)\), the diminishing-returns definition of submodularity. Part (iii) then follows from the classical guarantees {[}27--30{]}. \(\square\)
+
+Raw mutual information is not automatically decision value. It is a suitable query surrogate when the decision-relevant state and utility weighting justify it; otherwise queries should be ranked by decision-weighted expected VOI. Nor does submodularity survive arbitrary observation dependence. These qualifications matter for lateral reading: opening independent sources to investigate provenance can have high marginal value when credibility uncertainty dominates {[}34{]}, but near-duplicate queries can have strongly coupled returns.
+
+Continual monitoring is a restless-bandit problem when unread sources continue to evolve {[}22{]}. Whittle-style indices are useful heuristics, with asymptotic results only under their own conditions {[}32{]}; Gittins optimality applies to the more restrictive frozen-arm bandit {[}21{]}. This is another reason not to infer a global SAP approximation ratio from local index rules.
+
+Finally, when attention cost is Shannon-based, rational inattention yields soft rather than hard selection {[}13--15,33{]}. In a static discrete-choice reduction, \[
+P(i\in A)\propto\pi_i^0\exp(\langle w,\phi_i\rangle/\lambda).
+\] This is a cited specialization of rational-inattention results {[}15{]}, not a new theorem here. Hard thresholds emerge as attention becomes cheap relative to utility differences. The SAP adds an explicit owner for \(w\), rather than assuming that the objective is fixed and externally known.
+
+\section{9. Selected Extension: Goal Capture and Firewall Bounds}\label{selected-extension-goal-capture-and-firewall-bounds}
+
+Goal capture illustrates why S2 must constrain both retrieval and filtering. An adversarial item may attempt an unauthorized change in the effective scoring weights from \(w\) to \(w+\Delta(x)\). On the linear scoring component, define \[
+D(\widetilde U,U)=\sup_{x'\in X}|\langle\Delta,\phi_{x'}\rangle|
+\leq\|\Delta\|_1,
+\tag{20}
+\] because \(\phi\in[0,1]^5\). This metric does not capture every set-level or worldview change; small \(D\) is not a complete safety certificate. AI instances include indirect prompt injection through retrieved content {[}35,36{]} and approval-driven sycophantic drift {[}37{]}. Human emotional-capture interpretations are hypotheses to be tested, not established human effects in this article.
+
+We use three assumptions: \textbf{F1}, each leaked item has \(\|\Delta(x)\|_1\leq\delta\); \textbf{F2}, each manipulative item is independently detected with probability \(\rho_m\); and \textbf{F3}, suspicious-category admissions satisfy \(n_m\leq n_{\max}\).
+
+\textbf{Theorem 9.1 (expectation firewall bound).} \emph{Under F1--F3,} \[
+\mathbb E[D(\widetilde U,U)]
+\leq\delta(1-\rho_m)\mathbb E[n_m]
+\leq\delta(1-\rho_m)n_{\max}.
+\tag{21}
+\]
+
+\textbf{Proof.} If \(L\) is the leaked set, the triangle inequality and F1 give \(D\leq\|\sum_{i\in L}\Delta(x_i)\|_1\leq\delta|L|\). Independent detection under F2 gives \(\mathbb E|L|=(1-\rho_m)\mathbb E[n_m]\). F3 bounds the final expectation. \(\square\)
+
+\textbf{Theorem 9.2 (conditional high-probability firewall bound).} \emph{Under F1--F3, conditional on \(n_m\), for any \(\beta\in(0,1)\), with probability at least \(1-\beta\),} \[
+D(\widetilde U,U)\leq
+\delta(1-\rho_m)n_m+
+\delta\sqrt{\tfrac12n_m\ln(1/\beta)}.
+\tag{22}
+\] \emph{Replacing \(n_m\) by \(n_{\max}\) gives an unconditional exposure-cap form.}
+
+\textbf{Proof.} If \(n_m=0\), then \(D=0\) and the bound is trivial. Otherwise, given \(n_m\), \(|L|=\sum_{i=1}^{n_m}B_i\) with independent \(B_i\sim\mathrm{Bernoulli}(1-\rho_m)\). Hoeffding's inequality {[}38{]} gives \[
+P(|L|-\mathbb E|L|\geq u\mid n_m)\leq e^{-2u^2/n_m}.
+\] Choose \(u=\sqrt{n_m\ln(1/\beta)/2}\). On the complementary event, multiply \(|L|\) by \(\delta\) and use \(D\leq\delta|L|\). The right side increases with \(n_m\), so F3 supplies the unconditional form. \(\square\)
+
+The design rule is to choose detector recall, threshold, and \(n_{\max}\) so that the bound is below the declared tolerance. Exposure caps matter independently of average detector performance through the concentration term. Coordinated payloads can correlate detection errors; no corresponding high-probability bound is claimed here. Payload-cluster caps and measured aggregate leakage are mitigations, not substitutes for a missing dependence theorem. Repeated-exposure phenomena {[}39{]} further motivate deduplication, while correction literature {[}40,41{]} supports retaining ex post remedies as a second line.
+
+\section{10. Evidence as Validation and Boundary Mapping}\label{evidence-as-validation-and-boundary-mapping}
+
+\subsection{10.1 Evidence status}\label{evidence-status}
+
+The empirical material has three deliberately limited roles: check whether measured score separabilities approach the theoretical requirement, estimate when coverage assumptions hold, and test whether a judgment layer reproduces mechanistic gains across model families. Completed evidence comprises two real-corpus temporal-replay pilots and a four-family LLM-agent judgment-layer replay. The full population-level P1--P12 battery remains \textbf{in progress}, and its pre-registered run target has not been reached. Direct end-to-end LLM, RAG-safety, and welfare-optimized baseline arms remain design-stage and contribute no results here.
+
+No human-subject data were collected or analyzed for the reported SEA validation. HP-0 is \textbf{{[}designed; data collection pending{]}} and concerns feasibility rather than efficacy. Public human-data resources used elsewhere in the research program are transfer anchors, not human validation of SEA. Accordingly, every statement about human virtue convergence, backfire prevention, calibration improvement, or deskilling protection is a falsifiable prediction, not a finding.
+
+\subsection{10.2 Two-domain replay: where the recall claim succeeds and fails}\label{two-domain-replay-where-the-recall-claim-succeeds-and-fails}
+
+Both pilots used frozen temporal replays and post-hoc ground-truth proxies. Academic criticality was proxied by the subsequently top-2\% most-cited papers; financial market criticality by realized market-moving days. Neither proxy is identical to ex ante decision criticality. The financial replay also used legally material disclosures as a second, institutionally defined ground truth.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\caption{Table 4. Frozen two-domain pilot calibers and applicability boundaries.}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Quantity
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Academic pilot
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Financial pilot
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Quantity
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Academic pilot
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Financial pilot
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Corpus & arXiv, 2019-09 & EDGAR plus public news \\
+Scale & 2,576 propositions; \(K^*=52\) & 1,876 propositions; 15,368 documents \\
+Score \(d'\) & 0.73--0.77 & legal 2.65--3.49; market 0.54--0.60 \\
+Coverage \(\hat p_{\min}\) & author list about 0.02; institution list 0.17--0.37 & legal 1.00; market 0.70--0.73 \\
+Recall boundary & best end-to-end 0.28 & within-portfolio, quota-matched 0.952; 0.910 after news expansion \\
+\end{longtable}
+
+The academic strong form of high recall is \textbf{rejected}: its best end-to-end recall was 0.28. The result is not repaired by calling the ground truth imperfect. Citation counts are delayed and prestige-sensitive, but sensitivity analyses reported in the underlying pilot did not reverse the rejection. The single-source academic ecology also had \(\hat\rho_c=1.0\), so it did not test the multi-source collapse mechanism.
+
+The financial 0.952 figure has a much narrower interpretation. It was obtained at \(m=5\) for \textbf{within-portfolio, quota-matched} recall against the post-hoc market-moving-day proxy, under favorable supply conditions: 25 direct-pass holdings and approximately 4.6 propositions per day. It is not general financial recall, not ex ante critical-information recall, and not an unconditional architectural guarantee. Expanding the news layer diluted the same setting to 0.910 by drawing quota away from the list. The regulatory class's legal-ground-truth coverage floor illustrates institutional provenance; it does not show that arbitrary watchlists have \(p_{\min}=1\).
+
+Across both domains, measured \(d'\) remained below the representative 4.39 requirement. This supports the bottleneck's practical relevance, but it is not an independent proof of an algebraic identity. Gaussian-fit correlations, where reported, concern distributional approximation rather than theorem truth. Together the pilots support a domain-conditional conclusion: structure can meet a high recall target when coverage, capacity, and scope align, while the strong domain-general claim fails.
+
+\subsection{10.3 Four-family judgment-layer replay}\label{four-family-judgment-layer-replay}
+
+The completed academic-domain mechanistic replay used four model families, 80 independent runs, and 73,547 valid agent-day records. Primary families O and C contributed 30 runs each; anchor families Q and G contributed 10 each. The nominal run template used 30 agents over 30 simulated days, with sharded execution and protocolized retries/backfill; every accepted run passed an integrity gate of \textbf{at least} 900 valid records, a minimum rather than a cap. The recall comparison isolates the judgment layer against an honest feature arm; a separate day-paired comparison used a semi-oracle parametric arm. Neither comparison validates end-to-end SAP or human behavior.
+
+\begin{longtable}[]{@{}lrlr@{}}
+\caption{Table 5. Four-family judgment-layer results; intervals are run-level bootstrap 95\% CIs.}\tabularnewline
+\toprule\noalign{}
+Family & Critical recall & Run-bootstrap 95\% CI & \(\Delta\)value \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Family & Critical recall & Run-bootstrap 95\% CI & \(\Delta\)value \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+O & 0.443 & {[}0.433, 0.454{]} & −0.175 \\
+C & 0.534 & {[}0.527, 0.541{]} & +0.676 \\
+Q & 0.514 & {[}0.502, 0.526{]} & +0.432 \\
+G & 0.519 & {[}0.498, 0.539{]} & −0.223 \\
+\end{longtable}
+
+The honest feature arm's recall was 0.241. Every judgment family exceeded it by at least 1.8-fold, but value deltas in the semi-oracle comparison split: C and Q were positive, whereas O and G were negative. Recall improvement therefore cannot be summarized as uniform value improvement. The inconsistency is a result and an open mechanism question, not an anomaly to average away.
+
+Agent-days are the measurement unit, but runs are the replication unit. Confidence intervals used run-level bootstrap resampling, and pooled inference was stratified by run across 80 strata. For that day-paired judgment-versus-semi-oracle comparison, the cross-family continuity-corrected CMH statistic was \(\chi^2_1=981.5\). Its asymptotic upper tail was evaluated as \[
+p=\operatorname{erfc}\!\left(\sqrt{\chi^2/2}\right)
+\approx1.9\times10^{-215}.
+\] This extreme \(p\)-value is reported \textbf{only for order-of-magnitude orientation}, not as a calibrated error probability. Effect sizes, family-specific confidence intervals, and run-stratified replication carry the inferential weight. Voided protocols and a dropped family were quarantined rather than silently analyzed.
+
+\subsection{10.4 Falsification map}\label{falsification-map}
+
+The theory generates tests beyond the completed pilots.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\caption{Table 6. Falsification map for the principal theoretical mechanisms.}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Mechanism
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Prediction
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Failure interpretation
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Mechanism
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Prediction
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Failure interpretation
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Score bottleneck & Measured threshold tails satisfy the applicable class-conditional identity. & Recalibrate distribution or reject scorer model. \\
+Coverage & Misses remain below a confidence-adjusted coverage bound. & R1, independence, or class estimation fails. \\
+No-arbitrage scheduling & Reallocation toward higher marginal VOI improves value under matched budgets. & Separability or estimated marginal values fail. \\
+EIG query batches & Greedy approaches the applicable submodular benchmark. & Conditional independence or value surrogate fails. \\
+Firewall & Exposure respects the appropriate expectation or concentration bound. & F1--F3 or their calibration fails. \\
+\end{longtable}
+
+A simultaneous failure of structural coverage and scoring recall would reject the core aggressive-filtering program. By contrast, failure of a human behavioral prediction would reject that human instantiation, not alter the algebra of the coverage or budget theorems.
+
+\section{11. Discussion}\label{discussion}
+
+\subsection{11.1 What the synthesis changes}\label{what-the-synthesis-changes}
+
+SEA reframes acquisition as ownership-constrained control over both the candidate pool and its selection. A monitoring list is not merely a preference list: it determines which coverage events can guarantee recall. A query is not merely an interaction: it changes future supply and consumes current attention. A reflection session is not overhead: it competes at shadow price \(\nu\) while preserving the measurement and authorization channels. These are different operations within one budgeted problem.
+
+The theory also divides responsibilities more sharply than ``use a better model.'' The scorer is accountable for discovery and ranking, with error measured by class-conditional separability. Proposition collapse is accountable for slot efficiency. Source construction and active monitoring are accountable for coverage. Pass-through quotas are accountable for feasibility. S2 and S4 are accountable for preventing and detecting unauthorized objective writes. A failure can therefore be localized instead of prompting indiscriminate model enlargement.
+
+A minimal implementation follows that logic: declare \(D,g^{(2)},T\), and a watchlist; construct a proposition graph with provenance; estimate coverage by source class; reserve and audit Channel I capacity; score only the residual discovery pool; estimate marginal VOI across push, pull, and reflection; and log every write and admission. None of these steps presumes that an ordinary user can state a complete utility function. Elicitation remains a major unresolved burden; cooperative goal learning and correctability offer relevant tools {[}53,54{]}, but SEA requires human authorization rather than automatic consolidation of inferred preferences.
+
+\subsection{11.2 Limitations and open problems}\label{limitations-and-open-problems}
+
+The main limitations correspond directly to theorem assumptions.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Value representation.} V1 excludes value not mediated by declared decisions except through a separate slow term. V4 is strong, and linear scores have no general approximation guarantee to (4). Decision-set omission can make a recall audit internally consistent yet externally wrong.
+\item
+  \textbf{Score model.} The capacity ceiling is general, but \(4.39\) is Gaussian and operating-point-specific. Heavy-tailed or skewed scores require empirical tails. Estimating \(\pi,\beta,d'\) adds uncertainty not captured by a point calculation.
+\item
+  \textbf{Coverage.} R1 must hold for every proposition in the declared critical scope, not merely on average. R2 is often implausible under shared upstreams. Theorem 7.2 prices dependence only through a guaranteed independent subset; estimating mutual independence from finite corpora remains difficult. Upstream silence is outside any filtering guarantee.
+\item
+  \textbf{Budget allocation.} Theorem 8.1 assumes separable concave value functions. Complementarities between query results and push novelty can violate A2. Pandora and stationary patch models also degrade under source drift. Whittle scheduling is heuristic outside its asymptotic and indexability conditions.
+\item
+  \textbf{Query value and computation.} Conditional independence is essential to Theorem 8.2(ii). Mutual information can be expensive to estimate and need not track utility. Greedy ratios concern the formal objective, not estimation error or an end-to-end pipeline.
+\item
+  \textbf{Adversarial drift.} F1's bounded item impact and F2's independent detection are empirical calibration burdens. Coordinated attacks invalidate the present concentration argument, and the linear score-divergence metric does not exhaust belief or goal transformation.
+\item
+  \textbf{Sovereignty and governance.} Reflective endorsement can itself be adaptive {[}51{]}. Defaults are value-laden, and Goodhart-style metric capture remains possible even with audit logs {[}52{]}. Sovereign tools can be used to construct rigid echo chambers, and equitable access cannot be solved by individual optimization alone.
+\item
+  \textbf{Composition and extensions.} Local ratios and bounds do not yield a global layered-SAP approximation ratio. Public-agenda, emergency-override, and long-horizon virtue mechanisms are not needed for the present core and are not claimed here. In particular, the source framework's \textbf{Conjecture 10.1 (conditional, positive-drift-floor branch) remains unproved} {[}55{]}; this article neither proves nor repurposes it as a theorem. No human-gated convergence claim is made.
+\end{enumerate}
+
+These limitations also mark the difference between validation and confirmation. LLM cohorts can test carrier-neutral computations and AI instantiations, but family-specific calibration and persuasion responses limit transfer. Human anchors and studies of opposing exposure {[}42{]}, algorithmic feeds {[}45,46{]}, and correction {[}40,41{]} inform hypotheses; they do not substitute for a controlled human evaluation. The appropriate next empirical step is to complete the scoped baselines and full P1--P12 design before making broader comparative claims.
+
+\subsection{11.3 Ethics and audit requirements}\label{ethics-and-audit-requirements}
+
+The same architecture creates dual-use risks. A user-controlled filter can protect attention or intensify isolation; provenance can support accountability or exclude marginalized sources whose institutional records are thinner. Open implementation, exportable logs, reversible settings, and access to original sources mitigate but do not eliminate these risks. Audit should include source coverage by group, quota failures, and who bears the cost of declaration and reflection.
+
+Human approval must be substantive rather than a ritual click. Reviewers need access to underlying evidence, sufficient time, and a real ability to reject changes. System outputs should receive no credibility exemption: generated summaries and judges enter the same provenance and calibration process as external content. These requirements follow from S1--S4 and are more consequential than adding a generic ``human in the loop'' label.
+
+\section{12. Conclusion}\label{conclusion}
+
+The Sovereign Acquisition Problem unifies active acquisition and passive filtering under one cognitive budget and an agent-owned objective. Its central theoretical lesson is a division of labor. Scores price discovery, but extreme filtering makes pure-score recall demands explicit and often unattainable. Proposition collapse conserves slots, while monitored redundancy and verified pass-through provide conditional coverage guarantees. Active exploration, query batches, dwelling, and reflection are then priced against push consumption through a common attention shadow price.
+
+The guarantees are deliberately conditional. Coverage depends on a defensible \(p_{\min}\), effective independence, and quota feasibility; EIG submodularity depends on conditional independence; no-arbitrage depends on separable concavity; firewall concentration depends on independent detection. The pilots map these boundaries: academic strong-form recall fails at 0.28, whereas favorable within-portfolio financial recall reaches 0.952 before dilution to 0.910. Four-family replay replicates recall gains but not uniform value gains. Neither line is human efficacy evidence, and neither supplies a global SAP approximation ratio. The resulting contribution is therefore not a solved universal filter, but a testable architecture in which ownership, acquisition, recall, and attention cost can be reasoned about together.
+
+\section{Data and Code Availability}\label{data-and-code-availability}
+
+The algorithm reference implementation, replay pipelines, derived-data construction scripts, analysis code, frozen decision rules, and per-run integrity records are available at \textbf{https://github.com/hurrywhen/sea-nuaa}. The archival release is available at \textbf{https://doi.org/10.5281/zenodo.23620920}. The repositories also document which protocols are completed, in progress, or design-stage. No HP-0 human data are included because none have been collected.
+
+\section{AI Contribution and Human-Data Statement}\label{ai-contribution-and-human-data-statement}
+
+Large-language-model tools assisted with literature organization, theorem-statement drafting, proof checking, simulation and analysis code, and manuscript drafting. The human authors defined the research question, approved framework and experimental decisions, reviewed negative results and mathematical arguments, and retain final responsibility for the manuscript. AI tools hold no authorship or decision authority.
+
+\textbf{No human-subject data were collected or analyzed for this article.} Public, de-identified human-data resources in the broader program serve only as transfer anchors and are not presented as SEA human trials. HP-0 is \textbf{{[}designed; data collection pending{]}}, is underpowered for efficacy testing by design, and has generated no data. All human-side behavioral claims are falsifiable predictions. Agent-generated records are labeled as agent data and are not represented as human observations.
+
+\section{Author Contributions}\label{author-contributions}
+
+Wen Hu: conceptualization, supervision, funding acquisition, review and editing. Xutong Wang: methodology, software, validation, and AI-assisted original drafting. Ya Yu: investigation, data curation, visualization, review and editing.
+
+\section{References}\label{references}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Simon, H. A. (1971). Designing organizations for an information-rich world. In \emph{Computers, Communications, and the Public Interest}. Johns Hopkins Press.
+\item
+  Cowan, N. (2001). The magical number 4 in short-term memory. \emph{Behavioral and Brain Sciences}, 24(1), 87--114.
+\item
+  Frankfurt, H. (1971). Freedom of the will and the concept of a person. \emph{The Journal of Philosophy}, 68(1), 5--20.
+\item
+  Allcott, H., Braghieri, L., Eichmeyer, S., \& Gentzkow, M. (2020). The welfare effects of social media. \emph{American Economic Review}, 110(3), 629--676.
+\item
+  Allcott, H., Gentzkow, M., \& Song, L. (2022). Digital addiction. \emph{American Economic Review}, 112(7), 2424--2463.
+\item
+  Stray, J., Vendrov, I., Nixon, J., Adler, S., \& Hadfield-Menell, D. (2022). Building human values into recommender systems: An interdisciplinary synthesis. \emph{arXiv:2207.10192}. Revised version in \emph{ACM Transactions on Recommender Systems} (2024).
+\item
+  Kleinberg, J., Mullainathan, S., \& Raghavan, M. (2024). The challenge of understanding what users want: Inconsistent preferences and engagement optimization. \emph{Management Science}, 70(9), 6336--6358.
+\item
+  Zhong, W. (2022). Optimal dynamic information acquisition. \emph{Econometrica}, 90(4), 1537--1582.
+\item
+  Stigler, G. J. (1961). The economics of information. \emph{Journal of Political Economy}, 69(3), 213--225.
+\item
+  Weitzman, M. L. (1979). Optimal search for the best alternative. \emph{Econometrica}, 47(3), 641--654.
+\item
+  Charnov, E. L. (1976). Optimal foraging, the marginal value theorem. \emph{Theoretical Population Biology}, 9(2), 129--136.
+\item
+  Pirolli, P., \& Card, S. (1999). Information foraging. \emph{Psychological Review}, 106(4), 643--675.
+\item
+  Sims, C. A. (2003). Implications of rational inattention. \emph{Journal of Monetary Economics}, 50(3), 665--690.
+\item
+  Maćkowiak, B., Matějka, F., \& Wiederholt, M. (2023). Rational inattention: A review. \emph{Journal of Economic Literature}, 61(1), 226--273.
+\item
+  Matějka, F., \& McKay, A. (2015). Rational inattention to discrete choices: A new foundation for the multinomial logit model. \emph{American Economic Review}, 105(1), 272--298.
+\item
+  DeGroot, M. H. (1962). Uncertainty, information, and sequential experiments. \emph{The Annals of Mathematical Statistics}, 33(2), 404--419.
+\item
+  Lindley, D. V. (1956). On a measure of the information provided by an experiment. \emph{The Annals of Mathematical Statistics}, 27(4), 986--1005.
+\item
+  Chaloner, K., \& Verdinelli, I. (1995). Bayesian experimental design: A review. \emph{Statistical Science}, 10(3), 273--304.
+\item
+  Settles, B. (2009). \emph{Active Learning Literature Survey} (Computer Sciences Technical Report 1648). University of Wisconsin--Madison.
+\item
+  Krause, A., Singh, A., \& Guestrin, C. (2008). Near-optimal sensor placements in Gaussian processes: Theory, efficient algorithms and empirical studies. \emph{Journal of Machine Learning Research}, 9, 235--284.
+\item
+  Gittins, J. C. (1979). Bandit processes and dynamic allocation indices. \emph{Journal of the Royal Statistical Society: Series B}, 41(2), 148--177.
+\item
+  Whittle, P. (1988). Restless bandits: Activity allocation in a changing world. \emph{Journal of Applied Probability}, 25(A), 287--298.
+\item
+  Papadimitriou, C. H., \& Tsitsiklis, J. N. (1999). The complexity of optimal queueing network control. \emph{Mathematics of Operations Research}, 24(2), 293--305.
+\item
+  Blackwell, D. (1953). Equivalent comparisons of experiments. \emph{The Annals of Mathematical Statistics}, 24(2), 265--272.
+\item
+  Howard, R. A. (1966). Information value theory. \emph{IEEE Transactions on Systems Science and Cybernetics}, 2(1), 22--26.
+\item
+  Green, D. M., \& Swets, J. A. (1966). \emph{Signal Detection Theory and Psychophysics}. Wiley.
+\item
+  Nemhauser, G. L., Wolsey, L. A., \& Fisher, M. L. (1978). An analysis of approximations for maximizing submodular set functions---I. \emph{Mathematical Programming}, 14, 265--274.
+\item
+  Sviridenko, M. (2004). A note on maximizing a submodular set function subject to a knapsack constraint. \emph{Operations Research Letters}, 32(1), 41--43.
+\item
+  Khuller, S., Moss, A., \& Naor, J. (1999). The budgeted maximum coverage problem. \emph{Information Processing Letters}, 70(1), 39--45.
+\item
+  Leskovec, J., Krause, A., Guestrin, C., Faloutsos, C., VanBriesen, J., \& Glance, N. (2007). Cost-effective outbreak detection in networks. In \emph{Proceedings of the 13th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining}, 420--429.
+\item
+  Resnick, S. I. (1987). \emph{Extreme Values, Regular Variation, and Point Processes}. Springer.
+\item
+  Weber, R. R., \& Weiss, G. (1990). On an index policy for restless bandits. \emph{Journal of Applied Probability}, 27(3), 637--648.
+\item
+  Cover, T. M., \& Thomas, J. A. (2006). \emph{Elements of Information Theory} (2nd ed.). Wiley.
+\item
+  Wineburg, S., \& McGrew, S. (2019). Lateral reading and the nature of expertise: Reading less and learning more when evaluating digital information. \emph{Teachers College Record}, 121(11), 1--40.
+\item
+  Greshake, K., Abdelnabi, S., Mishra, S., Endres, C., Holz, T., \& Fritz, M. (2023). Not what you've signed up for: Compromising real-world LLM-integrated applications with indirect prompt injection. In \emph{Proceedings of the 16th ACM Workshop on Artificial Intelligence and Security}, 79--90.
+\item
+  Liu, Y., Jia, Y., Geng, R., Jia, J., \& Gong, N. Z. (2024). Formalizing and benchmarking prompt injection attacks and defenses. In \emph{Proceedings of the 33rd USENIX Security Symposium}, 1831--1847.
+\item
+  Sharma, M., Tong, M., Korbak, T., Duvenaud, D., Askell, A., Bowman, S. R., et al.~(2023). Towards understanding sycophancy in language models. \emph{arXiv:2310.13548}.
+\item
+  Hoeffding, W. (1963). Probability inequalities for sums of bounded random variables. \emph{Journal of the American Statistical Association}, 58(301), 13--30.
+\item
+  Fazio, L. K., Brashier, N. M., Payne, B. K., \& Marsh, E. J. (2015). Knowledge does not protect against illusory truth. \emph{Journal of Experimental Psychology: General}, 144(5), 950--958.
+\item
+  Ecker, U. K. H., Lewandowsky, S., Cook, J., Schmid, P., Fazio, L. K., Brashier, N., Kendeou, P., Vraga, E. K., \& Amazeen, M. A. (2022). The psychological drivers of misinformation belief and its resistance to correction. \emph{Nature Reviews Psychology}, 1, 13--29.
+\item
+  Lewandowsky, S., Ecker, U. K. H., Seifert, C. M., Schwarz, N., \& Cook, J. (2012). Misinformation and its correction: Continued influence and successful debiasing. \emph{Psychological Science in the Public Interest}, 13(3), 106--120.
+\item
+  Bail, C. A., Argyle, L. P., Brown, T. W., Bumpus, J. P., Chen, H., Hunzaker, M. B. F., Lee, J., Mann, M., Merhout, F., \& Volfovsky, A. (2018). Exposure to opposing views on social media can increase political polarization. \emph{PNAS}, 115(37), 9216--9222.
+\item
+  Nguyen, C. T. (2020). Echo chambers and epistemic bubbles. \emph{Episteme}, 17(2), 141--161.
+\item
+  Helberger, N., Karppinen, K., \& D'Acunto, L. (2018). Exposure diversity as a design principle for recommender systems. \emph{Information, Communication \& Society}, 21(2), 191--207.
+\item
+  Bakshy, E., Messing, S., \& Adamic, L. A. (2015). Exposure to ideologically diverse news and opinion on Facebook. \emph{Science}, 348(6239), 1130--1132.
+\item
+  Guess, A., Malhotra, N., Pan, J., Barberá, P., Allcott, H., Brown, T., Dimmery, A., Moehler, D., Nyhan, B., Tucker, J. A., \& Bonneau, R. (2023). How do social media feed algorithms affect attitudes and behavior in an election campaign? \emph{Science}, 381(6656), 398--404.
+\item
+  Kleinberg, J., \& Raghavan, M. (2021). Algorithmic monoculture and social welfare. \emph{Proceedings of the National Academy of Sciences}, 118(22), e2018340118.
+\item
+  Coady, C. A. J. (1992). \emph{Testimony: A Philosophical Study}. Oxford University Press.
+\item
+  Zagzebski, L. (2012). \emph{Epistemic Authority: A Theory of Trust, Authority, and Autonomy in Belief}. Oxford University Press.
+\item
+  Coalition for Content Provenance and Authenticity. (2021). \emph{C2PA Technical Specification}.
+\item
+  Elster, J. (1983). \emph{Sour Grapes: Studies in the Subversion of Rationality}. Cambridge University Press.
+\item
+  Goodhart, C. A. E. (1984). \emph{Monetary Theory and Practice: The U.K. Experience}. Macmillan.
+\item
+  Hadfield-Menell, D., Russell, S. J., Abbeel, P., \& Dragan, A. (2016). Cooperative inverse reinforcement learning. In \emph{Advances in Neural Information Processing Systems 29}.
+\item
+  Hadfield-Menell, D., Dragan, A., Abbeel, P., \& Russell, S. J. (2017). The off-switch game. In \emph{Proceedings of the 26th International Joint Conference on Artificial Intelligence}, 220--227.
+\item
+  Hu, W., Wang, X., \& Yu, Y. (2026). Sovereign Epistemic Acquisition: A Conditional Framework for Active Information Acquisition and Sovereign Filtering under Bounded Agency, with Preliminary Validation (Manuscript v1.7). https://github.com/hurrywhen/sea-nuaa
+\end{enumerate}
+
+\end{document}

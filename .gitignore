@@ -1,0 +1,51 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*~
+
+# Python（仿真阶段）
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+*.egg-info/
+
+# LaTeX（排版阶段：只忽略编译产物）
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
+
+# 临时文件与日志
+*.tmp
+*.bak
+logs/
+tmp/
+
+# 仿真原始抓取缓存（可由 fetch_openalex.py 重建；派生语料与结果入库）
+sim/pilot/data/raw/
+sim/pilot/data/title_embeddings.npz
+
+# 规约 R-6：OpenRouter 密钥文件，禁止入库
+.openrouter_key
+sim/.openrouter_key
+
+# 本机网页下载/回读件（不作为论文源或公开快照提交）
+download/
+
+# 研究生交接包与压缩包（选择性复制件；由脚本可重建，不重复入库）
+handoff/

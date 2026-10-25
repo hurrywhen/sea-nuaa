@@ -1,0 +1,15 @@
+{"day": 1, "picked": ["d0i11", "d0i0", "d0i22"], "injected": ["d0i2", "d0i3", "d0i11", "d0i13", "d0i20"], "impulse_consumed": ["d0i11"], "reason": "mock-heuristic"}
+{"day": 1, "picked": ["d0i0", "d0i11", "d0i22", "d0i33", "d0i2", "d0i9", "d0i16", "d0i18"], "injected": ["d0i2", "d0i9", "d0i16", "d0i18", "d0i28", "d0i31", "d0i36", "d0i39"], "impulse_consumed": ["d0i2", "d0i9", "d0i16", "d0i18"], "reason": "mock-heuristic"}
+{"day": 1, "picked": ["d0i0", "d0i11", "d0i22"], "injected": ["d0i7"], "impulse_consumed": [], "reason": "mock-heuristic"}
+{"day": 2, "picked": ["d1i0", "d1i11", "d1i22"], "injected": ["d1i13", "d1i19"], "impulse_consumed": [], "reason": "mock-heuristic"}
+{"day": 2, "picked": ["d1i0", "d1i11", "d1i22", "d1i33", "d1i8", "d1i12", "d1i14", "d1i15"], "injected": ["d1i8", "d1i12", "d1i14", "d1i15", "d1i21", "d1i26", "d1i30", "d1i35"], "impulse_consumed": ["d1i8", "d1i12", "d1i14", "d1i15"], "reason": "mock-heuristic"}
+{"day": 2, "picked": ["d1i0", "d1i11", "d1i22"], "injected": ["d1i9", "d1i24"], "impulse_consumed": [], "reason": "mock-heuristic"}
+{"day": 3, "picked": ["d2i33", "d2i0", "d2i11"], "injected": ["d2i12", "d2i28", "d2i31", "d2i33", "d2i37", "d2i39"], "impulse_consumed": ["d2i33"], "reason": "mock-heuristic"}
+{"day": 3, "picked": ["d2i11", "d2i0", "d2i22", "d2i33", "d2i1", "d2i3", "d2i5", "d2i7"], "injected": ["d2i1", "d2i3", "d2i5", "d2i7", "d2i11", "d2i13", "d2i16", "d2i27", "d2i29", "d2i31", "d2i35"], "impulse_consumed": ["d2i11", "d2i1", "d2i3", "d2i5", "d2i7"], "reason": "mock-heuristic"}
+{"day": 3, "picked": ["d2i0", "d2i11", "d2i22"], "injected": ["d2i0", "d2i4", "d2i6", "d2i9", "d2i13", "d2i17", "d2i26", "d2i30", "d2i37"], "impulse_consumed": ["d2i0"], "reason": "mock-heuristic"}
+{"day": 4, "picked": ["d3i0", "d3i11", "d3i22"], "injected": ["d3i26", "d3i30", "d3i32", "d3i39"], "impulse_consumed": [], "reason": "mock-heuristic"}
+{"day": 4, "picked": ["d3i22", "d3i0", "d3i11", "d3i33", "d3i6", "d3i7", "d3i20", "d3i23"], "injected": ["d3i6", "d3i7", "d3i20", "d3i22", "d3i23", "d3i29", "d3i34", "d3i36", "d3i38"], "impulse_consumed": ["d3i22", "d3i6", "d3i7", "d3i20", "d3i23"], "reason": "mock-heuristic"}
+{"day": 4, "picked": ["d3i0", "d3i11", "d3i22"], "injected": ["d3i13", "d3i21"], "impulse_consumed": [], "reason": "mock-heuristic"}
+{"day": 5, "picked": ["d4i0", "d4i11", "d4i22"], "injected": ["d4i36"], "impulse_consumed": [], "reason": "mock-heuristic"}
+{"day": 5, "picked": ["d4i22", "d4i0", "d4i11", "d4i33", "d4i8", "d4i16", "d4i24", "d4i34"], "injected": ["d4i8", "d4i16", "d4i22", "d4i24", "d4i34", "d4i38", "d4i39"], "impulse_consumed": ["d4i22", "d4i8", "d4i16", "d4i24", "d4i34"], "reason": "mock-heuristic"}
+{"day": 5, "picked": ["d4i0", "d4i11", "d4i22"], "injected": ["d4i24", "d4i27", "d4i34", "d4i36"], "impulse_consumed": [], "reason": "mock-heuristic"}

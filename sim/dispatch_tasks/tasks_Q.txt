@@ -1,0 +1,2 @@
+# Lane Q 任务清单（1 条）——由 make_dispatch_tasks.py 生成
+sea_pilot.run_llm_replay --days 30 --agents 30 --agent-start 0 --seed 101 --tag q_r01

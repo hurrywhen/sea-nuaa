@@ -1,0 +1,40 @@
+# Lane C1 任务清单（39 条）——由 make_dispatch_tasks.py 生成
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 201 --tag c_r01a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 202 --tag c_r02a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 203 --tag c_r03a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 204 --tag c_r04a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 205 --tag c_r05a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 206 --tag c_r06a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 207 --tag c_r07a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 208 --tag c_r08a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 209 --tag c_r09a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 210 --tag c_r10a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 211 --tag c_r11a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 212 --tag c_r12a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 213 --tag c_r13a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 214 --tag c_r14a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 215 --tag c_r15a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 216 --tag c_r16a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 217 --tag c_r17a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 218 --tag c_r18a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 219 --tag c_r19a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 220 --tag c_r20a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 221 --tag c_r21a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 222 --tag c_r22a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 223 --tag c_r23a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 224 --tag c_r24a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 225 --tag c_r25a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 226 --tag c_r26a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 227 --tag c_r27a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 228 --tag c_r28a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 229 --tag c_r29a
+sea_pilot.run_llm_replay --days 30 --agents 5 --agent-start 0 --seed 230 --tag c_r30a
+sea_pilot.h8_battery_v2 --model-tag c90_h8 --n-a 20 --n-b 10 --n-c 20
+sea_pilot.h9_calibration --tag c90_h9
+# [待模块] 臂 S0 × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）
+# [待模块] 臂 S1 × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）
+# [待模块] 臂 S2 × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）
+# [待模块] 臂 S3 × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）
+# [待模块] 臂 S2a × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）
+# [待模块] 臂 S2b × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）
+# [待模块] 臂 S2c × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）

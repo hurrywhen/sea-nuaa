@@ -1,0 +1,14 @@
+{
+ "tag": "f_r05",
+ "backend": "openai-compat:nvidia/nemotron-3-super-120b-a12b:free",
+ "records": 900,
+ "valid_days": 792,
+ "recall_llm": 0.35268817204301073,
+ "recall_param": 0.41935483870967744,
+ "value_llm_mean": 7.923896308071958,
+ "value_param_mean": 8.380294124292613,
+ "impulse_injected": 1316,
+ "impulse_consumed": 347,
+ "n_crit_opportunities": 930,
+ "impulse_rate": 0.26367781155015196
+}

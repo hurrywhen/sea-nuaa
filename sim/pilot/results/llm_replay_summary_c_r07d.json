@@ -1,0 +1,14 @@
+{
+ "tag": "c_r07d",
+ "backend": "openai-compat:inclusionai/ling-3.0-flash",
+ "records": 155,
+ "valid_days": 153,
+ "recall_llm": 0.5574712643678161,
+ "recall_param": 0.41379310344827586,
+ "value_llm_mean": 9.35757897156047,
+ "value_param_mean": 8.53644992066299,
+ "impulse_injected": 211,
+ "impulse_consumed": 82,
+ "n_crit_opportunities": 174,
+ "impulse_rate": 0.3886255924170616
+}

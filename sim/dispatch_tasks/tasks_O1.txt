@@ -1,0 +1,32 @@
+# Lane O1 任务清单（31 条）——由 make_dispatch_tasks.py 生成
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 1 --tag o_r01a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 2 --tag o_r02a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 3 --tag o_r03a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 4 --tag o_r04a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 5 --tag o_r05a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 6 --tag o_r06a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 7 --tag o_r07a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 8 --tag o_r08a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 9 --tag o_r09a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 10 --tag o_r10a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 11 --tag o_r11a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 12 --tag o_r12a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 13 --tag o_r13a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 14 --tag o_r14a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 15 --tag o_r15a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 16 --tag o_r16a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 17 --tag o_r17a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 18 --tag o_r18a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 19 --tag o_r19a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 20 --tag o_r20a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 21 --tag o_r21a
+sea_pilot.run_llm_replay --days 30 --agents 10 --agent-start 0 --seed 22 --tag o_r22a
+sea_pilot.h8_battery_v2 --model-tag o90_h8 --n-a 20 --n-b 10 --n-c 20
+sea_pilot.h9_calibration --tag o90_h9
+# [待模块] 臂 S0 × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）
+# [待模块] 臂 S1 × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）
+# [待模块] 臂 S2 × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）
+# [待模块] 臂 S3 × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）
+# [待模块] 臂 S2a × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）
+# [待模块] 臂 S2b × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）
+# [待模块] 臂 S2c × 30 run × 30日：待 run_main_validation.py（表14-1 [进行中]）

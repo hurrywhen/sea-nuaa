@@ -1,0 +1,28 @@
+{
+  "pid": "R-sea-team",
+  "summary": "SEA（主权认知获取）方向研究者：选题/实验设计/论文写作/工具采用/合作——本团队自用画像",
+  "domain": "academic_single_source",
+  "g2_decision_set": [
+    {"d": "选题与转向", "horizon_days": 90, "keywords": ["epistemic", "information acquisition", "attention allocation", "filter bubble", "selective exposure", "sovereign", "curation"]},
+    {"d": "实验设计", "horizon_days": 30, "keywords": ["LLM agent", "simulation", "replay", "calibration", "Brier", "forecasting", "bandit", "submodular", "evaluation"]},
+    {"d": "论文写作与投稿", "horizon_days": 60, "keywords": ["recommendation", "public layer", "redundancy", "coverage", "information value", "polarization"]},
+    {"d": "工具/数据集采用", "horizon_days": 14, "keywords": ["dataset", "benchmark", "embedding", "ollama", "retrieval", "RAG", "knowledge graph"]},
+    {"d": "合作与招聘", "horizon_days": 120, "keywords": []}
+  ],
+  "watchlist": {
+    "authors": [],
+    "categories": ["cs.AI", "cs.IR", "cs.CL", "cs.LG"]
+  },
+  "channel_I_rule": {"relevance_threshold": 0.34},
+  "budget_per_day": 3,
+  "impulse_threshold": 0.5,
+  "whitelist_urgent": ["项目相关重大更正/撤稿", "安全或隐私漏洞披露", "合作者直接相关的预印本"],
+  "channels": {"quota_I": 0.6, "allocator": "fixed"},
+  "certification": {"enabled": false, "reason": "单信源类域（arXiv），A8 冗余认证退化——P3 移植验证结论（k_c≥2 不可达）"},
+  "llm": {"backend": "ollama-native", "base_url": "http://<内网地址已脱敏>:11434", "model": "gemma4:26b", "think": false, "note": "gemma4:26b 是思考型模型，agentic 用途必须 think:false（否则响应进 thinking 字段、content 为空）；主力批量分析+agentic（34-38 tok/s）"},
+  "_provenance": {
+    "g2_declaration": "本文件即论文 §4.5 的 g² 声明实例化——决策集 D 由主体签字（S2），修订走冷却期并记入 S4 日志",
+    "domain_config_source": "channels.allocator=fixed 与 certification.enabled=false 直接来自 sim/pilot/results/ALGO_VALIDATION_REPORT_P3.md 的域条件性结论",
+    "scorer_status": "live 相关性评分为 v0 关键词重叠启发式（非验证过的 d′ 评分器）——2026 实时论文无地面真值（引用年延迟），遥测累积后再训练/校准 θ（A10）"
+  }
+}

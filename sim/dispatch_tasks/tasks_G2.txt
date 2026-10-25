@@ -1,0 +1,4 @@
+# Lane G2 任务清单（3 条）——由 make_dispatch_tasks.py 生成
+sea_pilot.run_llm_replay --days 30 --agents 15 --agent-start 15 --seed 1 --tag g_r01b
+sea_pilot.run_llm_replay --days 30 --agents 15 --agent-start 15 --seed 2 --tag g_r02b
+sea_pilot.run_llm_replay --days 30 --agents 15 --agent-start 15 --seed 3 --tag g_r03b

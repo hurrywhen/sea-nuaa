@@ -1,0 +1,3 @@
+participant_id,day,week,arm,minutes,urge_1,urge_2,urge_3,defensiveness,exposure_count,extremity_1,extremity_2,extremity_3,brier_item_01,brier_item_02,brier_item_03,brier_item_04,brier_item_05,brier_item_06,brier_item_07,brier_item_08,brier_item_09,brier_item_10,declaration_minutes,clarifier_prompts,declaration_revision_count
+EXAMPLE_P001,0,1,EXPOSURE,20,,,,,0,2,5,3,,,,,,,,,,,13,1,2
+EXAMPLE_P002,7,1,NO_EXPOSURE,9,2,3,1,3,0,3,4,3,0.04,0.09,0.25,0.01,0.36,0.09,0.16,0.04,0.49,0.09,,,

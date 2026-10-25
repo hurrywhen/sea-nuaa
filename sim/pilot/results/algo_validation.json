@@ -1,0 +1,209 @@
+{
+ "n_events": 1771,
+ "n_days": 30,
+ "n_props": 1876,
+ "T1_identity": {
+  "n_props_algo": 1876,
+  "n_props_env": 1876,
+  "rho_c_algo": 8.191897654584222,
+  "rho_c_env": 8.191897654584222,
+  "match": true,
+  "pass": true
+ },
+ "T2_certify": {
+  "raw_kc2": {
+   "certified": 432,
+   "certified_frac": 0.24392998306041785,
+   "precision": 0.05555555555555555,
+   "base_rate": 0.09034443817052512,
+   "lift": 0.6149305555555555,
+   "recall_of_critical": 0.15
+  },
+  "raw_kc3": {
+   "certified": 143,
+   "certified_frac": 0.08074534161490683,
+   "precision": 0.04195804195804196,
+   "base_rate": 0.09034443817052512,
+   "lift": 0.464423076923077,
+   "recall_of_critical": 0.0375
+  },
+  "quality@frac2": {
+   "certified": 432,
+   "certified_frac": 0.24392998306041785,
+   "precision": 0.05555555555555555,
+   "base_rate": 0.09034443817052512,
+   "lift": 0.6149305555555555,
+   "recall_of_critical": 0.15
+  },
+  "scarcity@frac2": {
+   "certified": 432,
+   "certified_frac": 0.24392998306041785,
+   "precision": 0.1111111111111111,
+   "base_rate": 0.09034443817052512,
+   "lift": 1.229861111111111,
+   "recall_of_critical": 0.3
+  },
+  "scarcity@frac3": {
+   "certified": 143,
+   "certified_frac": 0.08074534161490683,
+   "precision": 0.06293706293706294,
+   "base_rate": 0.09034443817052512,
+   "lift": 0.6966346153846155,
+   "recall_of_critical": 0.05625
+  },
+  "quality@frac3": {
+   "certified": 143,
+   "certified_frac": 0.08074534161490683,
+   "precision": 0.04195804195804196,
+   "base_rate": 0.09034443817052512,
+   "lift": 0.464423076923077,
+   "recall_of_critical": 0.0375
+  },
+  "raw_kc2(any)": {
+   "certified": 432,
+   "certified_frac": 0.24392998306041785,
+   "precision": 0.06712962962962964,
+   "base_rate": 0.10728402032749859,
+   "lift": 0.6257188109161794,
+   "recall_of_critical": 0.15263157894736842
+  },
+  "scarcity@frac2(any)": {
+   "certified": 432,
+   "certified_frac": 0.24392998306041785,
+   "precision": 0.14583333333333334,
+   "base_rate": 0.10728402032749859,
+   "lift": 1.3593201754385966,
+   "recall_of_critical": 0.33157894736842103
+  },
+  "pass": true
+ },
+ "T3_greedy": {
+  "greedy": 51,
+  "optimal": 51,
+  "ratio": 1.0,
+  "bound": 0.6321205588285577,
+  "pass": true
+ },
+ "T4_rolling": {
+  "jaccard_half_month": 0.08695652173913043,
+  "added": 21,
+  "dropped": 21,
+  "b_class_fast_track": 21,
+  "coverage_h1": 56,
+  "coverage_h2": 52
+ },
+ "T5_planner": {
+  "hits": {
+   "eig": 6,
+   "random": 2,
+   "freq": 4
+  },
+  "queries": {
+   "eig": 250,
+   "random": 250,
+   "freq": 250
+  },
+  "base_rate": 0.09034443817052512,
+  "per100": {
+   "eig": 2.4,
+   "random": 0.8,
+   "freq": 1.6
+  },
+  "pass": true
+ },
+ "T6_scheduler": {
+  "hits": {
+   "z_order": 7,
+   "random": 7,
+   "n_docs": 9
+  },
+  "n_selected": 66,
+  "hit_rate": {
+   "z_order": 0.10606060606060606,
+   "random": 0.10606060606060606,
+   "n_docs": 0.13636363636363635
+  },
+  "admission_threshold_at_nu5": 0.2,
+  "order_equivalence": true,
+  "pass": true
+ },
+ "T7_allocator": {
+  "hits_fixed": 10,
+  "hits_adaptive": 11,
+  "wasted_fixed": 11,
+  "wasted_adaptive": 0,
+  "alloc_days_varied": 21,
+  "pass": true
+ },
+ "T8_firewall": {
+  "rows": [
+   {
+    "impulse_p": 0.08,
+    "no_fw": {
+     "crit_recall": 0.5795833333333333,
+     "wasted": 0.0,
+     "consumed": 12.05,
+     "recovered": 0.0,
+     "useful": 2.3
+    },
+    "fw": {
+     "crit_recall": 0.6190000000000001,
+     "wasted": 0.0,
+     "consumed": 12.095,
+     "recovered": 2.15,
+     "useful": 2.32
+    }
+   },
+   {
+    "impulse_p": 0.29,
+    "no_fw": {
+     "crit_recall": 0.4421666666666667,
+     "wasted": 0.0,
+     "consumed": 43.975,
+     "recovered": 0.0,
+     "useful": 8.775
+    },
+    "fw": {
+     "crit_recall": 0.59775,
+     "wasted": 0.0,
+     "consumed": 41.765,
+     "recovered": 7.815,
+     "useful": 8.405
+    }
+   },
+   {
+    "impulse_p": 0.45,
+    "no_fw": {
+     "crit_recall": 0.34141666666666665,
+     "wasted": 0.0,
+     "consumed": 67.975,
+     "recovered": 0.0,
+     "useful": 13.405
+    },
+    "fw": {
+     "crit_recall": 0.58125,
+     "wasted": 0.0,
+     "consumed": 62.26,
+     "recovered": 11.485,
+     "useful": 12.29
+    }
+   }
+  ],
+  "pass": true
+ },
+ "T9_calib": {
+  "n_synth": 400,
+  "ece_raw": 0.28844886363636374,
+  "ece_recal": 0.1127606271537743,
+  "brier_raw": 0.2736238432334711,
+  "brier_recal": 0.18805934495681653,
+  "tracker_snapshot": {
+   "n": 30,
+   "brier": 0.3645650279859149,
+   "ece": 0.3452847060319525,
+   "degraded": false
+  },
+  "monotone": true,
+  "pass": true
+ }
+}

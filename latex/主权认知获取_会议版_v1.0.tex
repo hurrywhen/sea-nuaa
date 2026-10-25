@@ -1,0 +1,359 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{space}{xeCJK}
+\documentclass[
+  chinese,
+  conference,10pt]{IEEEtran}
+\usepackage{xcolor}
+\usepackage[letterpaper,margin=0.68in,columnsep=0.22in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \ifXeTeX
+    \usepackage{xeCJK}
+    \setCJKmainfont[]{Noto Serif CJK SC}
+  \fi
+  \ifLuaTeX
+    \usepackage[]{luatexja-fontspec}
+    \setmainjfont[]{Noto Serif CJK SC}
+  \fi
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\ifLuaTeX
+\usepackage[bidi=basic,shorthands=off,,provide=*]{babel}
+\else
+\usepackage[bidi=default,shorthands=off,,provide=*]{babel}
+\fi
+\ifLuaTeX
+  \usepackage{selnolig} % disable illegal ligatures
+\fi
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+\usepackage{etoolbox}
+\usepackage{hyperref}
+\ifPDFTeX\else
+  \setmainfont{DejaVuSerif.ttf}[BoldFont=DejaVuSerif-Bold.ttf,ItalicFont=DejaVuSerif-Italic.ttf,BoldItalicFont=DejaVuSerif-BoldItalic.ttf]
+  \setsansfont{DejaVuSans.ttf}[BoldFont=DejaVuSans-Bold.ttf,ItalicFont=DejaVuSans-Oblique.ttf,BoldItalicFont=DejaVuSans-BoldOblique.ttf]
+  \setmonofont{DejaVuSansMono.ttf}[BoldFont=DejaVuSansMono-Bold.ttf,ItalicFont=DejaVuSansMono-Oblique.ttf,BoldItalicFont=DejaVuSansMono-BoldOblique.ttf]
+\fi
+\setcounter{secnumdepth}{0}
+\setcounter{tocdepth}{1}
+\sloppy
+\setlength{\emergencystretch}{2em}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue,urlcolor=NavyBlue,citecolor=NavyBlue,pdftitle={主权认知获取_会议版_v1.0 (generic conference submission form)},pdfsubject={Generic conference submission form, v1.0},pdfkeywords={SEA; epistemic sovereignty; information acquisition; conference}}
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{1em}
+\setlength{\abovecaptionskip}{3pt}
+\setlength{\belowcaptionskip}{2pt}
+\AtBeginEnvironment{figure}{\footnotesize}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={主权过滤中大语言模型判断的机制与边界条件：四家族、80 次运行的机制性重放},
+  pdfauthor={Xutong Wang\^{}\{1\}, Wen Hu\^{}\{1,2\}, Ya Yu\^{}\{1\}},
+  pdflang={zh-CN},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{主权过滤中大语言模型判断的机制与边界条件：四家族、80 次运行的机制性重放}
+\author{Xutong Wang\(^{1}\), Wen Hu\(^{1,2}\), Ya Yu\(^{1}\)}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+信息过滤器必须丢弃几乎所有候选信息，但大语言模型（LLM）的判断能否取代结构性召回机制，仍不明确。我们将 LLM 智能体用作主权认知获取（SEA）判断层的模式生物，而非人类替代被试。这项已完成、协议冻结的机制研究在一个学术语料库上进行了重放，涵盖四个模型家族、80 次独立运行和 73,547 条有效智能体-日记录。O/C/Q/G 的判断臂关键机会召回率分别为 0.443/0.534/0.514/0.519，而诚实特征参照为 0.241；每个家族均报告运行层自助法 95\% 置信区间。然而，引用代理价值仅在 C/Q 中上升，在 O/G 中下降。两个真实语料试点界定了适用范围：学术域高召回的强形式被拒绝（最佳端到端召回率为 0.28）；金融域组合内召回率仅在极为有利的配额匹配条件下达到 0.952，并在新闻扩展后稀释至 0.910。因此，语义判断改善了日简报内的选择，却既不能提供架构层面的召回保证，也不能提供人类获益的证据。完整的 P1--P12 检验组合仍在进行中；本文不声称对人类有效，也不声称已完成总体层面的验证。
+\end{abstract}
+
+\textbf{关键词：} 大语言模型智能体；模式生物；信息过滤；关键召回；机制性重放；认知主权
+
+\textbf{单位：} 1 南京航空航天大学电子信息工程学院，中国南京；2 江苏云禾峰智能科技有限公司，中国江苏。通信作者：Wen Hu (huwen@nuaa.edu.cn)。
+
+\section{1. 引言}\label{ux5f15ux8a00}
+
+在数字信息环境中，稀缺资源是注意力，而非候选信息 {[}1{]}。因此，无论约束来自人类工作记忆 {[}2{]}，还是人工智能体的上下文与推理预算，有限智能体都必须在深度处理前丢弃大多数到达项。LLM 智能体为研究这一问题提供了独特的实验载体：其决策可以重放，反事实可以配对，完整的选择轨迹可以审计 {[}3{]}。对于载体中立机制，它们是有用的\emph{模式生物}；但其顺从性、训练知识以及人类情感的缺失，使其不适合作为直接的人类替代被试。
+
+这一区分对主权信息获取至关重要。推荐系统研究日益关注如何将福祉或价值编码进排序 {[}4{]}，以及不一致偏好为何会使参与度优化受挫 {[}5{]}。与此同时，LLM 智能体研究记录了强大的工具调用系统与新的操纵攻击面，包括间接提示注入 {[}3{]}, {[}6{]}, {[}7{]}。然而，任何一类文献都无法独自回答三个可分离的实证问题：关键信息是否到达候选集？到达后判断层是否选择了它？这种选择是否提升了决策相关价值？将三者合并为一个端到端准确率指标，会掩盖实际失效的机制。
+
+主权认知获取（SEA）将获取界定为有界优化问题，其中智能体拥有目标、写入权和审计轨迹。其双通道架构将结构性覆盖与评分发现分开。完整的 SEA 专著展开了完整的定理体系 {[}21{]}；配套期刊理论论文以常规论文形式呈现该体系。相比之下，本会议论文的贡献是实证与机制层面的：冻结一项判断层重放，报告跨家族效应量与不确定性，并刻画端到端召回在何处失效。只有在规定测量准则或防止过度主张所必需之处，本文才保留理论内容。
+
+本文贡献有四点。第一，我们报告一项\textbf{已完成、范围受限的机制研究}，而非完整的 SEA 验证组合：在学术语料时序重放上，涵盖四个 LLM 家族、80 次独立运行和 73,547 条有效智能体-日记录。第二，我们表明，相较于诚实特征参照，判断提高了关键机会召回率，而引用代理价值的符号却随家族而异。因此，召回与价值不能作为可互换的终点。第三，双域真实语料试点提供了适用边界的证据：学术域高召回的强形式被拒绝，而金融域的有利结果仅出现在受限组合与配额配置内。第四，我们公开完整的统计协议、排除规则和冻结记录，使负结果及推断范围均可审查。
+
+\section{2. 机制检验所需的最低理论}\label{ux673aux5236ux68c0ux9a8cux6240ux9700ux7684ux6700ux4f4eux7406ux8bba}
+
+\subsection{2.1 SAP、认知主权与双通道}\label{sapux8ba4ux77e5ux4e3bux6743ux4e0eux53ccux901aux9053}
+
+主权获取问题（SAP）选择获取策略 \(\pi\)，其所属的策略集 \(\Pi_S\) 受认知主权约束：
+
+\[
+\begin{aligned}
+\max_{\pi\in\Pi_S}\;\mathbb{E}_{\pi}\!\Bigg[&\sum_{t=1}^{H}\beta^t\\
+&\{\mathrm{VOI}_t(A_t)+\zeta\Delta\theta_t-\mathrm{Harm}_t(A_t)\}\Bigg],
+\end{aligned}
+\]
+
+约束条件为
+
+\[
+\sum_{i\in A_t}\tau_i+c(\pi_{\mathrm{pull},t})+c_{\mathrm{ref}}\le T .
+\]
+
+其中，\(A_t\) 为消费集合，\(T\) 为注意力预算，\(\mathrm{VOI}\) 为期望决策价值 {[}8{]}, {[}9{]}，\(\theta\) 为慢变认知状态变量。拉取式获取、推送过滤与反思共享同一预算。认知主权要求目标可检视、参数写入须经反思层明确授权、不含第三方收益项，且决策可审计。这些条件约束的是 \(\Pi_S\)，本身并不提高准确率。
+
+选择之前，先将文档坍缩为命题，以避免在重复副本上耗费多个名额。随后，双通道分工如下。\textbf{通道 I} 在去重后直接放行受监测的信源类和已声明的观察清单实体，并设有预算可行性报警。\textbf{通道 II} 对剩余候选排序，以发现新信息并分配稀缺名额。本实验单独考察\emph{日简报构建之后}的判断。它不验证完整的 SAP、拉取/推送的全局最优性、人类目标引出，或完整的双通道技术栈。
+
+\subsection{2.2 评分分离度：排序器为何不能承载 95\% 的承诺}\label{ux8bc4ux5206ux5206ux79bbux5ea6ux6392ux5e8fux5668ux4e3aux4f55ux4e0dux80fdux627fux8f7d-95-ux7684ux627fux8bfa}
+
+令 \(\pi_0\) 为关键命题比例，\(\beta\) 为消费比例，\(d'\) 为关键与非关键评分分布之间的标准化分离度 {[}10{]}。在等方差高斯评分下，选取评分最高的 \(\beta\) 比例候选，可得
+
+\[
+(1-\pi_0)\bar\Phi(z)+\pi_0\bar\Phi(z-d')=\beta,
+\qquad R=\bar\Phi(z-d'),
+\]
+
+其中，\(\bar\Phi\) 为标准正态分布上尾，\(R\) 为评分通道召回率。与高斯模型无关，计数约束给出 \(R\le\min(1,\beta/\pi_0)\)。在高斯特例下，要达到目标召回率 \(R\)，需要
+
+\[
+d'\ge \Phi^{-1}\!\left(1-\frac{\beta-\pi_0R}{1-\pi_0}\right)+\Phi^{-1}(R),
+\]
+
+前提是 \(\beta\ge\pi_0R\)。当 \(\beta=0.0125\)、\(\pi_0=0.01\) 且 \(R=0.95\) 时，阈值为 \(d'\ge4.39\)。该准则是预算---分离度约束，并非声称任一实际部署的评分器都服从高斯分布。它预示着，仅靠表征改进不足以为极端过滤提供可信的召回保证。
+
+\subsection{2.3 冗余：条件性架构界}\label{ux5197ux4f59ux6761ux4ef6ux6027ux67b6ux6784ux754c}
+
+令 \(p_{\min}\) 为每个受监测类别对关键命题覆盖概率的经核验下界。若 \(k_{\mathrm{eff}}\) 为信源类独立子集的大小，则
+
+\[
+P(\mathrm{miss}\;e)\le(1-p_{\min})^{k_{\mathrm{eff}}}.
+\]
+
+该界以覆盖下界和独立性结构为条件；相关信源会降低 \(k_{\mathrm{eff}}\)，而过小的 \(p_{\min}\) 会使界失去实际约束力。若被观察实体发布了内容且配额仍可行，观察清单可消除\emph{过滤阶段}的漏报，但无法迫使保持沉默的实体发布内容。因此，SEA 的综合设计有意采取非对称分工：评分负责发现，架构负责任何有依据的召回保证。由此，主动搜索、信源探索和监测清单构建与排序同等重要 {[}11{]}--{[}15{]}。
+
+\section{3. 方法}\label{ux65b9ux6cd5}
+
+\subsection{3.1 冻结的判断层重放}\label{ux51bbux7ed3ux7684ux5224ux65adux5c42ux91cdux653e}
+
+主要研究采用协议 v2.1 和 arXiv 2019 年 9 月学术重放。监测全集包含 2,576 条命题。冻结的关键性代理将当月被引量前 2\% 的论文标记为关键，得到 \(K^*=52\)；被引数据是回顾性评价标签，而非作为事前真值提供的信息。该学术生态为单信源，因此命题坍缩比为 1.0。
+
+在每个模拟日，框架构建至多 18 个条目的日简报：先列入机构清单的通道 I 条目，再补入按代理分数排序的通道 II 候选。智能体接收研究者画像和已声明的决策集，并以结构化输出至多选择三个条目。预算由框架而非模型强制执行，结果也由框架计算。外生凸显性注入与关键性分别记录。
+
+区分三种选择逻辑。\textbf{判断臂}是 LLM 对每日简报所作的选择。\textbf{半 oracle 参数臂}在含噪的引用相关代理（\(\rho=0.4\)）下选取排名前三的条目；由于它使用了与未来相关的信号，所以是一个要求很高的比较对象，而非真正可部署的诚实评分器。\textbf{诚实特征参照}利用前窗的元数据和滚动前推的 TF-IDF 新颖度拟合逻辑评分，然后不调用 LLM 而选择三个条目。其冻结的 30 天参照召回率为 0.241。它是描述性参照，而非另一个包含 80 次运行的随机化臂。
+
+主要终点是\textbf{关键机会召回率}：重放日简报中，关键命中数除以出现的关键机会数。对每次运行，先分别汇总命中数与机会数，再计算召回率；每个家族的估计值是其各次运行估计值的非加权均值。该终点以上游候选构建为条件，不得与语料库层面的端到端召回率混淆。次要终点为引用代理价值，即对所选条目计算 \(\sum\log(1+\mathrm{citations})\)。\(\Delta\mathrm{value}\) 先在有效智能体-日上计算判断臂减参数臂之差的运行层均值，再对运行求家族均值。它是冻结的代理度量，而非实际实现的 SAP 效用或人类福祉。
+
+\subsection{3.2 复制、有效性与模型分离}\label{ux590dux5236ux6709ux6548ux6027ux4e0eux6a21ux578bux5206ux79bb}
+
+O 和 C 家族各有 30 次独立运行；锚点家族 Q 和 G 各有 10 次，共计 80 次运行。名义上的运行模板是在固定种子下使用 30 个智能体、模拟 30 天；实际执行采用分片，重试与补齐均由冻结协议规定。有效记录要求选择结果非空；每次纳入分析的运行都必须通过\textbf{至少} 900 条有效记录的完整性门限------这是下限，而非上限。冻结分析包含 73,547 条有效智能体-日记录：O 27,385；C 27,459；Q 9,321；G 9,382。提示词、模型实例、解码参数、后端分配和访问条件均在发布材料中冻结。研究结论仅适用于这些实例，而不适用于相关厂商的整个产品线。
+
+协议 v1 记录和未完成的第五家族 F 在分析前已被隔离，不纳入任何观测数据。凡需由模型承担不同角色之处，被试、评分器、生产者/红队和评审至少在三个家族之间分离；本重放的关键命中由框架计算，而非模型自我报告。跨家族复制检验结果对模型家族特异机制的稳健性；同一家族内的后端差异则作为已声明的实现条件，而非新的生物学重复。
+
+\subsection{3.3 统计分析}\label{ux7edfux8ba1ux5206ux6790}
+
+\textbf{运行是复制单元}，\textbf{智能体-日是分析单元}，推断按运行分层或以运行为单位重抽样。绝不为虚增自由度而将智能体-日视为独立复制。我们使用 10,000 次运行层重抽样，报告 95\% 百分位自助法区间。判断臂与参数臂在同一智能体-日上的配对比较，在各家族内采用精确 McNemar 检验，并进行 Benjamini--Hochberg 校正。经连续性校正的 Cochran--Mantel--Haenszel（CMH）汇总以 80 次运行为层，其解释从属于效应量与区间估计。
+
+对于 \(\chi^2_1\) CMH 统计量，上尾概率严格按 \(p=\mathrm{erfc}(\sqrt{\chi^2/2})\) 计算。极端尾概率仅用于数量级参考，绝不作为校准后的错误概率，也不替代效应量估计。
+
+\subsection{3.4 独立的双域适用性试点}\label{ux72ecux7acbux7684ux53ccux57dfux9002ux7528ux6027ux8bd5ux70b9}
+
+学术与金融试点分别冻结，不与 80 次运行的推断数据集合并。金融重放涵盖 2019 年 9 月的 EDGAR 披露和扩展到十个域的公开新闻存档，包含 1,876 条命题和 15,368 篇文档。它采用两类目标：具有法定重大性的 8-K 申报文件和市场移动日。关键的有利配置让 25 家持仓公司通过通道 I 直通，每日仅有 4.6 条命题，并以 \(m=5\) 的配额匹配该供给。我们还考察新闻扩展后的同一设置，此时新增命题会竞争配额。这些试点检验的是适用条件，而非普遍召回保证。
+
+\section{4. 结果}\label{ux7ed3ux679c}
+
+\subsection{4.1 四家族判断层复制}\label{ux56dbux5bb6ux65cfux5224ux65adux5c42ux590dux5236}
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{表 1. 冻结的四家族机制性结果。召回区间为运行层自助法 95\% 置信区间；\(\Delta\)value 为描述性指标。}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}crrcr@{}}
+\toprule\noalign{}
+家族 & 运行数 & 有效记录 & 关键召回率 {[}95\% CI{]} & \(\Delta\)value \\
+\midrule\noalign{}
+O & 30 & 27,385 & 0.443 {[}0.433, 0.454{]} & −0.175 \\
+C & 30 & 27,459 & 0.534 {[}0.527, 0.541{]} & +0.676 \\
+Q & 10 & 9,321 & 0.514 {[}0.502, 0.526{]} & +0.432 \\
+G & 10 & 9,382 & 0.519 {[}0.498, 0.539{]} & −0.223 \\
+\bottomrule\noalign{}
+\end{tabular}%
+}
+\end{table*}
+
+每个家族的召回率均至少达到诚实特征参照 0.241 的 1.8 倍，且四个召回区间整体位于该参照值之上。这些区间量化的是家族召回率的运行间不确定性，而非判断臂与特征参照之差的置信区间。更重要的是，即使尚未计入上游漏报，0.443--0.534 仍远低于 95\% 的召回目标。
+
+与半 oracle 参数臂相比，按运行分层的 CMH 汇总合并了 14,550 个判断臂较优与 9,673 个参数臂较优的不一致智能体-日，得到 \(\chi^2_1=981.52\)。由上式可得 \(p\approx1.9\times10^{-215}\)。我们报告该渐近尾概率仅作参考；实质结果是在多次运行中重现的召回效应大小及其运行层不确定性，而不是极端的 \(p\) 值。
+
+\subsection{4.2 召回提升并不意味着价值一致提升}\label{ux53ecux56deux63d0ux5347ux5e76ux4e0dux610fux5473ux7740ux4ef7ux503cux4e00ux81f4ux63d0ux5347}
+
+价值结果按家族分化：C 和 Q 的 \(\Delta\)value 为正值（+0.676 和 +0.432），O 和 G 则为负值（−0.175 和 −0.223）。因此，命中维度的结果在四个家族中均得到复制，但平均引用代理价值增量并未同样复制。我们将这一两正两负的分化视为一项发现，而非可通过平均抹去的噪声。冻结结果中没有价值差值的置信区间，因此不对任一符号作统计显著性判断。
+
+另一项包含 40 个问题的智能体校准诊断进一步表明，不能将各家族视为可互换。O/C/Q/G 的 Brier 分数 {[}18{]}, {[}19{]} 分别为 0.170/0.232/0.233/0.285。这些是模型特定的校准测量，不是校准改善，也不是人类测量。结合价值分化，这些结果提示应依据家族分别部署和复制，而不是声称``LLM''具有一种稳定的判断效应。
+
+\subsection{4.3 双域适用边界}\label{ux53ccux57dfux9002ux7528ux8fb9ux754c}
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{表 2. 冻结的真实语料试点口径与边界证据。}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+指标
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+学术试点
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+金融试点
+\end{minipage} \\
+\midrule\noalign{}
+语料库与代理 & 2,576 条命题；被引量前 2\%，\(K^*=52\) & 1,876 条命题/15,368 篇文档；法定与市场目标 \\
+坍缩比 \(\rho_c\) & 1.0（单信源） & 8.19 \\
+覆盖 \(\hat p_{\min}\) & 作者清单 ≈0.02；机构清单 0.17--0.37 & 法定 1.00；市场 0.70--0.73 \\
+特征 \(d'\) & 0.73--0.77 & 法定 2.65--3.49；市场 0.54--0.60 \\
+召回边界 & \textbf{最佳端到端召回率 0.28：强形式被拒绝} & \textbf{0.952 仅出现在有利的组合内设置；新闻扩展后为 0.910} \\
+\bottomrule\noalign{}
+\end{tabular}%
+}
+\end{table*}
+
+所有报告的特征-\(d'\) 估计值均低于 4.39。由于该阈值是高斯特例，且试点使用代理标签，因此这一结果支持架构/评分的分工，而非对该恒等式的独立证明。
+
+学术结果拒绝了高召回的强形式。作者粒度监测几乎未覆盖回顾性关键集合，机构清单虽改善覆盖但仍对容量敏感；两类诚实特征产生的 \(d'=0.73\)--\(0.77\)，远低于高斯准则所要求的 4.39。替代引用代理------早期被引和跨领域被引------并不改变拒绝的方向。这是关于获取、清单构建与配额适配的边界结果，与表 1 中较高的\emph{以日简报机会为条件的}召回率并不矛盾。
+
+金融域的 0.952 有意作了严格限定：它是 \(m=5\)、25 家持仓公司直通、每日 4.6 条命题且配额与这一有利供给相匹配时的组合内市场代理召回率。它不是所有事前关键金融信息的召回率。新闻层扩展引入了同一配额的竞争，使召回率稀释至 0.910。法定重大申报文件表明，制度性来源如何提供高覆盖下界；市场移动标签并不继承这种法律保证。在所汇集的披露/新闻层中，约 90\% 的市场移动日没有可归因的当日文档，进一步限制了构念效度。
+
+另一项公共层诊断进一步强化了边界主题。原始多类别认证产生的关键性提升倍数为 0.63×，表明其发生了注意力驱动的反转，而非富集。质量加权惊讶度认证将提升倍数部分恢复至 1.23×，但仍只是弱富集，不能作为对抗鲁棒性的证据。因此，除非审计其来源与稀缺性，冗余计数所衡量的可能是注意力集中。
+
+\section{5. 讨论}\label{ux8ba8ux8bba}
+
+\subsection{5.1 证据的三阶段解释}\label{ux8bc1ux636eux7684ux4e09ux9636ux6bb5ux89e3ux91ca}
+
+结果区分了端到端评分经常混淆的三个阶段。\textbf{到达}关注关键命题是否进入日简报；\textbf{判断}关注其到达后智能体是否选择它；\textbf{价值}关注由此产生的集合是否改善已声明的目标。表 1 支持 LLM 在判断阶段的贡献。表 2 表明，良好的判断无法找回被上游排除的命题，而配额竞争会稀释直通效果。随后，\(\Delta\)value 的符号分化表明，在第二个基于引用的终点上，更多关键命中并不必然意味着更高价值。
+
+这种分解使 SEA 的综合框架更加清晰，而非削弱它。诚实特征比较表明，语义判断包含了低成本的滚动前推特征未能捕捉的选择信号。它并未表明 LLM 的端到端 \(d'\ge4.39\)，也未消除评分分离度瓶颈。反之，冗余界是否有力，取决于实测的 \(p_{\min}\)、有效独立性以及供给---配额适配程度。``高召回是结构性的''因而是一项设计要求和可证伪的条件性主张，而非附加在 SEA 标签上的保证。
+
+模式生物策略之所以有效，正因为它能定位这些机制。受控智能体可呈现反事实选择行为，并允许进行大量基于随机种子的复制。它们不能回答应由谁写入目标、人们如何声明这些目标，或人类福祉是否改善。在重放中，反思层是工程化的画像与宪法，而不是已正确引出某个人第二序意志的证据。
+
+\subsection{5.2 与相邻研究的关系}\label{ux4e0eux76f8ux90bbux7814ux7a76ux7684ux5173ux7cfb}
+
+SEA 与预算约束下的信息获取研究共同关注理性疏忽和主动学习 {[}11{]}, {[}14{]}，但它还把目标的所有权与覆盖的来源纳入实证问题。搜索与觅食规则 {[}12{]}, {[}13{]} 为信源探索提供依据，而次模监测分配 {[}15{]} 说明清单构建为何是一个优化问题，而非例行性的 top-\(N\) 步骤。我们的贡献不是新的通用搜索定理，而是展示这些组件在组合时何处成功、何处失败的证据。
+
+同样，曝光多样性与算法单一文化研究为公共兜底层提供了动机 {[}16{]}, {[}17{]}，但认证反转表明，若原始覆盖计数成为公共层的认证依据，该层也会再现注意力集中。最后，提示注入研究 {[}6{]}, {[}7{]} 表明检索内容是一种攻击面。本研究并不声称具有对抗鲁棒性：它提供的是一个基线，后续注入与协同伪造检验必须据此评估。
+
+\subsection{5.3 效度威胁与证据状态}\label{ux6548ux5ea6ux5a01ux80c1ux4e0eux8bc1ux636eux72b6ux6001}
+
+五项局限界定了本文主张的边界。\textbf{构念效度：}引用影响和市场移动是回顾性代理，而非对关键性的独立事前判断。金融法定目标以规则为基础，但其范围窄于所有决策相关信息。\textbf{生态效度：}两个重放均只涉及一个月，公开新闻存档也不完整；两个域不能建立时间、文化或总体层面的普适性。\textbf{归因：}半 oracle 代理参与了上游日简报的构建，而诚实特征参照并非完整的现代 RAG 或端到端 LLM 基线。直接端到端 LLM 消融实验及 RAG/福祉基线仍处于设计阶段。\textbf{模型依赖：}冻结实例、量化、后端和不等的运行次数都会制约估计；因容量限制而裁撤的家族也可能限制代表性。\textbf{有效性筛选：}空选择按冻结规则被重试或排除，因此实际运行中的失败率应与基于有效日的科学终点一并检查。
+
+向人类转移是另一个尚未解决的推断步骤。在此前对 Bail 对立观点接触范式的重放 {[}20{]} 中，效应方向在不同模型家族间并不一致，这说明为何不能通过类比，把载体中立的选择机制转化为人类心理效应。本文不对人类侧功效、福祉、校准改善、反噬防护或去技能化防护作出任何主张。这些陈述仍为\textbf{可证伪预测}，而非已确立的结果。HP-0 为\textbf{{[}已设计；数据收集待完成{]}}，仅检验可行性，不检验功效。完整的 P1--P12 总体层面检验组合\textbf{仍在进行中}，其预注册样本量尚未达到。
+
+因此，下一批实验应在相同数据流上设置直接端到端 LLM 与 RAG 基线，分别干预清单质量和配额，并预注册与决策相关联的事前标签。价值分化需要机制分析，以区分召回导向的选择与价值导向的选择。人类研究若日后获批并启动，必须检验其自身的预测，而不能继承智能体结果。
+
+\section{6. 结论}\label{ux7ed3ux8bba}
+
+在 80 次运行和 73,547 条有效智能体-日记录中，四个 LLM 家族在关键机会召回率上均表现出可复制的判断层优势，优于诚实特征参照，但引用代理价值并未一致提升。双域试点同样清晰地揭示了架构边界：学术域高召回的强形式被拒绝，最佳端到端召回率为 0.28；金融域的 0.952 仅出现在极为有利、组合内且配额匹配的设置中，并在新闻扩展后稀释至 0.910。因此，LLM 判断是主权获取的一个有用组件，但不能替代候选覆盖、冗余、配额约束或审计。本文是一项范围受限且已完成的机制研究，不意味着完成 P1--P12 检验组合，也不构成人类验证或总体层面有效性的主张。
+
+\section{数据与代码可用性}\label{ux6570ux636eux4e0eux4ee3ux7801ux53efux7528ux6027}
+
+代码、冻结协议、分析脚本、逐次运行记录和重建材料见 \textbf{https://github.com/hurrywhen/sea-nuaa}。冻结存档版本见 \textbf{https://doi.org/10.5281/zenodo.23620920}。发布材料标明了协议 v2.1、有效记录与完整性规则、运行层推断流程，以及被隔离的协议 v1 和家族 F 记录。派生语料库可利用冻结种子和访问记录，从已记录的公开 arXiv/OpenAlex、EDGAR、archive.org CDX 和 Wikimedia 来源重建。其中不包含任何人类参与者数据集。
+
+\section{AI 贡献与人类数据声明}\label{ai-ux8d21ux732eux4e0eux4ebaux7c7bux6570ux636eux58f0ux660e}
+
+LLM 智能体协助了文献综合、软件、实验执行、统计分析和论文起草；它们不作为作者，也不拥有决策权。人类作者提出研究问题，批准协议与冻结的判定规则，批准保留负结果，并审阅最终稿和所报告的数值。部分模型家族既是研究工具，又是研究对象。角色分离、冻结协议、跨家族复制、隔离规则和人工审查可缓解但不能消除由此产生的循环论证风险。
+
+本文未收集或分析任何人类被试数据。智能体-日观测由机器生成，语料库文档也不是参与者数据。本文不对人类功效、安全性或福祉下结论，也不得出总体层面的结论。所有人类侧主张均为需要独立检验的可证伪预测；HP-0 仍为\textbf{{[}已设计；数据收集待完成{]}}，不构成证据。
+
+\section{参考文献}\label{ux53c2ux8003ux6587ux732e}
+\begingroup\footnotesize
+
+{[}1{]} H. A. Simon, ``Designing organizations for an information-rich world,'' in \emph{Computers, Communications, and the Public Interest}. Johns Hopkins Press, 1971.
+
+{[}2{]} N. Cowan, ``The magical number 4 in short-term memory,'' \emph{Behavioral and Brain Sciences}, vol.~24, no. 1, pp.~87--114, 2001.
+
+{[}3{]} Z. Xi, W. Chen, X. Guo, et al., ``The rise and potential of large language model based agents: A survey,'' \emph{Science China Information Sciences}, vol.~68, no. 2, Art. 121101, 2025.
+
+{[}4{]} J. Stray, I. Vendrov, J. Nixon, S. Adler, and D. Hadfield-Menell, ``Building human values into recommender systems: An interdisciplinary synthesis,'' arXiv:2207.10192, 2022; revised version in \emph{ACM Transactions on Recommender Systems}, 2024.
+
+{[}5{]} J. Kleinberg, S. Mullainathan, and M. Raghavan, ``The challenge of understanding what users want: Inconsistent preferences and engagement optimization,'' \emph{Management Science}, vol.~70, no. 9, pp.~6336--6358, 2024.
+
+{[}6{]} K. Greshake, S. Abdelnabi, S. Mishra, C. Endres, T. Holz, and M. Fritz, ``Not what you've signed up for: Compromising real-world LLM-integrated applications with indirect prompt injection,'' in \emph{Proceedings of the 16th ACM Workshop on Artificial Intelligence and Security (AISec)}, pp.~79--90, 2023.
+
+{[}7{]} Y. Liu, Y. Jia, R. Geng, J. Jia, and N. Z. Gong, ``Formalizing and benchmarking prompt injection attacks and defenses,'' in \emph{Proceedings of the 33rd USENIX Security Symposium}, pp.~1831--1847, 2024.
+
+{[}8{]} R. A. Howard, ``Information value theory,'' \emph{IEEE Transactions on Systems Science and Cybernetics}, vol.~2, no. 1, pp.~22--26, 1966.
+
+{[}9{]} D. Blackwell, ``Equivalent comparisons of experiments,'' \emph{The Annals of Mathematical Statistics}, vol.~24, no. 2, pp.~265--272, 1953.
+
+{[}10{]} D. M. Green and J. A. Swets, \emph{Signal Detection Theory and Psychophysics}. Wiley, 1966.
+
+{[}11{]} C. A. Sims, ``Implications of rational inattention,'' \emph{Journal of Monetary Economics}, vol.~50, no. 3, pp.~665--690, 2003.
+
+{[}12{]} M. L. Weitzman, ``Optimal search for the best alternative,'' \emph{Econometrica}, vol.~47, no. 3, pp.~641--654, 1979.
+
+{[}13{]} P. Pirolli and S. Card, ``Information foraging,'' \emph{Psychological Review}, vol.~106, no. 4, pp.~643--675, 1999.
+
+{[}14{]} B. Settles, \emph{Active Learning Literature Survey}, Computer Sciences Technical Report 1648, University of Wisconsin--Madison, 2009.
+
+{[}15{]} G. L. Nemhauser, L. A. Wolsey, and M. L. Fisher, ``An analysis of approximations for maximizing submodular set functions---I,'' \emph{Mathematical Programming}, vol.~14, pp.~265--274, 1978.
+
+{[}16{]} N. Helberger, K. Karppinen, and L. D'Acunto, ``Exposure diversity as a design principle for recommender systems,'' \emph{Information, Communication \& Society}, vol.~21, no. 2, pp.~191--207, 2018.
+
+{[}17{]} J. Kleinberg and M. Raghavan, ``Algorithmic monoculture and social welfare,'' \emph{Proceedings of the National Academy of Sciences}, vol.~118, no. 22, Art. e2018340118, 2021.
+
+{[}18{]} G. W. Brier, ``Verification of forecasts expressed in terms of probability,'' \emph{Monthly Weather Review}, vol.~78, no. 1, pp.~1--3, 1950.
+
+{[}19{]} T. Gneiting and A. E. Raftery, ``Strictly proper scoring rules, prediction, and estimation,'' \emph{Journal of the American Statistical Association}, vol.~102, no. 477, pp.~359--378, 2007.
+
+{[}20{]} C. A. Bail, L. P. Argyle, T. W. Brown, et al., ``Exposure to opposing views on social media can increase political polarization,'' \emph{Proceedings of the National Academy of Sciences}, vol.~115, no. 37, pp.~9216--9222, 2018.
+
+{[}21{]} W. Hu, X. Wang, and Y. Yu, ``Sovereign Epistemic Acquisition: A Conditional Framework for Active Information Acquisition and Sovereign Filtering under Bounded Agency, with Preliminary Validation,'' manuscript v1.7, 2026. {[}Online{]}. Available: https://github.com/hurrywhen/sea-nuaa
+
+\endgroup
+\end{document}

@@ -1,0 +1,54 @@
+{
+ "oct_universe": 2594,
+ "oct_critical": 52,
+ "p_min_hat": {
+  "static": 0.23076923076923078,
+  "rolling": 0.2692307692307692
+ },
+ "supply_per_day": {
+  "static": 12.35483870967742,
+  "rolling": 12.903225806451612
+ },
+ "churn": {
+  "jaccard_static_rolling": 0.3888888888888889,
+  "static_hit_oct_cover": 0.18,
+  "rolling_hit_oct_cover": 0.22,
+  "sep_list_hit_oct_cover": 0.18
+ },
+ "arms": {
+  "2": {
+   "static(7-8月)": {
+    "recall_mean": 0.19423076923076926,
+    "recall_wl_mean": 0.34444444444444444,
+    "alarm_rate": 1.0,
+    "dprime_proxy": 1.243184271469745
+   },
+   "rolling(8-9月)": {
+    "recall_mean": 0.1993589743589744,
+    "recall_wl_mean": 0.35,
+    "alarm_rate": 1.0,
+    "dprime_proxy": 1.243184271469745
+   },
+   "S2c(无清单)": {
+    "recall_mean": 0.2044871794871795
+   }
+  },
+  "4": {
+   "static(7-8月)": {
+    "recall_mean": 0.29230769230769227,
+    "recall_wl_mean": 0.5416666666666666,
+    "alarm_rate": 1.0,
+    "dprime_proxy": 1.243184271469745
+   },
+   "rolling(8-9月)": {
+    "recall_mean": 0.2948717948717949,
+    "recall_wl_mean": 0.5047619047619047,
+    "alarm_rate": 1.0,
+    "dprime_proxy": 1.243184271469745
+   },
+   "S2c(无清单)": {
+    "recall_mean": 0.32499999999999996
+   }
+  }
+ }
+}

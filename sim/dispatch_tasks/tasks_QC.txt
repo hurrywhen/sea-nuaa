@@ -1,0 +1,12 @@
+# Lane QC 任务清单（11 条）——由 make_dispatch_tasks.py 生成
+sea_pilot.run_llm_replay --days 30 --agents 30 --agent-start 0 --seed 102 --tag qc_r02
+sea_pilot.run_llm_replay --days 30 --agents 30 --agent-start 0 --seed 103 --tag qc_r03
+sea_pilot.run_llm_replay --days 30 --agents 30 --agent-start 0 --seed 104 --tag qc_r04
+sea_pilot.run_llm_replay --days 30 --agents 30 --agent-start 0 --seed 105 --tag qc_r05
+sea_pilot.run_llm_replay --days 30 --agents 30 --agent-start 0 --seed 106 --tag qc_r06
+sea_pilot.run_llm_replay --days 30 --agents 30 --agent-start 0 --seed 107 --tag qc_r07
+sea_pilot.run_llm_replay --days 30 --agents 30 --agent-start 0 --seed 108 --tag qc_r08
+sea_pilot.run_llm_replay --days 30 --agents 30 --agent-start 0 --seed 109 --tag qc_r09
+sea_pilot.run_llm_replay --days 30 --agents 30 --agent-start 0 --seed 110 --tag qc_r10
+sea_pilot.h8_battery_v2 --model-tag q90_h8 --n-a 20 --n-b 10 --n-c 20
+sea_pilot.h9_calibration --tag q90_h9

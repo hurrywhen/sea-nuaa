@@ -1,0 +1,355 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+  conference,10pt]{IEEEtran}
+\usepackage{xcolor}
+\usepackage[letterpaper,margin=0.68in,columnsep=0.22in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+\usepackage{etoolbox}
+\usepackage{hyperref}
+\ifPDFTeX\else
+  \setmainfont{DejaVuSerif.ttf}[BoldFont=DejaVuSerif-Bold.ttf,ItalicFont=DejaVuSerif-Italic.ttf,BoldItalicFont=DejaVuSerif-BoldItalic.ttf]
+  \setsansfont{DejaVuSans.ttf}[BoldFont=DejaVuSans-Bold.ttf,ItalicFont=DejaVuSans-Oblique.ttf,BoldItalicFont=DejaVuSans-BoldOblique.ttf]
+  \setmonofont{DejaVuSansMono.ttf}[BoldFont=DejaVuSansMono-Bold.ttf,ItalicFont=DejaVuSansMono-Oblique.ttf,BoldItalicFont=DejaVuSansMono-BoldOblique.ttf]
+\fi
+\setcounter{secnumdepth}{0}
+\setcounter{tocdepth}{1}
+\sloppy
+\setlength{\emergencystretch}{2em}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue,urlcolor=NavyBlue,citecolor=NavyBlue,pdftitle={SEA_conference_v1.0 (generic conference submission form)},pdfsubject={Generic conference submission form, v1.0},pdfkeywords={SEA; epistemic sovereignty; information acquisition; conference}}
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{1em}
+\setlength{\abovecaptionskip}{3pt}
+\setlength{\belowcaptionskip}{2pt}
+\AtBeginEnvironment{figure}{\footnotesize}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Mechanisms and Boundary Conditions of LLM Judgment in Sovereign Information Filtering: A Four-Family, 80-Run Mechanistic Replay},
+  pdfauthor={Xutong Wang\^{}\{1\}, Wen Hu\^{}\{1,2\}, Ya Yu\^{}\{1\}},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Mechanisms and Boundary Conditions of LLM Judgment in Sovereign Information Filtering: A Four-Family, 80-Run Mechanistic Replay}
+\author{Xutong Wang\(^{1}\), Wen Hu\(^{1,2}\), Ya Yu\(^{1}\)}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+Information filters must discard nearly all candidates, yet it is unclear whether large-language-model (LLM) judgment can replace structural recall mechanisms. We use LLM agents as model organisms for the judgment layer of Sovereign Epistemic Acquisition (SEA), not as human surrogates. The completed, protocol-frozen mechanistic study replays an academic corpus across four model families, 80 independent runs, and 73,547 valid agent-day records. Judgment-arm critical-opportunity recall is 0.443/0.534/0.514/0.519 for O/C/Q/G, versus 0.241 for an honest feature reference; run-level bootstrap 95\% confidence intervals are reported for every family. Citation-proxy value, however, increases only for C/Q and decreases for O/G. Two real-corpus pilots delineate applicability: academic strong-form high recall is rejected (best end-to-end recall 0.28); financial within-portfolio recall reaches 0.952 only under highly favorable quota-matched conditions and is diluted to 0.910 after news expansion. Thus, semantic judgment improves selection within a digest but supplies neither an architectural recall guarantee nor evidence of human benefit. The full P1--P12 battery remains in progress; no human efficacy or population-level validation is claimed.
+\end{abstract}
+
+\textbf{Keywords:} LLM agents; model organisms; information filtering; critical recall; mechanistic replay; epistemic sovereignty
+
+\textbf{Affiliations:} 1 College of Electronic and Information Engineering, Nanjing University of Aeronautics and Astronautics, Nanjing, China; 2 Jiangsu Yunhefeng Intelligent Technology Co., Ltd., Jiangsu, China. Corresponding author: Wen Hu (huwen@nuaa.edu.cn).
+
+\section{1. Introduction}\label{introduction}
+
+Attention, rather than candidate information, is the scarce resource in digital information environments {[}1{]}. Bounded agents must therefore discard most arrivals before deep processing, whether the binding constraint is human working memory {[}2{]} or an artificial agent's context and inference budget. LLM agents offer a distinctive experimental vehicle for this problem: their decisions can be replayed, counterfactuals can be paired, and the complete selection trail can be audited {[}3{]}. They are useful \emph{model organisms} for carrier-neutral mechanisms, but their compliance, training knowledge, and lack of human affect make them unsuitable as direct human surrogates.
+
+This distinction matters for sovereign information acquisition. Recommender research increasingly asks how to encode welfare or values into ranking {[}4{]}, and why inconsistent preferences frustrate engagement optimization {[}5{]}. LLM-agent research simultaneously documents powerful tool-using systems and new manipulation surfaces, including indirect prompt injection {[}3{]}, {[}6{]}, {[}7{]}. Yet neither literature, by itself, answers three separable empirical questions: did critical information reach the candidate set, did the judgment layer select it once present, and did selection increase decision-relevant value? Treating these questions as one end-to-end accuracy metric hides the mechanism that failed.
+
+Sovereign Epistemic Acquisition (SEA) frames acquisition as a bounded optimization problem in which the agent owns the objective, write rights, and audit trail. Its dual-channel architecture separates structural coverage from scored discovery. The full SEA monograph develops the complete theorem program {[}21{]}; a companion journal theory paper presents that program in regular-article form. In contrast, this conference paper is an empirical and mechanistic contribution: it freezes a judgment-layer replay, reports cross-family effect sizes and uncertainty, and maps where end-to-end recall fails. The theory is retained only where it specifies a measurement criterion or prevents an overclaim.
+
+The contributions are fourfold. First, we report a \textbf{completed, scoped mechanistic study}, not the full SEA validation battery: four LLM families, 80 independent runs, and 73,547 valid agent-day records on a temporal academic replay. Second, we show that judgment improves critical-opportunity recall relative to an honest feature reference, while citation-proxy value changes sign across families. Recall and value therefore cannot be used as interchangeable endpoints. Third, two-domain real-corpus pilots provide applicability-boundary evidence: the academic strong form of high recall is rejected, whereas the financial result is favorable only within a restricted portfolio and quota configuration. Fourth, the complete statistical protocol, exclusions, and frozen records are released to make the negative results and the scope of inference inspectable.
+
+\section{2. Minimum Theory for the Mechanistic Tests}\label{minimum-theory-for-the-mechanistic-tests}
+
+\subsection{2.1 SAP, sovereignty, and the dual channel}\label{sap-sovereignty-and-the-dual-channel}
+
+The Sovereign Acquisition Problem (SAP) chooses an acquisition policy \(\pi\) from a sovereignty-constrained set \(\Pi_S\):
+
+\[
+\begin{aligned}
+\max_{\pi\in\Pi_S}\;\mathbb{E}_{\pi}\!\Bigg[&\sum_{t=1}^{H}\beta^t\\
+&\{\mathrm{VOI}_t(A_t)+\zeta\Delta\theta_t-\mathrm{Harm}_t(A_t)\}\Bigg],
+\end{aligned}
+\]
+
+subject to
+
+\[
+\sum_{i\in A_t}\tau_i+c(\pi_{\mathrm{pull},t})+c_{\mathrm{ref}}\le T .
+\]
+
+Here \(A_t\) is the consumed set, \(T\) the attention budget, \(\mathrm{VOI}\) expected decision value {[}8{]}, {[}9{]}, and \(\theta\) a slow cognitive-state variable. Pull acquisition, push filtering, and reflection share the same budget. Sovereignty requires an inspectable objective, explicit authorization of parameter writes by the reflective layer, no third-party revenue term, and auditable decisions. These conditions restrict \(\Pi_S\); they are not an accuracy bonus.
+
+Before selection, documents are collapsed into propositions to avoid spending multiple slots on copies. The dual channel then divides labor. \textbf{Channel I} passes monitored source classes and declared watchlist entities through after deduplication, subject to a budget-feasibility alarm. \textbf{Channel II} ranks the remaining candidates for discovery and allocation of scarce slots. The present experiment isolates judgment \emph{after a daily digest has been constructed}. It does not validate the full SAP, global pull/push optimality, human goal elicitation, or the complete dual-channel stack.
+
+\subsection{2.2 Score separability: why a ranker cannot carry a 95\% promise}\label{score-separability-why-a-ranker-cannot-carry-a-95-promise}
+
+Let \(\pi_0\) be the critical fraction, \(\beta\) the consumed fraction, and \(d'\) the standardized separation between critical and noncritical score distributions {[}10{]}. Under equal-variance Gaussian scores, selecting the top \(\beta\) mass gives
+
+\[
+(1-\pi_0)\bar\Phi(z)+\pi_0\bar\Phi(z-d')=\beta,
+\qquad R=\bar\Phi(z-d'),
+\]
+
+where \(\bar\Phi\) is the standard-normal upper tail and \(R\) is scoring-channel recall. Independently of the Gaussian model, counting imposes \(R\le\min(1,\beta/\pi_0)\). Under the Gaussian specialization, target recall \(R\) requires
+
+\[
+d'\ge \Phi^{-1}\!\left(1-\frac{\beta-\pi_0R}{1-\pi_0}\right)+\Phi^{-1}(R),
+\]
+
+provided \(\beta\ge\pi_0R\). At \(\beta=0.0125\), \(\pi_0=0.01\), and \(R=0.95\), the threshold is \(d'\ge4.39\). The criterion is a budget--separability constraint, not a claim that a particular deployed scorer is Gaussian. It predicts that representation improvements alone cannot responsibly carry an extreme-filtering recall guarantee.
+
+\subsection{2.3 Redundancy: the conditional architectural bound}\label{redundancy-the-conditional-architectural-bound}
+
+Let \(p_{\min}\) be a verified lower bound on each monitored class's coverage probability for critical propositions. If \(k_{\mathrm{eff}}\) is the size of an independent subset of source classes, then
+
+\[
+P(\mathrm{miss}\;e)\le(1-p_{\min})^{k_{\mathrm{eff}}}.
+\]
+
+The bound is conditional on the coverage floor and independence structure; correlated sources reduce \(k_{\mathrm{eff}}\), and a small \(p_{\min}\) makes it vacuous. A watchlist can eliminate the \emph{filtering-stage} miss when the watched entity publishes and the quota remains feasible, but cannot force a silent source to publish. Thus SEA's synthesis is deliberately asymmetric: scoring performs discovery, while architecture bears any justified recall guarantee. Active search, source exploration, and monitoring-list construction consequently matter as much as ranking {[}11{]}--{[}15{]}.
+
+\section{3. Methods}\label{methods}
+
+\subsection{3.1 Frozen judgment-layer replay}\label{frozen-judgment-layer-replay}
+
+The primary study uses protocol v2.1 and the arXiv September 2019 academic replay. The monitoring universe contains 2,576 propositions. The frozen criticality proxy marks the month's top-2\% cited papers, yielding \(K^*=52\); citations are retrospective evaluation labels, not information supplied as ex ante ground truth. This is a single-source academic ecology, so its proposition-collapse ratio is 1.0.
+
+For each simulated day, the framework forms a digest of at most 18 items: institution-list Channel-I items followed by proxy-ranked Channel-II candidates. The agent receives a researcher profile and declared decision set, and selects at most three items in structured output. The framework, not the model, enforces the budget and computes outcomes. Exogenous salience injection is logged separately from criticality.
+
+Three selection logics are distinguished. The \textbf{judgment arm} is the LLM's choice on the daily digest. The \textbf{semi-oracle parametric arm} takes the top three under a noisy citation-correlated proxy (\(\rho=0.4\)); its access to a future-correlated signal makes it a demanding comparator, not an honest deployable scorer. The \textbf{honest feature reference} fits logistic scoring on the preceding window using metadata and walk-forward TF-IDF novelty, then selects three items without an LLM call. Its frozen 30-day reference recall is 0.241. It is a descriptive reference, not an additional 80-run randomized arm.
+
+The primary endpoint is \textbf{critical-opportunity recall}: critical hits divided by critical opportunities present in the replay digest. For each run, hits and opportunities are summed before calculating recall; each family estimate is the unweighted mean of its run estimates. This endpoint is conditional on upstream candidate construction and must not be confused with corpus-level end-to-end recall. The secondary endpoint is citation-proxy value, \(\sum\log(1+\mathrm{citations})\) over selected items. \(\Delta\mathrm{value}\) is the run-level mean judgment-minus-parametric difference over valid agent-days, followed by a family mean over runs. It is a frozen proxy scale, not realized SAP utility or human welfare.
+
+\subsection{3.2 Replication, validity, and model separation}\label{replication-validity-and-model-separation}
+
+Families O and C each have 30 independent runs; anchor families Q and G each have 10, producing 80 runs in total. The nominal run template uses 30 agents over 30 simulated days with fixed seeds; execution is sharded, with retries and backfill governed by the frozen protocol. A valid record requires a nonempty selection, and each accepted run must pass an integrity gate of \textbf{at least} 900 valid records---a minimum, not a cap. The frozen analysis contains 73,547 valid agent-day records: O 27,385; C 27,459; Q 9,321; and G 9,382. Prompts, model instances, decoding parameters, backend assignments, and access conditions are frozen in the release. Findings apply to those instances, not entire vendors' product lines.
+
+Protocol-v1 records and an incomplete fifth family, F, were quarantined before analysis and contribute no observations. Where model-based roles are required, subject, scorer, producer/red-team, and judge are separated across at least three families; critical hits in this replay are computed by the framework rather than model self-report. Cross-family replication tests robustness to a model-specific mechanism, while backend variation within a family is treated as a declared implementation condition rather than a new biological replicate.
+
+\subsection{3.3 Statistical analysis}\label{statistical-analysis}
+
+The \textbf{run is the replication unit}, the \textbf{agent-day is the analysis unit}, and inference is stratified or resampled by run. Agent-days are never treated as independent replications merely to inflate degrees of freedom. We report 95\% percentile bootstrap intervals using 10,000 run-level resamples. Judgment-versus-parametric comparisons paired on the same agent-day use exact McNemar tests within families with Benjamini--Hochberg correction. A continuity-corrected Cochran--Mantel--Haenszel (CMH) summary uses the 80 runs as strata and is secondary to effect sizes and intervals.
+
+For the \(\chi^2_1\) CMH statistic, the upper-tail calculation is exactly \(p=\mathrm{erfc}(\sqrt{\chi^2/2})\). Extreme tails are used for order-of-magnitude orientation only, never as calibrated error probabilities or substitutes for magnitude estimates.
+
+\subsection{3.4 Separate two-domain applicability pilots}\label{separate-two-domain-applicability-pilots}
+
+The academic and financial pilots are frozen separately and are not pooled with the 80-run inferential dataset. The financial replay covers September 2019 EDGAR disclosures and public news archives expanded to ten domains, with 1,876 propositions and 15,368 documents. It uses two targets: legally material 8-K filings and market-moving days. The key favorable configuration passes 25 portfolio holdings through Channel I, has only 4.6 propositions per day, and matches an \(m=5\) quota to that supply. We also examine the same setting after news expansion, when additional propositions compete for quota. These pilots test applicability conditions, not a universal recall guarantee.
+
+\section{4. Results}\label{results}
+
+\subsection{4.1 Four-family judgment-layer replication}\label{four-family-judgment-layer-replication}
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{Table 1. Frozen four-family mechanistic results. Recall intervals are run-level bootstrap 95\% CIs; \(\Delta\)value is descriptive.}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}
+  >{\centering\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2273}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1818}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1818}}
+  >{\centering\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2273}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1818}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\centering
+Family
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Runs
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Valid records
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Critical recall {[}95\% CI{]}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+\(\Delta\)value
+\end{minipage} \\
+\midrule\noalign{}
+O & 30 & 27,385 & 0.443 {[}0.433, 0.454{]} & −0.175 \\
+C & 30 & 27,459 & 0.534 {[}0.527, 0.541{]} & +0.676 \\
+Q & 10 & 9,321 & 0.514 {[}0.502, 0.526{]} & +0.432 \\
+G & 10 & 9,382 & 0.519 {[}0.498, 0.539{]} & −0.223 \\
+\bottomrule\noalign{}
+\end{tabular}%
+}
+\end{table*}
+
+Every family exceeds the honest feature reference of 0.241 by at least 1.8-fold, and all four recall intervals lie above that reference. These intervals quantify run-to-run uncertainty in family recall; they are not confidence intervals for a judgment-minus-feature contrast. More importantly, 0.443--0.534 remains far below a 95\% recall objective even before upstream misses are counted.
+
+Against the semi-oracle parametric arm, the run-stratified CMH summary pools 14,550 judgment-better versus 9,673 parametric-better discordant agent-days, yielding \(\chi^2_1=981.52\). The formula above gives \(p\approx1.9\times10^{-215}\). We report this asymptotic tail only for orientation; the substantive result is the replicated recall magnitude and its run-level uncertainty, not the extreme \(p\)-value.
+
+\subsection{4.2 Recall gains do not imply uniform value gains}\label{recall-gains-do-not-imply-uniform-value-gains}
+
+The value result splits by family: C and Q have positive \(\Delta\)value (+0.676 and +0.432), whereas O and G have negative values (−0.175 and −0.223). Thus the hit dimension replicates across all four families, but the average citation-proxy value increment does not. We treat this two-positive/two-negative split as a finding, not as noise to be averaged away. No value-difference confidence intervals were frozen, so we do not assign statistical significance to either sign.
+
+A separate 40-question agent calibration diagnostic further warns against treating families as interchangeable. Brier scores {[}18{]}, {[}19{]} for O/C/Q/G were 0.170/0.232/0.233/0.285. These are model-specific calibration measurements, not calibration improvements and not human measurements. Together with the value split, they motivate family-conditioned deployment and replication rather than a claim that ``the LLM'' has one stable judgment effect.
+
+\subsection{4.3 Two-domain applicability boundaries}\label{two-domain-applicability-boundaries}
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{Table 2. Frozen real-corpus pilot calibers and boundary evidence.}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Quantity
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Academic pilot
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Financial pilot
+\end{minipage} \\
+\midrule\noalign{}
+Corpus and proxy & 2,576 propositions; top-2\% cited, \(K^*=52\) & 1,876 propositions/15,368 documents; legal and market targets \\
+Collapse ratio \(\rho_c\) & 1.0 (single source) & 8.19 \\
+Coverage \(\hat p_{\min}\) & Author list ≈0.02; institution list 0.17--0.37 & Legal 1.00; market 0.70--0.73 \\
+Feature \(d'\) & 0.73--0.77 & Legal 2.65--3.49; market 0.54--0.60 \\
+Recall boundary & \textbf{Best end-to-end 0.28: strong form rejected} & \textbf{0.952 only in favorable within-portfolio setting; 0.910 after news expansion} \\
+\bottomrule\noalign{}
+\end{tabular}%
+}
+\end{table*}
+
+Every reported feature-\(d'\) estimate is below 4.39. Because that threshold is Gaussian-specialized and the pilots use proxy labels, this is evidence for the architecture/scoring division of labor, not an independent proof of the identity.
+
+The academic result rejects the strong form of high recall. Author-granularity monitoring covers almost none of the retrospective critical set, institutional lists improve coverage but remain capacity-sensitive, and the two honest feature families produce \(d'=0.73\)--\(0.77\), far below the Gaussian criterion's 4.39 requirement. Alternative citation proxies---early citations and cross-field citations---do not change the direction of rejection. This is a boundary result about acquisition, list construction, and quota fit, not a contradiction of the higher \emph{conditional digest-opportunity} recall in Table 1.
+
+The financial 0.952 is deliberately narrow: it is within-portfolio, market-proxy recall at \(m=5\), with 25 direct-pass holdings, 4.6 propositions/day, and a quota matched to that favorable supply. It is not recall of all ex ante critical financial information. Expanding the news layer introduces competition for the same quota and dilutes recall to 0.910. Legally material filings show how institutional provenance can supply a high coverage floor; market-moving labels do not inherit that legal guarantee. Approximately 90\% of market-moving days lack an attributable same-day document in the assembled disclosure/news layer, further limiting construct validity.
+
+A separate public-layer diagnostic reinforces the boundary theme. Raw multi-class certification produced a criticality lift of 0.63×, indicating attention-driven reversal rather than enrichment. Quality-weighted-surprisal certification partially repaired lift to 1.23×, still weak enrichment and not evidence of adversarial robustness. Redundancy counts can therefore measure attention concentration unless their provenance and scarcity are audited.
+
+\section{5. Discussion}\label{discussion}
+
+\subsection{5.1 A three-stage interpretation of the evidence}\label{a-three-stage-interpretation-of-the-evidence}
+
+The results separate three stages that an end-to-end score often conflates. \textbf{Reach} asks whether a critical proposition enters the digest; \textbf{judgment} asks whether an agent selects it once present; \textbf{value} asks whether the resulting set improves the declared objective. Table 1 supports an LLM contribution at the judgment stage. Table 2 shows that favorable judgment cannot recover propositions excluded upstream and that pass-through can be diluted by quota competition. The sign split in \(\Delta\)value then shows that more critical hits need not imply more value on a second, citation-based endpoint.
+
+This decomposition sharpens, rather than weakens, the SEA synthesis. The honest-feature comparison shows that semantic judgment contains selection signal missed by inexpensive walk-forward features. It does not show that the LLM has end-to-end \(d'\ge4.39\), nor does it remove the score-separability bottleneck. Conversely, the redundancy bound is only as strong as measured \(p_{\min}\), effective independence, and supply--quota fit. ``High recall is structural'' is therefore a design requirement and a falsifiable conditional claim, not a guarantee attached to the SEA label.
+
+The model-organism strategy is productive precisely because it localizes such mechanisms. Controlled agents expose counterfactual selection behavior and permit many seeded replications. They do not settle whose objectives should be written, how people declare those objectives, or whether human welfare improves. In the replay, the reflective layer is an engineered profile and constitution, not evidence that a person's second-order will has been elicited correctly.
+
+\subsection{5.2 Relation to adjacent research}\label{relation-to-adjacent-research}
+
+SEA shares rational-inattention and active-learning concerns with budgeted information acquisition {[}11{]}, {[}14{]}, but places the ownership of the objective and the provenance of coverage inside the empirical problem. Search and foraging rules {[}12{]}, {[}13{]} inform source exploration, while submodular monitoring allocation {[}15{]} explains why list construction is an optimization problem rather than a top-\(N\) clerical step. Our contribution is not a new general search theorem; it is evidence showing where these components succeed or fail when composed.
+
+Likewise, exposure-diversity and algorithmic-monoculture research motivates a public backstop {[}16{]}, {[}17{]}, but the certification reversal shows that a public layer can reproduce attention concentration if raw coverage counts become its certificate. Finally, prompt-injection work {[}6{]}, {[}7{]} establishes that retrieved content is an attack surface. The present study does not claim adversarial robustness: it supplies a baseline against which later injection and coordinated-fabrication tests must be evaluated.
+
+\subsection{5.3 Threats to validity and evidence status}\label{threats-to-validity-and-evidence-status}
+
+Five limitations bound the claims. \textbf{Construct validity:} citation impact and market movement are retrospective proxies, not independent ex ante judgments of criticality. The financial legal target is rule-based but narrower than all decision-relevant information. \textbf{Ecological validity:} both replays concern one month, and the public news archive is incomplete; two domains cannot establish temporal, cultural, or population generality. \textbf{Attribution:} the semi-oracle constructs part of the upstream digest, and the honest feature reference is not a complete modern RAG or end-to-end LLM baseline. The direct end-to-end LLM ablation and RAG/welfare baselines remain design-stage work. \textbf{Model dependence:} frozen instances, quantization, backends, and unequal run counts condition the estimates; the capacity-limited dropped family may also constrain representativeness. \textbf{Validity filtering:} empty selections were retried or excluded under the frozen rule, so operational failure rates should be examined alongside valid-day scientific endpoints.
+
+Human transfer is a separate, unresolved inferential step. In a prior replay of the Bail opposing-exposure paradigm {[}20{]}, effect directions were inconsistent across model families, illustrating why carrier-neutral selection mechanisms cannot be converted into human psychological effects by analogy. No claim is made here about human efficacy, welfare, calibration improvement, backfire protection, or deskilling protection. Such statements remain \textbf{falsifiable predictions}, not established results. HP-0 is \textbf{{[}designed; data collection pending{]}} and addresses feasibility only, not efficacy. The full P1--P12 population-level battery remains \textbf{in progress}, and its preregistered sample size has not been reached.
+
+The next experiments should therefore pair the same streams with direct end-to-end LLM and RAG baselines, intervene separately on list quality and quota, and preregister decision-linked ex ante labels. The value split requires mechanism analyses that distinguish recall-oriented selection from value-oriented selection. Human studies, if later approved and launched, must test their own predictions rather than inherit the agent results.
+
+\section{6. Conclusion}\label{conclusion}
+
+Across 80 runs and 73,547 valid agent-day records, four LLM families show a reproducible judgment-layer advantage in critical-opportunity recall over an honest feature reference, but not a uniform gain in citation-proxy value. Two-domain pilots make the architectural boundary equally clear: academic strong-form high recall is rejected at best end-to-end recall 0.28, while financial recall of 0.952 occurs only in a highly favorable within-portfolio, quota-matched setting and is diluted to 0.910 after news expansion. LLM judgment is therefore a useful component of sovereign acquisition, not a substitute for candidate coverage, redundancy, quota discipline, or audit. This is a completed scoped mechanistic study, not a completed P1--P12 battery, human validation, or population-level effectiveness claim.
+
+\section{Data and Code Availability}\label{data-and-code-availability}
+
+Code, frozen protocols, analysis scripts, per-run records, and reconstruction materials are available at \textbf{https://github.com/hurrywhen/sea-nuaa}. The frozen archival release is available at \textbf{https://doi.org/10.5281/zenodo.23620920}. The release identifies protocol v2.1, valid-record and integrity rules, run-level inference procedures, and the quarantined protocol-v1 and family-F records. Derived corpora can be reconstructed from the documented public arXiv/OpenAlex, EDGAR, archive.org CDX, and Wikimedia sources with frozen seeds and access records. No human-participant dataset is included.
+
+\section{AI Contribution and Human-Data Statement}\label{ai-contribution-and-human-data-statement}
+
+LLM agents assisted with literature synthesis, software, experiment execution, statistical analysis, and manuscript drafting; they held no authorship or decision authority. The human authors defined the research questions, approved the protocols and frozen decision rules, approved retention of negative results, and reviewed the final manuscript and reported values. Some model families were both research instruments and research objects. Role separation, frozen protocols, cross-family replication, quarantine rules, and human review mitigate but do not eliminate the resulting circularity risk.
+
+No human-subject data were collected or analyzed for this paper. Agent-day observations are machine-generated, and corpus documents are not participant data. No human efficacy, safety, welfare, or population-level conclusion is drawn. All human-side implications are predictions requiring independent testing; HP-0 remains \textbf{{[}designed; data collection pending{]}} and is not evidence.
+
+\section{References}\label{references}
+\begingroup\footnotesize
+
+{[}1{]} H. A. Simon, ``Designing organizations for an information-rich world,'' in \emph{Computers, Communications, and the Public Interest}. Johns Hopkins Press, 1971.
+
+{[}2{]} N. Cowan, ``The magical number 4 in short-term memory,'' \emph{Behavioral and Brain Sciences}, vol.~24, no. 1, pp.~87--114, 2001.
+
+{[}3{]} Z. Xi, W. Chen, X. Guo, et al., ``The rise and potential of large language model based agents: A survey,'' \emph{Science China Information Sciences}, vol.~68, no. 2, Art. 121101, 2025.
+
+{[}4{]} J. Stray, I. Vendrov, J. Nixon, S. Adler, and D. Hadfield-Menell, ``Building human values into recommender systems: An interdisciplinary synthesis,'' arXiv:2207.10192, 2022; revised version in \emph{ACM Transactions on Recommender Systems}, 2024.
+
+{[}5{]} J. Kleinberg, S. Mullainathan, and M. Raghavan, ``The challenge of understanding what users want: Inconsistent preferences and engagement optimization,'' \emph{Management Science}, vol.~70, no. 9, pp.~6336--6358, 2024.
+
+{[}6{]} K. Greshake, S. Abdelnabi, S. Mishra, C. Endres, T. Holz, and M. Fritz, ``Not what you've signed up for: Compromising real-world LLM-integrated applications with indirect prompt injection,'' in \emph{Proceedings of the 16th ACM Workshop on Artificial Intelligence and Security (AISec)}, pp.~79--90, 2023.
+
+{[}7{]} Y. Liu, Y. Jia, R. Geng, J. Jia, and N. Z. Gong, ``Formalizing and benchmarking prompt injection attacks and defenses,'' in \emph{Proceedings of the 33rd USENIX Security Symposium}, pp.~1831--1847, 2024.
+
+{[}8{]} R. A. Howard, ``Information value theory,'' \emph{IEEE Transactions on Systems Science and Cybernetics}, vol.~2, no. 1, pp.~22--26, 1966.
+
+{[}9{]} D. Blackwell, ``Equivalent comparisons of experiments,'' \emph{The Annals of Mathematical Statistics}, vol.~24, no. 2, pp.~265--272, 1953.
+
+{[}10{]} D. M. Green and J. A. Swets, \emph{Signal Detection Theory and Psychophysics}. Wiley, 1966.
+
+{[}11{]} C. A. Sims, ``Implications of rational inattention,'' \emph{Journal of Monetary Economics}, vol.~50, no. 3, pp.~665--690, 2003.
+
+{[}12{]} M. L. Weitzman, ``Optimal search for the best alternative,'' \emph{Econometrica}, vol.~47, no. 3, pp.~641--654, 1979.
+
+{[}13{]} P. Pirolli and S. Card, ``Information foraging,'' \emph{Psychological Review}, vol.~106, no. 4, pp.~643--675, 1999.
+
+{[}14{]} B. Settles, \emph{Active Learning Literature Survey}, Computer Sciences Technical Report 1648, University of Wisconsin--Madison, 2009.
+
+{[}15{]} G. L. Nemhauser, L. A. Wolsey, and M. L. Fisher, ``An analysis of approximations for maximizing submodular set functions---I,'' \emph{Mathematical Programming}, vol.~14, pp.~265--274, 1978.
+
+{[}16{]} N. Helberger, K. Karppinen, and L. D'Acunto, ``Exposure diversity as a design principle for recommender systems,'' \emph{Information, Communication \& Society}, vol.~21, no. 2, pp.~191--207, 2018.
+
+{[}17{]} J. Kleinberg and M. Raghavan, ``Algorithmic monoculture and social welfare,'' \emph{Proceedings of the National Academy of Sciences}, vol.~118, no. 22, Art. e2018340118, 2021.
+
+{[}18{]} G. W. Brier, ``Verification of forecasts expressed in terms of probability,'' \emph{Monthly Weather Review}, vol.~78, no. 1, pp.~1--3, 1950.
+
+{[}19{]} T. Gneiting and A. E. Raftery, ``Strictly proper scoring rules, prediction, and estimation,'' \emph{Journal of the American Statistical Association}, vol.~102, no. 477, pp.~359--378, 2007.
+
+{[}20{]} C. A. Bail, L. P. Argyle, T. W. Brown, et al., ``Exposure to opposing views on social media can increase political polarization,'' \emph{Proceedings of the National Academy of Sciences}, vol.~115, no. 37, pp.~9216--9222, 2018.
+
+{[}21{]} W. Hu, X. Wang, and Y. Yu, ``Sovereign Epistemic Acquisition: A Conditional Framework for Active Information Acquisition and Sovereign Filtering under Bounded Agency, with Preliminary Validation,'' manuscript v1.7, 2026. {[}Online{]}. Available: https://github.com/hurrywhen/sea-nuaa
+
+\endgroup
+\end{document}

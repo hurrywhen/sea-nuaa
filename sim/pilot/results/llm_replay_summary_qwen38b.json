@@ -1,0 +1,14 @@
+{
+ "tag": "qwen38b",
+ "backend": "openai-compat:~/models/qwen3.8-27b/Qwen3.8-27B-UD-Q4_K_XL.gguf",
+ "records": 240,
+ "valid_days": 240,
+ "recall_llm": 0.5172413793103449,
+ "recall_param": 0.4482758620689655,
+ "value_llm_mean": 8.866851768876627,
+ "value_param_mean": 8.354728705775383,
+ "impulse_injected": 343,
+ "impulse_consumed": 101,
+ "n_crit_opportunities": 232,
+ "impulse_rate": 0.2944606413994169
+}
