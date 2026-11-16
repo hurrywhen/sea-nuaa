@@ -8,13 +8,15 @@
 """
 from __future__ import annotations
 
+import csv
+import gzip
 import json
 import os
 import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAPER = os.path.join(ROOT, "input", "主权认知获取_统一理论_v1.7.md")
+PAPER = os.path.join(ROOT, "input", "主权认知获取_统一理论_v1.8.md")
 RES = os.path.join(ROOT, "sim", "pilot", "results")
 
 LABEL_KINDS = "公理|定理|命题|定义|引理|推论|性质|假设|猜想"
@@ -202,7 +204,7 @@ def main() -> int:
         warns.append(f"[措辞] L{ln}: {s_}")
 
     # ---------- 7. v1.6 修订核查（中英双稿；含 v1.5 遗留项）----------
-    en_path = os.path.join(ROOT, "input", "sovereign_epistemic_acquisition_EN_v1.7.md")
+    en_path = os.path.join(ROOT, "input", "sovereign_epistemic_acquisition_EN_v1.8.md")
     en = open(en_path, encoding="utf-8").read() if os.path.exists(en_path) else ""
     v15: list[tuple[str, bool]] = []
     for tag, doc in (("ZH", text), ("EN", en)):
@@ -241,9 +243,10 @@ def main() -> int:
         v15.append((f"{tag} 引理12.1 独立性失效条款", ("k_{\\mathrm{eff}}^a" in doc) or ("k_{\\mathrm{eff}}^{a}" in doc)))
         v15.append((f"{tag} 摘要零人类数据声明",
                     ("no human-subject data" in doc) or ("未收集任何人类被试数据" in doc)))
-        v15.append((f"{tag} 定理8.1 统一表述定位",
-                    ("unification theorem" in doc) or ("统一表述定理" in doc)))
-        v15.append((f"{tag} 两本账小结", ("Two-ledger summary" in doc) or ("两本账小结" in doc)))
+        v15.append((f"{tag} 定理8.1 KKT/角点与单位定位",
+                    ("KKT characterization" in doc) or ("KKT 刻画" in doc)))
+        v15.append((f"{tag} 已执行子列单一账本",
+                     ("Why no veto-rate factor appears" in doc) or ("为什么没有否决率因子" in doc)))
         v15.append((f"{tag} g2良定义性快照近似",
                     ("snapshot approximation" in doc) or ("快照近似" in doc)))
         v15.append((f"{tag} I2酸葡萄注",
@@ -278,8 +281,8 @@ def main() -> int:
                     or ("$\\chi^2_1$ 渐近的适用性（v1.7）" in doc)))
         v17.append((f"{tag} 每层不一致对数 226/296/402",
                     ("226" in doc) and ("296" in doc) and ("402" in doc)))
-        v17.append((f"{tag} 猜想10.1 可闭合性注",
-                    ("Closability note (v1.7" in doc) or ("可闭合性注（v1.7" in doc)))
+        v17.append((f"{tag} 猜想10.1 KC2/KC5 未闭合清单",
+                    (("Revised checklist for the $b_0>0$ sketch" in doc) or ("修订核验清单" in doc)) and (("Autonomous Lipschitz mean field" in doc) or ("自主 Lipschitz 均值场" in doc))))
         v17.append((f"{tag} 摘要猜想非定理",
                     ("a conjecture, not a theorem** (Conjecture 10.1)" in doc)
                     or ("是猜想而非定理**（猜想 10.1）" in doc)))
@@ -290,8 +293,8 @@ def main() -> int:
         v17.append((f"{tag} HP-0 样本量消歧",
                     ("Sample-size disambiguation (v1.7" in doc) or ("样本量消歧（v1.7" in doc)))
         v17.append((f"{tag} 引理12.1 条件性设计引理",
-                    ("Design lemma, conditional: the manipulation resistance" in doc)
-                    or ("条件性设计引理：公共层的抗操纵性" in doc)))
+                    ("Manipulation-sufficient, manipulation-present, and counterfactual attestation" in doc)
+                    or ("操纵充分、操纵在场与反事实认证" in doc)))
         v17.append((f"{tag} 1.6 设计引理档约定",
                     ("Design lemmas (conditional)** (added in v1.7" in doc)
                     or ("**条件性设计引理**（v1.7 新增" in doc)))
@@ -299,6 +302,269 @@ def main() -> int:
         if not ok:
             issues.append(f"[v1.7] {name} 不满足")
     print(f"8. v1.7 核查：{sum(1 for _, ok in v17 if ok)}/{len(v17)} 项满足")
+
+    # ---------- 9. v1.8 大修专项核查（理论、证据、引用与可复现性）----------
+    v18: list[tuple[str, bool]] = []
+    for tag, doc in (("ZH", text), ("EN", en)):
+        if not doc:
+            continue
+        def need(name: str, *terms: str) -> None:
+            v18.append((f"{tag} {name}", all(term in doc for term in terms)))
+        need("V4a/V4b 全部可表示", "(V4a)", "(V4b)", "\\mathcal D_\\lambda", "\\mathcal A(\\phi_i)")
+        need("M_R 受限单调证书与受限最优", "(M$_R$)", "restricted feasible problem" if tag == "EN" else "受限可行问题")
+        need("R4 实际消费", "R4", "actual consumption" if tag == "EN" else "实际消费")
+        need("逐命题 RII 与 pooled 反例", "R_{\\mathrm{II}}(e)", "0.25")
+        need("KKT 线性角点一阶损失", "V_1=x_1", "first-order loss" if tag == "EN" else "一阶损失")
+        need("Pandora/patch 单位", "\\widetilde c_e", "B_0^H", "\\kappa_{sw}")
+        need("历史条件已执行漂移与 KC2", "C1-H", "C3-H", "C5-H", "KC2")
+        need("二项尾与数值回归", "\\binom{K}{k_c}", "0.028", "0.030")
+        need("公共公告 S4-PA", "S4-PA", "self-evident" if tag == "EN" else "自明")
+        need("criticality 目标/代理分离", "E_{\\mathrm{proxy}}", "v_e\\in[0,\\infty)")
+        need("重放唯一键与 O 区间", "71,914", "1,633", "LEGACY_EXPLORATORY_NOT_DEDUPLICATED",
+             "interval includes zero" if tag == "EN" else "区间跨零")
+        need("匹配公共认证口径", "0.615", "1.230", "0.626", "1.359")
+        need("引用硬错误修正", "Article 2333", "Shumaylov", "Article 20", "Article 3", "pgaf172")
+        need("不可变归档与 v1.8 工作修订", "fdc4912a30174d71b944d1ec83fcfda260f8ebf1",
+             "zenodo.23620920", "working-revision" if tag == "EN" else "工作修订")
+        need("venue-dependent A/B/C 拆稿", "extreme filtering and redundancy coverage" if tag == "EN" else "极端过滤与冗余覆盖",
+             "venue-dependent" if tag == "EN" else "取决于载体")
+        need("治理有效性待检验", "propositions to be tested" if tag == "EN" else "待检验命题")
+        need("M_R 非负系数", "\\mu\\ge0", "\\hat m_i\\ge0")
+        need("patch 穿越条件", "must change from positive to negative" if tag == "EN" else "由正变负")
+        need("操纵诱导事件语义", "\\mathcal M_{k_c}", "organic coverage" if tag == "EN" else "有机覆盖")
+        need("执行递归可测停时", "strictly increasing stopping-time sequence" if tag == "EN" else "严格递增停时刻列", "M_\\xi<\\infty")
+        need("B2 比较梗概非引理", "Heuristic B.2(ii)(b)" if tag == "EN" else "启发式 B.2(ii)(b)")
+        need("条件概率正分母与 B4 边界", "P(B_e)>0", "k\\ge1", "dummy")
+        need("可用记录与效应优先摘要", "Available raw records" if tag == "EN" else "可用的原始记录",
+             "effect-first contrasts" if tag == "EN" else "效应优先对照",
+             "successive trials" if tag == "EN" else "连续 trials")
+        need("归档警示与三臂 RCT", "Archive warning" if tag == "EN" else "归档警示", "three-arm RCT" if tag == "EN" else "三臂 RCT")
+        # 2026-11-03 P0/P1 follow-up: definitions, boundary regimes, and algorithms.
+        need("VOI 决策特定而非互信息单调函数", "not a monotone function of conditional mutual information" if tag == "EN" else "而不是条件互信息的单调函数")
+        need("KKT 边界活跃二次反例与正增益", "V_1=2x_1-\\tfrac12x_1^2", "V_1'(1)=V_2'(0)=\\nu=1", "o(\\epsilon)>0")
+        need("Pandora 事前确定成本", "deterministic path known before opening" if tag == "EN" else "开盒前已知的确定性路径")
+        need("Theorem 7.4 统一实际消费事件", "D_{\\mathrm{II}}(e)", "E^*\\setminus\\mathrm{WL}")
+        need("Theorem 9.3 有效区间和边界", "0<G<D_m", "G\\ge D_m", "D_s")
+        need("Proposition 9.2 gamma 与初值", "\\gamma := \\min\\{\\Pi_h, \\Pi_s\\} - \\Pi_m > 0", "x_m(0)\\in[0,1/2]")
+        need("Theorem 11 有限授权与撤销成本", "nonempty finite" if tag == "EN" else "非空有限", "u_{\\mathrm{undo}}", "\\rho_{\\mathrm{adv}}^*")
+        need("Theorem 11.2 一般虚警损失与严格条件", "C_F", "if and only if $\\Psi>0$" if tag == "EN" else "当且仅当 $\\Psi>0$")
+        need("Lemma 12.1 三类认证与混合反例", "\\mathcal A_{\\mathrm{cf}}", "\\mathcal A_{\\mathrm{present}}", "S_{\\mathrm{manip}}", "O_i")
+        need("Proposition 10.2 连接模型且投影", "separate linkage model" if tag == "EN" else "连接模型", "\\Pi_{[0,1]^3}[\\theta_{t_j}+a_{t_j}\\xi_{t_j}]")
+        need("B2 确定系数与 B1/B5 边界", "deterministic sequences" if tag == "EN" else "确定数列", "n\\ge1", "finite action set" if tag == "EN" else "有限行动集")
+        need("跨章精确摘要含 V4", "(V4), (V4a), and (V4b)" if tag == "EN" else "(V4)、(V4a) 与 (V4b)")
+        need("背包可行元素枚举深度残余容量", "depth **three**" if tag == "EN" else "深度 **3**", "residual capacity" if tag == "EN" else "残余容量", "best feasible singleton" if tag == "EN" else "最佳可行单元素")
+        need("三家族名义推断与日级敏感性", "nominal within-corpus" if tag == "EN" else "语料内名义推断", "day-cluster" if tag == "EN" else "日聚类", "moving-block" if tag == "EN" else "连续 5 日块")
+        need("公共层实际共同消费量词", "\\mathcal C_S", "P(\\mathcal C_S)=1")
+        need("紧急接管与抗记忆术语", "memorization-resistant new materials" if tag == "EN" else "抗记忆污染的新材料", "Emergency Override")
+        need("log-benefit 含 A 与零收益", "B_i:=A_ic_iV_i", "order-equivalent" if tag == "EN" else "保序等价", "\\log B_i=-\\infty")
+        need("Gaussian 独立噪声与 credibility 区分", "independent of $\\omega_d$" if tag == "EN" else "与 $\\omega_d$ 独立", "No map from $c_i$" if tag == "EN" else "模型不蕴含任何 $c_i")
+        need("VOI/Blackwell 正则条件", "attainment and integrability" if tag == "EN" else "最大值可达与可积条件", "regular decision problem" if tag == "EN" else "正则决策问题")
+        need("两行动虚警分支与非负危害", "C_F=0", "H_{\\max}\\ge0", "P_E=0")
+        need("四家族全量重算与缺口分类", "CONTROLLED_UNIQUE_KEY_REANALYSIS__WITHIN_CORPUS_EXPLORATORY",
+             "EMPTY_ONLY", "NO_SURVIVING_ROW", "71,573", "70,676", "71,618")
+        need("A 主结果与 run-cluster 分歧", "0.443790", "0.532600", "0.516153", "0.519783", "0.160128")
+        need("重算场景/CMH/BH 对账", "17 scenarios" if tag == "EN" else "17 个场景", "14,113", "9,371", "957.123190", "BH(4)")
+        need("摘要与卷首重算完成状态", "controlled 17-scenario unique-key reanalysis" if tag == "EN" else "17 场景唯一键受控重算")
+        need("相关漏网保留路径与期望界", "pathwise bound" if tag == "EN" else "路径界",
+             "does not require independence" if tag == "EN" else "不需要独立性")
+        need("退出仅移除公共层保证", "public-layer guarantee associated with their participation is removed" if tag == "EN" else "其参与所对应的公共层保证随之移除",
+             "pairwise Jaccard overlaps" if tag == "EN" else "成对 Jaccard 重叠")
+        need("局部 Lean 报告与非整篇认证", "quadratic_corner_is_optimal", "activation_loss_is_quadratic",
+             "producer_threshold_exceeds_one", "mixed_attestation_not_subset_of_two_manipulations",
+             "not independently reproduced" if tag == "EN" else "未独立复现")
+        need("独立性仅限乘积型概率尾", "product-form union bound" if tag == "EN" else "乘积型 union bound",
+             "event identities" if tag == "EN" else "事件恒等式",
+             "do not assume independence" if tag == "EN" else "不假设独立性")
+        need("跨章重算完成状态一致", "integrity audit and controlled unique-key reanalysis are complete" if tag == "EN" else "完整性审计与唯一键受控全量重算已完成",
+             "incorporating the completed controlled unique-key reanalysis" if tag == "EN" else "纳入已完成的受控唯一键重算")
+        need("Hoeffding 零暴露分支", "If $n_m=0$" if tag == "EN" else "若 $n_m=0$", "$n_m\\ge1$")
+        need("加性评分最优选择遗憾", "V_{\\mathrm{lin}}", "\\arg\\max_{|A|\\le m}", "mD+0+mD=2mD")
+        need("备用名额进入预算证明", "cannot also be counted as capacity" if tag == "EN" else "不能同时计作", "m-m_{\\mathrm{pub}}-m_{\\mathrm{slack}}")
+        need("紧性构造端点闭合", "0<p_{\\min}<1", "deterministic variables" if tag == "EN" else "确定性变量")
+        need("相关矩阵不构成独立证书", "pairwise uncorrelatedness does not imply mutual independence" if tag == "EN" else "两两不相关不蕴含相互独立",
+             "neither a certificate nor a rigorous lower or upper bound" if tag == "EN" else "既不是 $k_{\\mathrm{eff}}$ 的证书，也不是其严格下界或上界")
+        need("联合覆盖次模与三类反例", "No independence is needed for the set-function claim" if tag == "EN" else "集函数结论不需要独立性",
+             ".89>.875", "not a partition" if tag == "EN" else "不给出 $k_{\\mathrm{eff}}$ 个组的分区",
+             "upper bound on actual coverage" if tag == "EN" else "实际覆盖率的上界",
+             "lower bound on actual miss probability" if tag == "EN" else "实际漏报率的下界")
+        need("公共层非空仅示例", "not a guarantee of nonempty daily supply" if tag == "EN" else "不是每日非空供给保证",
+             "separate supply and attestation assumptions" if tag == "EN" else "独立的供给与认证假设")
+        need("union bound 本身无需独立", "which itself requires no independence" if tag == "EN" else "本身不依赖独立性的 union bound")
+        old = ("4 model families × 80 independent runs", "73,547 valid agent-days",
+               "Preliminary Validation", "Shumilo", "13, 1732", "randomized double-greedy",
+               "the bound holds with $k_c$ replaced by $k_{\\mathrm{eff}}^a$",
+               "run the full SEA stack on synthetic ecologies", "All raw records",
+               "primary inference", "every printed number", "full two-arm RCT",
+               "longitudinal trials", "cross-validating the model-collapse",
+               "division-of-labor conclusion reinforced", "dual-domain real-data validation",
+               "a finite interior solution exists iff", "P(\\mathrm{attestation})=P(S\\ge k_c)",
+               "The proof of the R–S theorem itself is the standard tail-sum reduction",
+               "zero and upper-bound uses satisfy",
+               "a monotone function of the conditional information gain",
+               "The first-order term vanishes only for reallocations",
+               "strictly dominated by honesty at every $\\sigma$",
+               "so $\\hat\\theta_{\\mathrm{cal}}$ is statistically independent",
+               "Suppose $\\alpha_t,\\beta_t$ are predictable",
+               "the pre-authorization quadruple",
+               "The five-dimensional exact summary requires the sufficient conditions (V4a) and (V4b).",
+               "memory-proof new materials", "statistically confirmed",
+               "after taking logarithms, the benefit term $cVe^{-h/\\lambda}$",
+               "precisely source-noise calibration",
+               "In the two-action model of Theorem 11.1(ii), $C_F=c_p$;",
+               "duplicate-disposition reanalysis pending", "full reanalysis required after duplicate disposition",
+               "unique-key disposition and full reanalysis remain open",
+               "requires a pre-specified duplicate-disposition rule followed by full reanalysis",
+               "must be regenerated after duplicate disposition",
+                "four-family estimates are legacy non-deduplicated exploratory results",
+                "pre-specified duplicate disposition and full reanalysis of the reconciled unique keys",
+                "no Lean or other formal proof certification", "this revision claims no Lean verification",
+                "bound degenerates to the order of the expectation bound",
+                "that subject's contribution to the population $\\Omega$ is zeroed",
+                "four-family judgment replay under integrity review", "only after unique-key reanalysis",
+                "number of merged groups is a lower-bound estimate", "run greedy in units of the $k_{\\mathrm{eff}}$ independent groups",
+                "each in/out swap costs", "every day at least 1–2 propositions",
+                "If classes are positively correlated, the true $P(\\text{covered by at least one class})$ is lower",
+                "so the independence-product coverage formula is conservative")
+        if tag == "ZH":
+            old += ("精确测量", "全部原始记录", "主要推断", "每一个印刷数字", "完整两臂 RCT",
+                    "两域加固", "双域真实数据验证", "存在当且仅当", "上界用途",
+                    "条件信息增益的单调函数", "一阶项才消失。只有在同一活跃面", "预先授权四元组",
+                    "零后见评估", "紧急覆盖", "防记忆新材料", "判断层增量价值统计确认",
+                    "重复处置后的重算待完成", "重复处置后须全量重算", "唯一键处置与全量重算仍未完成",
+                    "必须先预定重复处置规则，再作全量重算", "完成重复处置后必须重新生成",
+                    "四家族估计均为旧管线未去重探索结果", "也没有 Lean 或其他形式化证明认证",
+                    "本修订不声称完成 Lean 验证", "界退化到 $\\delta(1-\\rho_m)n_{\\max}$ 的期望界量级",
+                    "该主体对群体 $\\Omega$ 的贡献归零", "退出的代价由本定理显式定价",
+                    "四家族判断重放仍处于完整性复核", "须先完成唯一键重算",
+                    "合并后的组数即 $k_{\\mathrm{eff}}$ 的下界估计", "以 $k_{\\mathrm{eff}}$ 个独立组为单位做贪心",
+                    "每对入出调换的效用代价", "每日至少 1–2 个",
+                    "若类间正相关，真实的 $P(\\text{至少一类覆盖})$ 低于独立公式",
+                    "故独立乘积覆盖公式是保守的")
+        v18.append((f"{tag} 旧过强/错误表述清除", not any(term in doc for term in old)))
+    for name, ok in v18:
+        if not ok:
+            issues.append(f"[v1.8] {name} 不满足")
+    print(f"9. v1.8 文本专项：{sum(1 for _, ok in v18 if ok)}/{len(v18)} 项满足")
+
+    integrity = load("REPLAY_INTEGRITY_AUDIT.json")
+    data_ok = False
+    if integrity:
+        totals = integrity.get("totals", {})
+        expected = {"raw": 73704, "empty": 157, "valid": 73547, "unique": 71914,
+                    "duplicate_excess": 1633, "below_nominal_900": 25,
+                    "nominal_agent_days": 72000, "unique_deficit_vs_nominal": 86}
+        data_ok = (all(totals.get(k) == v for k, v in expected.items())
+                   and len(integrity.get("run_manifest", [])) == 80
+                   and integrity.get("source_shards") == 292
+                   and integrity.get("status") == "LEGACY_EXPLORATORY_NOT_DEDUPLICATED"
+                   and integrity.get("disposition") == "UNRESOLVED_PREREGISTRATION_REQUIRED_THEN_RECOMPUTE")
+        fam = integrity.get("family_totals", {})
+        data_ok = data_ok and all(fam.get(f, {}).get("nominal_agent_days") == n
+                                  for f, n in (("O", 27000), ("C", 27000), ("Q", 9000), ("G", 9000)))
+    if not data_ok:
+        issues.append("[v1.8] REPLAY_INTEGRITY_AUDIT 唯一键 manifest 对账失败")
+    from math import comb
+    tail = sum(comb(3, j) * 0.1**j * 0.9**(3-j) for j in range(2, 4))
+    miss_display = (1 - 0.910) / (1 - 0.952) - 1
+    miss_full = (1 - 0.9097744360902255) / (1 - 0.9523809523809523) - 1
+    # Producer threshold must not be clipped: p_plat=.9,p_h=0,cost=0 gives >1.
+    producer_sigma = 0.9 / (0.9 - 0.05)
+    # Boundary-active quadratic example: both marginals equal one and loss is epsilon^2.
+    def v1(x): return 2*x - x*x/2
+    def v2(x): return x - x*x/2
+    quadratic_losses = [v1(1) - (v1(1-e) + v2(e)) - e*e for e in (0.0, 0.1, 0.5, 1.0)]
+    # Mixed raw-count example: one implant + one organic class attests, but is not M_2.
+    B = [1, 0]; O = [0, 1]
+    mixed_raw_attested = sum(max(b, o) for b, o in zip(B, O)) >= 2
+    mixed_manipulation_sufficient = sum(B) >= 2
+    # Three positively pairwise-correlated indicators can have union above the independent product formula.
+    probs = {(1, 1, 1): .29, (1, 1, 0): .01, (1, 0, 1): .01, (0, 1, 1): .01,
+             (1, 0, 0): .19, (0, 1, 0): .19, (0, 0, 1): .19, (0, 0, 0): .11}
+    marginals = [sum(p for bits, p in probs.items() if bits[i]) for i in range(3)]
+    pair_intersections = [sum(p for bits, p in probs.items() if bits[i] and bits[j])
+                          for i, j in ((0, 1), (0, 2), (1, 2))]
+    union_probability = 1 - probs[(0, 0, 0)]
+    coverage_counterexample_ok = (abs(sum(probs.values()) - 1) < 1e-12
+                                  and all(abs(p - .5) < 1e-12 for p in marginals)
+                                  and all(abs(p - .30) < 1e-12 for p in pair_intersections)
+                                  and union_probability > 1 - .5**3)
+    math_ok = (abs(tail - 0.028) < 1e-12 and comb(3, 2) * 0.1**2 >= tail
+               and abs(miss_display - 0.875) < 1e-12
+               and abs(miss_full - 0.8947368421052632) < 1e-9
+               and producer_sigma > 1 and max(abs(x) for x in quadratic_losses) < 1e-12
+               and mixed_raw_attested and not mixed_manipulation_sufficient
+               and coverage_counterexample_ok)
+    if not math_ok:
+        issues.append("[v1.8] 数值回归（二项尾/金融漏报/阈值/角点/混合认证/相关覆盖）失败")
+
+    dependence = load("THREE_FAMILY_DEPENDENCE_SENSITIVITY.json")
+    dependence_ok = False
+    if dependence:
+        fams = dependence.get("families", {})
+        dependence_ok = (dependence.get("status") == "POST_HOC_WITHIN_CORPUS_DEPENDENCE_SENSITIVITY"
+                         and len(fams) == 5
+                         and dependence.get("bootstrap", {}).get("resamples_per_method_family_arm") == 10000)
+        for tag, item in fams.items():
+            for method in ("day_cluster", "moving_block_5"):
+                ci = item.get("bootstrap", {}).get(method, {}).get("judgment_minus_parametric_ci95", [])
+                dependence_ok = dependence_ok and len(ci) == 2 and ci[0] <= 0 <= ci[1]
+        q = fams.get("qwen38all", {})
+        dependence_ok = (dependence_ok and q
+                         and abs(q.get("point_estimates", {}).get("judgment_minus_parametric", 0) - 0.0668103448275862) < 1e-12)
+    if not dependence_ok:
+        issues.append("[v1.8] 三家族依赖敏感性工件或参数对照区间对账失败")
+
+    frozen = load("frozen_reanalysis_v1/summary.json")
+    frozen_ok = False
+    if frozen:
+        frozen_ok = (frozen.get("status") == "CONTROLLED_UNIQUE_KEY_REANALYSIS__WITHIN_CORPUS_EXPLORATORY"
+                     and frozen.get("input_manifest_count") == 292
+                     and len(frozen.get("scenario_order", [])) == 17
+                     and frozen.get("not_prospective_preregistration") is True
+                     and frozen.get("cross_corpus_confirmatory") is False)
+        st = frozen.get("structure", {})
+        expected_frozen = {"expected_keys": 72000, "valid_unique_keys": 71914,
+                           "empty_only_keys": 56, "no_surviving_row_keys": 30,
+                           "resolved_recall_A": 71573, "resolved_value_A": 70676,
+                           "resolved_sign_A": 71618, "resolved_B": 70676,
+                           "resolved_C": 70306, "resolved_D": 70525, "resolved_E": 71914}
+        frozen_ok = frozen_ok and all(st.get(k) == v for k, v in expected_frozen.items())
+        scenarios = frozen.get("scenarios", {})
+        frozen_ok = frozen_ok and scenarios.get("E", {}).get("all_80_runs", {}).get("paired_inference") is None
+        expected_effects = {
+            "O": (0.030169581001408607, -0.17501551269772986),
+            "C": (0.129282950253562, 0.6673802451225368),
+            "Q": (0.11288735607185085, 0.426727386567186),
+            "G": (0.08941244179928154, -0.2190528269004773),
+        }
+        for family, (dr, dv) in expected_effects.items():
+            eq = scenarios.get("A", {}).get("families", {}).get(family, {}).get("equal_run", {})
+            frozen_ok = (frozen_ok
+                         and abs(eq.get("delta_recall", {}).get("estimate", 0) - dr) < 1e-12
+                         and abs(eq.get("delta_value", {}).get("estimate", 0) - dv) < 1e-12)
+        o_ci = scenarios.get("A", {}).get("families", {}).get("O", {}).get("equal_run", {}).get("delta_recall", {}).get("ci95", [])
+        frozen_ok = frozen_ok and len(o_ci) == 2 and o_ci[0] < 0 < o_ci[1]
+        flip_o = scenarios.get("A", {}).get("families", {}).get("O", {}).get("paired_inference", {}).get("run_cluster_sign_flip", {})
+        frozen_ok = frozen_ok and abs(flip_o.get("p", 0) - 0.16012839871601284) < 1e-12
+        cmh = scenarios.get("A", {}).get("all_80_runs", {}).get("paired_inference", {}).get("pooled_cmh_three_formulas", {})
+        frozen_ok = (frozen_ok and cmh.get("B") == 14113 and cmh.get("C") == 9371
+                     and abs(cmh.get("continuity_corrected", {}).get("chi2", 0) - 957.1231902571964) < 1e-9)
+        artifacts = frozen.get("artifacts", {})
+        frozen_ok = (frozen_ok and artifacts.get("run_metric_rows") == 1360
+                     and artifacts.get("key_ledger_rows") == 72000)
+        frozen_dir = os.path.join(RES, "frozen_reanalysis_v1")
+        try:
+            with open(os.path.join(frozen_dir, "run_metrics.csv"), encoding="utf-8", newline="") as handle:
+                frozen_ok = frozen_ok and sum(1 for _ in csv.DictReader(handle)) == 1360
+            with gzip.open(os.path.join(frozen_dir, "key_ledger.jsonl.gz"), "rt", encoding="utf-8") as handle:
+                frozen_ok = frozen_ok and sum(1 for _ in handle) == 72000
+            manifest = json.load(open(os.path.join(frozen_dir, "input_manifest.json"), encoding="utf-8"))
+            frozen_ok = frozen_ok and len(manifest) == 292
+        except (OSError, EOFError, json.JSONDecodeError):
+            frozen_ok = False
+    if not frozen_ok:
+        issues.append("[v1.8] 四家族唯一键全量重算工件或场景矩阵对账失败")
+    print(f"10. 工件与数值回归：manifest={'PASS' if data_ok else 'FAIL'}；math={'PASS' if math_ok else 'FAIL'}；three-family-dependence={'PASS' if dependence_ok else 'FAIL'}；frozen-reanalysis={'PASS' if frozen_ok else 'FAIL'}")
 
     # ---------- 汇总 ----------
     print("\n===== 审计汇总 =====")

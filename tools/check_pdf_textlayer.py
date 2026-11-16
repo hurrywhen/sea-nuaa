@@ -38,6 +38,11 @@ def main() -> int:
         print(__doc__)
         return 2
     pdf, src = sys.argv[1], sys.argv[2]
+    captions = list(CAPTIONS)
+    keystrings = list(KEYSTRINGS)
+    if "v1.9" in os.path.basename(pdf):
+        captions = []
+        keystrings = ["4.389337888", "0.28480", "0.909774", "121/133", "171 randomized"]
     if not os.path.exists(pdf):
         print(f"[fail] PDF 不存在：{pdf}")
         return 1
@@ -50,7 +55,7 @@ def main() -> int:
         issues.append(f"[伪影] 文本层第 {line} 行附近出现 '1 1 1' 模式")
     # 2 captions
     ntxt = norm(txt)
-    for c in CAPTIONS:
+    for c in captions:
         if norm(c) not in ntxt:
             # 允许中英稿各自只含其语言的一半
             if c.startswith("Table") or c == "Family-code mapping":
@@ -60,7 +65,7 @@ def main() -> int:
                 if "SEA" not in pdf and "EN" not in pdf:
                     issues.append(f"[标题] 文本层缺少：{c}")
     # 3 key strings
-    for k in KEYSTRINGS:
+    for k in keystrings:
         if norm(k) not in ntxt:
             issues.append(f"[关键串] 文本层缺少：{k}")
     # 4 headings

@@ -1,0 +1,322 @@
+{
+  "class_coverage_descriptive": {
+    "all_market_proxy": {
+      "aggregator": {
+        "covered": 0,
+        "share": 0.0,
+        "targets": 175
+      },
+      "fin_media": {
+        "covered": 26,
+        "share": 0.14857142857142858,
+        "targets": 175
+      },
+      "general": {
+        "covered": 0,
+        "share": 0.0,
+        "targets": 175
+      },
+      "other": {
+        "covered": 0,
+        "share": 0.0,
+        "targets": 175
+      },
+      "regulator": {
+        "covered": 122,
+        "share": 0.6971428571428572,
+        "targets": 175
+      },
+      "tech_media": {
+        "covered": 7,
+        "share": 0.04,
+        "targets": 175
+      },
+      "wire": {
+        "covered": 44,
+        "share": 0.25142857142857145,
+        "targets": 175
+      }
+    },
+    "portfolio_market_proxy": {
+      "aggregator": {
+        "covered": 0,
+        "share": 0.0,
+        "targets": 19
+      },
+      "fin_media": {
+        "covered": 2,
+        "share": 0.10526315789473684,
+        "targets": 19
+      },
+      "general": {
+        "covered": 0,
+        "share": 0.0,
+        "targets": 19
+      },
+      "other": {
+        "covered": 0,
+        "share": 0.0,
+        "targets": 19
+      },
+      "regulator": {
+        "covered": 11,
+        "share": 0.5789473684210527,
+        "targets": 19
+      },
+      "tech_media": {
+        "covered": 0,
+        "share": 0.0,
+        "targets": 19
+      },
+      "wire": {
+        "covered": 7,
+        "share": 0.3684210526315789,
+        "targets": 19
+      }
+    }
+  },
+  "independence_warning": "Conditional recovery and disjoint class indicators are not evidence of mutual independence. Because pid includes family, regulatory and news items can be distinct targets for the same company-day; class coverage is therefore confounded with target construction.",
+  "inputs": {
+    "sim/pilot/data/p2_env_lite.json": {
+      "bytes": 553893,
+      "sha256": "407e5f924360c685569b1d3e8f153062ce78453a8eaac6666c1fd6d907f2c195"
+    },
+    "sim/pilot/results/p2_rows.csv": {
+      "bytes": 385096,
+      "sha256": "b701242e72a4b2e4de95cfa92f1cdd32c22cbeef57be44a8bd0e4098f37545b8"
+    }
+  },
+  "legacy_18_to_19_note": "The target count increases from 18 to 19 propositions, which is valid at proposition level. The expanded 19 propositions represent 18 company-days (10 tickers), not a company-day increase from 18 to 19. The configurations and target sets are non-paired; the historical company-day denominator was not independently reconstructed.",
+  "m5_pooled_across_runs": {
+    "company_day": {
+      "fraction": "19/21",
+      "hits": 114,
+      "opportunities": 126,
+      "ratio": 0.9047619047619048
+    },
+    "n_runs": 7,
+    "note": "121/133 pools 121 proposition hits over 7 runs x 19 targets; it is not a single-corpus denominator. The 0.909774 value is also the unweighted mean of the seven run recalls because every run has the same 19-target denominator.",
+    "proposition": {
+      "fraction": "121/133",
+      "hits": 121,
+      "opportunities": 133,
+      "ratio": 0.9097744360902256
+    }
+  },
+  "m5_run_level": [
+    {
+      "agent": 3,
+      "budget_conflict_alarm": true,
+      "budget_per_day": 5,
+      "budget_window": "month",
+      "company_day": {
+        "fraction": "17/18",
+        "hits": 17,
+        "opportunities": 18,
+        "ratio": 0.9444444444444444
+      },
+      "legacy_proposition_ratio_verified": 0.9473684210526315,
+      "proposition": {
+        "fraction": "18/19",
+        "hits": 18,
+        "opportunities": 19,
+        "ratio": 0.9473684210526315
+      },
+      "slots": 150,
+      "strict_daily_cap_enforced": false
+    },
+    {
+      "agent": 7,
+      "budget_conflict_alarm": true,
+      "budget_per_day": 5,
+      "budget_window": "month",
+      "company_day": {
+        "fraction": "7/9",
+        "hits": 14,
+        "opportunities": 18,
+        "ratio": 0.7777777777777778
+      },
+      "legacy_proposition_ratio_verified": 0.7894736842105263,
+      "proposition": {
+        "fraction": "15/19",
+        "hits": 15,
+        "opportunities": 19,
+        "ratio": 0.7894736842105263
+      },
+      "slots": 150,
+      "strict_daily_cap_enforced": false
+    },
+    {
+      "agent": 11,
+      "budget_conflict_alarm": true,
+      "budget_per_day": 5,
+      "budget_window": "month",
+      "company_day": {
+        "fraction": "17/18",
+        "hits": 17,
+        "opportunities": 18,
+        "ratio": 0.9444444444444444
+      },
+      "legacy_proposition_ratio_verified": 0.9473684210526315,
+      "proposition": {
+        "fraction": "18/19",
+        "hits": 18,
+        "opportunities": 19,
+        "ratio": 0.9473684210526315
+      },
+      "slots": 150,
+      "strict_daily_cap_enforced": false
+    },
+    {
+      "agent": 15,
+      "budget_conflict_alarm": true,
+      "budget_per_day": 5,
+      "budget_window": "month",
+      "company_day": {
+        "fraction": "17/18",
+        "hits": 17,
+        "opportunities": 18,
+        "ratio": 0.9444444444444444
+      },
+      "legacy_proposition_ratio_verified": 0.9473684210526315,
+      "proposition": {
+        "fraction": "18/19",
+        "hits": 18,
+        "opportunities": 19,
+        "ratio": 0.9473684210526315
+      },
+      "slots": 150,
+      "strict_daily_cap_enforced": false
+    },
+    {
+      "agent": 19,
+      "budget_conflict_alarm": true,
+      "budget_per_day": 5,
+      "budget_window": "month",
+      "company_day": {
+        "fraction": "17/18",
+        "hits": 17,
+        "opportunities": 18,
+        "ratio": 0.9444444444444444
+      },
+      "legacy_proposition_ratio_verified": 0.9473684210526315,
+      "proposition": {
+        "fraction": "18/19",
+        "hits": 18,
+        "opportunities": 19,
+        "ratio": 0.9473684210526315
+      },
+      "slots": 150,
+      "strict_daily_cap_enforced": false
+    },
+    {
+      "agent": 23,
+      "budget_conflict_alarm": true,
+      "budget_per_day": 5,
+      "budget_window": "month",
+      "company_day": {
+        "fraction": "8/9",
+        "hits": 16,
+        "opportunities": 18,
+        "ratio": 0.8888888888888888
+      },
+      "legacy_proposition_ratio_verified": 0.8947368421052632,
+      "proposition": {
+        "fraction": "17/19",
+        "hits": 17,
+        "opportunities": 19,
+        "ratio": 0.8947368421052632
+      },
+      "slots": 150,
+      "strict_daily_cap_enforced": false
+    },
+    {
+      "agent": 27,
+      "budget_conflict_alarm": true,
+      "budget_per_day": 5,
+      "budget_window": "month",
+      "company_day": {
+        "fraction": "8/9",
+        "hits": 16,
+        "opportunities": 18,
+        "ratio": 0.8888888888888888
+      },
+      "legacy_proposition_ratio_verified": 0.8947368421052632,
+      "proposition": {
+        "fraction": "17/19",
+        "hits": 17,
+        "opportunities": 19,
+        "ratio": 0.8947368421052632
+      },
+      "slots": 150,
+      "strict_daily_cap_enforced": false
+    }
+  ],
+  "new_experiment": false,
+  "new_llm_calls": 0,
+  "portfolio_market_proxy": {
+    "company_day_targets": 18,
+    "distinct_tickers": 10,
+    "family_counts": {
+      "8K": 1,
+      "news": 8,
+      "other-filing": 10
+    },
+    "proposition_targets": 19
+  },
+  "schema": "sea.v19.financial-caliber-audit/v1",
+  "selection_proxy_warning": "The parametric selection score uses realized legal and market labels; headline S2p recall is semi-oracle. Feature-only comparisons are reported separately and still have timestamp limitations.",
+  "selection_reconstruction_verified_against_p2_rows": true,
+  "semi_oracle_configuration_comparison": {
+    "channel1_supply_per_day": {
+      "channel1_cap_at_m5": 3,
+      "expanded": 4.733333333333333,
+      "historical": 4.6
+    },
+    "comparison_status": "non-paired descriptive configurations; not a news-expansion causal effect",
+    "expanded_m5": {
+      "agent_proxy_configurations": 7,
+      "agent_target_hits": 121,
+      "agent_target_opportunities": 133,
+      "budget_conflict_alarms": 7,
+      "feature_scorer_mean_recall": 0.7894736842105263,
+      "mean_recall": 0.9097744360902256,
+      "proposition_targets_per_run": 19,
+      "slots_per_run": 150,
+      "strict_daily_cap_enforced": false
+    },
+    "historical_git_commit": "8ffc7f5",
+    "historical_m5": {
+      "agent_proxy_configurations": 7,
+      "agent_target_hits": 120,
+      "agent_target_opportunities": 126,
+      "budget_conflict_alarms": 7,
+      "feature_scorer_mean_recall": 0.7222222222222222,
+      "mean_recall": 0.9523809523809523,
+      "proposition_targets_per_run": 18,
+      "slots_per_run": 150,
+      "strict_daily_cap_enforced": false
+    },
+    "r4_compliant_95_percent_guarantee_established": false
+  },
+  "status": "POST_HOC_CALIBER_AUDIT__SAME_CORPUS_DESCRIPTIVE",
+  "target_definitions": {
+    "company_day": "unique (ticker,date) among those propositions",
+    "distinct_ticker": "reported for provenance only; not a recall denominator",
+    "proposition": "pid=(ticker,date,family), market_critical and in_portfolio"
+  },
+  "timestamp_audit": {
+    "all_market_proxy": {
+      "acceptance_hour_ge_13": 94,
+      "acceptance_hour_lt_13": 28,
+      "acceptance_hour_unknown_news": 53,
+      "targets": 175
+    },
+    "portfolio_market_proxy": {
+      "acceptance_hour_ge_13": 7,
+      "acceptance_hour_lt_13": 4,
+      "acceptance_hour_unknown_news": 8,
+      "targets": 19
+    }
+  }
+}

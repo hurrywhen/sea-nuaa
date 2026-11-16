@@ -1,0 +1,88 @@
+{
+  "distinct_complete_digest_configurations": 70,
+  "families": {
+    "C": {
+      "max_targets": 33,
+      "mean_targets": 28.4,
+      "mean_upstream_opportunity_share": 0.5461538461538461,
+      "min_targets": 25,
+      "runs": 30
+    },
+    "G": {
+      "max_targets": 32,
+      "mean_targets": 28.7,
+      "mean_upstream_opportunity_share": 0.551923076923077,
+      "min_targets": 27,
+      "runs": 10
+    },
+    "O": {
+      "max_targets": 32,
+      "mean_targets": 28.366666666666667,
+      "mean_upstream_opportunity_share": 0.5455128205128206,
+      "min_targets": 25,
+      "runs": 30
+    },
+    "Q": {
+      "max_targets": 31,
+      "mean_targets": 27.7,
+      "mean_upstream_opportunity_share": 0.5326923076923077,
+      "min_targets": 24,
+      "runs": 10
+    }
+  },
+  "input_provenance": {
+    "corpus_lite_json_sha256": "eb1a7e2d2615eb6fdc1dd3ecfeb5d22e9e681579045e3a5d0a1e283342055d6a",
+    "forced_lite_input": true,
+    "run_llm_replay_py_sha256": "0f96d1951785d84dfb2d838569b318726a8f43ca16b828aed23d0e723711a99a",
+    "seed_mapping": "proxy_seed = 99 + run_seed"
+  },
+  "interpretation": "Reported judgment recall is conditional on targets reaching the fixed digest. It is not whole-corpus end-to-end recall. Do not multiply or divide by the upstream share without freezing a new estimand and its joint denominator rules.",
+  "model_seed_configurations": 80,
+  "new_llm_calls": 0,
+  "proxy_construction": "Channel-II candidate construction uses 0.4*z(log1p(2026 citation))+noise",
+  "schema": "sea.v19.upstream-digest-audit/v1",
+  "shared_digest_groups": [
+    [
+      "O01",
+      "G01"
+    ],
+    [
+      "O02",
+      "G02"
+    ],
+    [
+      "O03",
+      "G03"
+    ],
+    [
+      "O04",
+      "G04"
+    ],
+    [
+      "O05",
+      "G05"
+    ],
+    [
+      "O06",
+      "G06"
+    ],
+    [
+      "O07",
+      "G07"
+    ],
+    [
+      "O08",
+      "G08"
+    ],
+    [
+      "O09",
+      "G09"
+    ],
+    [
+      "O10",
+      "G10"
+    ]
+  ],
+  "status": "POST_HOC_UPSTREAM_OPPORTUNITY_AUDIT__SEMI_ORACLE_WITHIN_CORPUS",
+  "target_count": 52
+}

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# 生成内审稿 PDF。用法：bash tools/build_review_pdf.sh [zh|en|zh-preprint]
-#   zh（默认）：input/主权认知获取_统一理论_v1.7.md -> latex/主权认知获取_统一理论_v1.7_内审稿.pdf（xelatex，CJK）
-#   en        ：input/sovereign_epistemic_acquisition_EN_v1.7.md -> latex/SEA_EN_v1.7_draft.pdf（lualatex，完整 Unicode 文本层）
-#   zh-preprint：同 zh 源稿但不注入审稿工件身份戳 -> latex/主权认知获取_统一理论_v1.7_预印本.pdf（ChinaXiv 等公开预印本用）
+# 生成内审稿 PDF。用法：bash tools/build_review_pdf.sh [zh|en|zh-preprint] [版本，默认 v1.8]
+#   zh（默认）：input/主权认知获取_统一理论_v1.8.md -> latex/主权认知获取_统一理论_v1.8_内审稿.pdf（xelatex，CJK）
+#   en        ：input/sovereign_epistemic_acquisition_EN_v1.8.md -> latex/SEA_EN_v1.8_draft.pdf（lualatex，完整 Unicode 文本层）
+#   en v1.9   ：input/sovereign_epistemic_acquisition_EN_v1.9.md -> latex/SEA_EN_v1.9_draft.pdf
+#   zh-preprint：同 zh 源稿但不注入审稿工件身份戳 -> latex/主权认知获取_统一理论_v1.8_预印本.pdf（ChinaXiv 等公开预印本用）
 # v1.4 起：源文件禁止任何 HTML 注释（含嵌套）；预处理仍剥离注释作为保险，并对残留告警。
 # v1.6 起：工件身份戳（版本+构建日期）注入标题页首行之下并写入 PDF 元数据（pdftitle/pdfsubject），
 #          以杜绝"评审读到陈旧工件"类混淆（四审意见2 的教训）；构建后必须跑 tools/check_pdf_textlayer.py。
@@ -11,37 +12,42 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 MODE="${1:-zh}"
 BUILD_DATE="$(date +%F)"
-PDFVER="v1.7"
+PDFVER="${2:-v1.8}"
 
 if [ "$MODE" = "en" ]; then
-  SRC="input/sovereign_epistemic_acquisition_EN_v1.7.md"
-  OUT="latex/SEA_EN_v1.7_draft.pdf"
+  SRC="input/sovereign_epistemic_acquisition_EN_${PDFVER}.md"
+  OUT="latex/SEA_EN_${PDFVER}_draft.pdf"
   ENGINE="lualatex"
   LANG=""
   CONTENTS="Contents"
   FIRSTPART='^# Part I'
-  STAMP="*Review artifact: **v1.7** · built ${BUILD_DATE} · authoritative PDF — verify version and page count against the cover-letter manifest before reviewing (v1.7 body+appendices = see manifest; earlier v1.4/v1.5/v1.6 PDFs are superseded).*"
-  PDFTITLE="Sovereign Epistemic Acquisition (SEA) v1.7 - built ${BUILD_DATE}"
+  STAMP="*Review artifact: **${PDFVER}** · built ${BUILD_DATE} · working revision — verify the source hash and evidence-status matrix before review; earlier PDFs are separate versions.*"
+  PDFTITLE="Sovereign Epistemic Acquisition (SEA) ${PDFVER} - built ${BUILD_DATE}"
 else
-  SRC="input/主权认知获取_统一理论_v1.7.md"
-  OUT="latex/主权认知获取_统一理论_v1.7_内审稿.pdf"
+  SRC="input/主权认知获取_统一理论_${PDFVER}.md"
+  OUT="latex/主权认知获取_统一理论_${PDFVER}_内审稿.pdf"
   ENGINE="xelatex"
   LANG="zh-CN"
   CONTENTS="目录"
   FIRSTPART='^#\s+第一部分'
-  STAMP="*审稿工件：**v1.7** · 构建于 ${BUILD_DATE} · 本 PDF 为权威审稿工件——评审前请对照投稿信清单核验版本与页数（v1.4/v1.5/v1.6 旧 PDF 已被取代）。*"
-  PDFTITLE="主权认知获取（SEA）v1.7 - 构建于 ${BUILD_DATE}"
+  STAMP="*审稿工件：**${PDFVER}** · 构建于 ${BUILD_DATE} · 工作修订稿——评审前请对照源文件哈希与证据状态矩阵；旧 PDF 属于各自历史版本。*"
+  PDFTITLE="主权认知获取（SEA）${PDFVER} - 构建于 ${BUILD_DATE}"
 fi
 if [ "$MODE" = "zh-preprint" ]; then
   # 预印本用中文 PDF：与内审稿同源但**不含审稿工件身份戳**（公开预印本不需要）
-  SRC="input/主权认知获取_统一理论_v1.7.md"
-  OUT="latex/主权认知获取_统一理论_v1.7_预印本.pdf"
+  SRC="input/主权认知获取_统一理论_v1.8.md"
+  OUT="latex/主权认知获取_统一理论_v1.8_预印本.pdf"
   ENGINE="xelatex"
   LANG="zh-CN"
   CONTENTS="目录"
   FIRSTPART='^#\s+第一部分'
   STAMP=""
-  PDFTITLE="主权认知获取（SEA）v1.7 预印本 - ${BUILD_DATE}"
+  PDFTITLE="主权认知获取（SEA）v1.8 预印本 - ${BUILD_DATE}"
+fi
+
+if [ ! -f "$SRC" ]; then
+  echo "[fail] 源稿不存在：$SRC" >&2
+  exit 2
 fi
 
 TMP="$(mktemp -d)"

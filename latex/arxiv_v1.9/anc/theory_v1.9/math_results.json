@@ -1,0 +1,167 @@
+{
+  "filtering_example": {
+    "percent": 99.88749999999999,
+    "ratio": 0.998875
+  },
+  "finite_topm_examples": [
+    {
+      "K": 8,
+      "M": 800,
+      "dprime": 1.5,
+      "expected_finite_minus_population": -0.0009789685932152237,
+      "finite_topm": {
+        "expected_recall": 0.20866071170973968,
+        "normal_tail_mass_outside_grid": 2.2571768119076845e-19,
+        "quadrature_nodes": 384
+      },
+      "m": 10,
+      "monte_carlo": {
+        "mean_absolute_error_vs_quadrature": 0.0012419617097396696,
+        "mean_recall": 0.20741875,
+        "monte_carlo_mean_95ci": [
+          0.20554745200000585,
+          0.20929004799999418
+        ],
+        "monte_carlo_standard_error": 0.0009547438775480369,
+        "realized_recall_predictive_quantiles_2.5_50_97.5": [
+          0.0,
+          0.25,
+          0.5
+        ],
+        "repetitions": 20000,
+        "seed": 20261116
+      },
+      "population_threshold_recall": 0.2096396803029549
+    },
+    {
+      "K": 8,
+      "M": 800,
+      "dprime": 2.5,
+      "expected_finite_minus_population": 0.00046781543714458085,
+      "finite_topm": {
+        "expected_recall": 0.5242343855130016,
+        "normal_tail_mass_outside_grid": 2.2571768119076845e-19,
+        "quadrature_nodes": 384
+      },
+      "m": 10,
+      "monte_carlo": {
+        "mean_absolute_error_vs_quadrature": 0.0012343855130015902,
+        "mean_recall": 0.523,
+        "monte_carlo_mean_95ci": [
+          0.5208117894083796,
+          0.5251882105916205
+        ],
+        "monte_carlo_standard_error": 0.0011164339753165263,
+        "realized_recall_predictive_quantiles_2.5_50_97.5": [
+          0.25,
+          0.5,
+          0.875
+        ],
+        "repetitions": 20000,
+        "seed": 20261117
+      },
+      "population_threshold_recall": 0.523766570075857
+    },
+    {
+      "K": 8,
+      "M": 800,
+      "dprime": 4.389337887813888,
+      "expected_finite_minus_population": 0.0026262837059869426,
+      "finite_topm": {
+        "expected_recall": 0.9526262837059867,
+        "normal_tail_mass_outside_grid": 2.2571768119076845e-19,
+        "quadrature_nodes": 384
+      },
+      "m": 10,
+      "monte_carlo": {
+        "mean_absolute_error_vs_quadrature": 0.0001987162940133569,
+        "mean_recall": 0.952825,
+        "monte_carlo_mean_95ci": [
+          0.9518245627954339,
+          0.9538254372045661
+        ],
+        "monte_carlo_standard_error": 0.000510427145186781,
+        "realized_recall_predictive_quantiles_2.5_50_97.5": [
+          0.75,
+          1.0,
+          1.0
+        ],
+        "repetitions": 20000,
+        "seed": 20261118
+      },
+      "population_threshold_recall": 0.9499999999999997
+    }
+  ],
+  "gaussian_population": {
+    "auc_at_required_dprime": 0.9990445137060342,
+    "beta": 0.0125,
+    "boundary_rules": {
+      "R_equals_1_and_beta_less_than_1": "infinite Gaussian separation required",
+      "b_ge_1": "zero minimum separation; identical score distributions already meet the target",
+      "beta_equals_1": "consume everything; recall one for every dprime",
+      "beta_equals_pi_R_with_positive_R": "infinite Gaussian separation required",
+      "beta_less_than_pi_R": "infeasible"
+    },
+    "high_budget_regression": {
+      "population_recall_beta_1": 1.0,
+      "required_dprime_beta_0.9999": 0.0,
+      "required_dprime_beta_1": 0.0
+    },
+    "pi": 0.01,
+    "recall_dprime_1.5": 0.2096396803029549,
+    "recall_dprime_2.5": 0.523766570075857,
+    "required_dprime": 4.389337887813888,
+    "target_recall": 0.95
+  },
+  "misspecified_binary_example": {
+    "agent_assumed_mixture_signal_accuracy": 0.7400000000000001,
+    "correct_model_VOI": 0.24,
+    "expected_realized_value_W": -0.24,
+    "misspecification_regret": 0.48,
+    "true_mixture_signal_accuracy": 0.26
+  },
+  "online_threshold_constant_reward": {
+    "delta_1_1": 1.0,
+    "delta_1_2": 0.0,
+    "delta_2_1": 1.0,
+    "delta_2_2": 1.0
+  },
+  "pareto_alpha_1.5_K_52": {
+    "m_26": {
+      "approximation_minus_exact_percentage_points": -0.16993909178382172,
+      "exact_leakage_share": 0.20799886493373843,
+      "m_over_K": 0.5,
+      "quantile_integral_approximation_using_actual_m_over_K": 0.2062994740159002
+    },
+    "m_42": {
+      "approximation_minus_exact_percentage_points": -0.04747782218124108,
+      "exact_leakage_share": 0.06919111988963089,
+      "m_over_K": 0.8076923076923077,
+      "quantile_integral_approximation_using_actual_m_over_K": 0.06871634166781848
+    }
+  },
+  "rct_sample_size": {
+    "note": "Normal-approximation two-sample calculation, not a completed clinical power analysis. A future protocol must declare the primary comparison before recruitment and consider a mixed-model analysis of repeated outcomes.",
+    "one_declared_primary_comparison": {
+      "ceiling_after_25_percent_attrition": 171,
+      "ceiling_before_attrition": 129,
+      "three_arm_total": 513,
+      "unrounded_n_per_arm": 128.14497525467897
+    },
+    "two_coprimary_bonferroni_sensitivity": {
+      "ceiling_after_25_percent_attrition": 207,
+      "ceiling_before_attrition": 156,
+      "three_arm_total": 621,
+      "unrounded_n_per_arm": 155.18427339096863
+    }
+  },
+  "schema": "sea.v19.math-reproduction/v1",
+  "seed": 20261116,
+  "weighted_coverage_counterexample": {
+    "difference_in_miss": 0.16000000000000003,
+    "invalid_product_of_pooled_mean_coverages": 0.25,
+    "naive_recall_that_would_be_overstated": 0.75,
+    "weighted_expected_miss": 0.41000000000000003,
+    "weighted_expected_recall": 0.59
+  }
+}

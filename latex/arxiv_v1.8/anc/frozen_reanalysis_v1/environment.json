@@ -1,0 +1,36 @@
+{
+ "python_version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+ "python_version_info": [
+  3,
+  12,
+  3
+ ],
+ "python_executable": "/usr/bin/python3",
+ "numpy_version": "2.3.5",
+ "platform": "Linux-7.0.0-34-generic-x86_64-with-glibc2.39",
+ "machine": "x86_64",
+ "byteorder": "little",
+ "analysis_script": "sim/sea_pilot/recompute_replay_frozen.py",
+ "analysis_script_sha256": "6bd237743ccaf1dc4a36e7c06c7c9eff0e2968101d9e0fadaf9e39e2c1fc683d",
+ "specification": "docs/主验证唯一键处置与重分析规约.md",
+ "specification_sha256": "c8f8da2eaeb4b234e71138203dd9100dc704bd05270c7b6206097425d3cfdd36",
+ "input_manifest_entries": 292,
+ "input_manifest_sha256": "a7036d553e53e3eafc3249e050616dcf58b29a4b220a4300de31ac8e2867789d",
+ "bootstrap": {
+  "unit": "run",
+  "resamples": 10000,
+  "seed": 42,
+  "interval": "percentile 95%"
+ },
+ "sign_flip": {
+  "monte_carlo_draws": 100000,
+  "seed": 42,
+  "Q_G": "exact 2^10",
+  "O_C_and_80_run": "Monte Carlo (1+extreme)/(1+N)"
+ },
+ "fixed_corpus_for_J_value_ceiling": {
+  "path": "sim/pilot/data/raw/arxiv_2019-09.jsonl",
+  "sha256": "dd72983af6226a8979e392362e333a766b4653c74aaf75e0c293b685537b7cd4",
+  "role": "Only scenario J daily all-corpus top-three log1p(cit) ceilings; no extra replay outcomes."
+ }
+}

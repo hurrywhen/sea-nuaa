@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # 生成 arXiv 预印本源包（**XeLaTeX**——arXiv 受支持处理器中没有 lualatex）。
-# 用法：bash tools/make_arxiv_source.sh
-#   产物：latex/arxiv_v1.7/{main.tex,00README.XXX,anc/...} 与 latex/SEA_v1.7_arxiv_source.tar.gz
+# 用法：bash tools/make_arxiv_source.sh [版本，默认 v1.8]
+#   产物：latex/arxiv_<版本>/{main.tex,00README.XXX,anc/...} 与 latex/SEA_<版本>_arxiv_source.tar.gz
+#   v1.9 另含 292 个重放分片、数据快照、审计源码和新增结果，仍属候选工作包而非正式发布。
 # 说明：
 #   - 预处理与 tools/build_review_pdf.sh 同源（剥离 HTML 注释、手写目录块替换为 \tableofcontents），
 #     但**不注入审稿工件身份戳**（预印本不需要）；
@@ -10,14 +11,22 @@
 #     正文文本模式含 Unicode 数学符号（≥ ≤ ≠ ⇒ ≈ ∈ ∪ γ δ ′ ⁴ …），Latin Modern 缺字形，故必须用 DejaVu；
 #   - 00README.XXX 用旧式指令 `main.tex toplevelfile`（新 JSON 的 toplevel 键不适用于此文件）；
 #   - 本地试编译用 **xelatex** 两遍并断言 Missing character = 0；
-#   - anc/ 目录为 arXiv 附件（补充材料 S2、HP-0 工具包 zip、四家族冻结分析记录）。
+#   - anc/ 目录为 arXiv 附件（S2、HP-0、四家族旧管线记录、唯一键审计、三家族依赖敏感性、复现说明与依赖锁）。
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-SRC="input/sovereign_epistemic_acquisition_EN_v1.7.md"
-OUTDIR="latex/arxiv_v1.7"
-TARBALL="latex/SEA_v1.7_arxiv_source.tar.gz"
-DATE_STR="23 October 2026"
+VERSION="${1:-v1.8}"
+SRC="input/sovereign_epistemic_acquisition_EN_${VERSION}.md"
+OUTDIR="latex/arxiv_${VERSION}"
+TARBALL="latex/SEA_${VERSION}_arxiv_source.tar.gz"
+DATE_STR="3 November 2026"
+if [ "$VERSION" = "v1.9" ]; then
+  DATE_STR="16 November 2026"
+fi
+if [ ! -f "$SRC" ]; then
+  echo "[fail] 源稿不存在：$SRC" >&2
+  exit 2
+fi
 
 rm -rf "$OUTDIR"
 mkdir -p "$OUTDIR/anc"
@@ -99,10 +108,52 @@ cat > "$OUTDIR/00README.XXX" <<'EOF'
 main.tex toplevelfile
 EOF
 
-# 5) anc/ 附件：补充材料 S2（投稿版）、HP-0 工具包 zip、四家族冻结分析记录
-cp docs/补充材料S2_一致性审计报告_v1.5.md "$OUTDIR/anc/supplement_S2_consistency_audit_v1.5.md"
-cp sim/pilot/results/MAIN_VALIDATION_ANALYSIS.md "$OUTDIR/anc/main_validation_analysis_four_family.md"
-( cd docs/human_pilot_v1.5 && zip -qr - . ) > "$OUTDIR/anc/hp0_kit_v1.5.zip"
+# 5) anc/ 附件：按版本封装；v1.9 候选包另含全部 292 分片和数据快照。
+if [ "$VERSION" = "v1.9" ]; then
+  cp docs/REPRODUCIBILITY_v1.9.md "$OUTDIR/anc/"
+  cp docs/审稿回复与修改说明_v1.9.md "$OUTDIR/anc/review_response_v1.9_zh.md"
+  cp docs/MINIMAL_VALID_EXPERIMENT_v1.9.md docs/LITERATURE_SEARCH_v1.9.md "$OUTDIR/anc/"
+  cp docs/AI智能体实验设计.md docs/主验证唯一键处置与重分析规约.md "$OUTDIR/anc/"
+  cp docs/UNIQUE_KEY_REANALYSIS_SPEC_ZH.md "$OUTDIR/anc/"
+  cp sim/pilot/results/evidence_status_v1.9.json "$OUTDIR/anc/"
+  cp -r sim/theory_v1.9 "$OUTDIR/anc/"
+  cp -r sim/pilot/results/frozen_reanalysis_v1 "$OUTDIR/anc/"
+  cp -r sim/pilot/results/v19_financial_caliber_audit "$OUTDIR/anc/"
+  cp -r sim/pilot/results/v19_upstream_digest_audit "$OUTDIR/anc/"
+  cp -r sim/pilot/results/v19_recall_value_tradeoff "$OUTDIR/anc/"
+  cp tools/reproduce_v19_math.py tools/test_v19_math.py tools/audit_v19.py "$OUTDIR/anc/"
+  cp tools/audit_v19_report.json "$OUTDIR/anc/"
+  mkdir -p "$OUTDIR/anc/replay_shards" "$OUTDIR/anc/data" "$OUTDIR/anc/src" "$OUTDIR/anc/logs"
+  cp sim/pilot/results/llm_replay_*.jsonl "$OUTDIR/anc/replay_shards/"
+  cp sim/pilot/results/llm_replay_summary_*.json "$OUTDIR/anc/logs/"
+  cp sim/pilot/results/dispatch_*.log "$OUTDIR/anc/logs/"
+  cp sim/pilot/data/corpus_lite.json sim/pilot/data/p2_env_lite.json \
+     sim/pilot/data/manifold_resolved.json sim/pilot/data/pageviews.json "$OUTDIR/anc/data/"
+  cp sim/sea_pilot/*.py sim/sea_pilot/requirements-replay-integrity.txt \
+     sim/sea_pilot/runtime-replay-integrity.txt "$OUTDIR/anc/src/"
+  ( cd "$OUTDIR" && find anc -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > anc/SHA256SUMS )
+else
+  cp docs/补充材料S2_一致性审计报告_v1.5.md "$OUTDIR/anc/supplement_S2_consistency_audit_v1.5.md"
+  cp sim/pilot/results/MAIN_VALIDATION_ANALYSIS.md "$OUTDIR/anc/main_validation_analysis_four_family.md"
+  cp sim/pilot/results/REPLAY_INTEGRITY_AUDIT.md "$OUTDIR/anc/replay_integrity_audit.md"
+  cp sim/pilot/results/REPLAY_INTEGRITY_AUDIT.json "$OUTDIR/anc/replay_integrity_audit.json"
+  cp sim/sea_pilot/audit_replay_integrity.py "$OUTDIR/anc/audit_replay_integrity.py"
+  cp sim/pilot/results/THREE_FAMILY_DEPENDENCE_SENSITIVITY.md "$OUTDIR/anc/three_family_dependence_sensitivity.md"
+  cp sim/pilot/results/THREE_FAMILY_DEPENDENCE_SENSITIVITY.json "$OUTDIR/anc/three_family_dependence_sensitivity.json"
+  cp sim/sea_pilot/audit_three_family_dependence.py "$OUTDIR/anc/audit_three_family_dependence.py"
+  cp sim/sea_pilot/test_three_family_dependence.py "$OUTDIR/anc/test_three_family_dependence.py"
+  cp docs/主验证唯一键处置与重分析规约.md "$OUTDIR/anc/unique_key_reanalysis_spec_zh.md"
+  cp docs/UNIQUE_KEY_REANALYSIS_SPEC_ZH.md "$OUTDIR/anc/UNIQUE_KEY_REANALYSIS_SPEC_ZH.md"
+  cp sim/sea_pilot/recompute_replay_frozen.py "$OUTDIR/anc/recompute_replay_frozen.py"
+  cp sim/sea_pilot/test_replay_frozen.py "$OUTDIR/anc/test_replay_frozen.py"
+  cp -r sim/pilot/results/frozen_reanalysis_v1 "$OUTDIR/anc/"
+  cp docs/RELEASE_CHECKLIST_v1.8.md "$OUTDIR/anc/RELEASE_CHECKLIST_v1.8.md"
+  cp sim/sea_pilot/requirements-replay-integrity.txt "$OUTDIR/anc/requirements-replay-integrity.txt"
+  cp sim/sea_pilot/runtime-replay-integrity.txt "$OUTDIR/anc/runtime-replay-integrity.txt"
+  cp docs/REPRODUCIBILITY_v1.8.md "$OUTDIR/anc/REPRODUCIBILITY_v1.8.md"
+  cp docs/审稿回复与修改说明_v1.8.md "$OUTDIR/anc/review_response_v1.8_zh.md"
+  ( cd docs/human_pilot_v1.5 && zip -qr - . ) > "$OUTDIR/anc/hp0_kit_v1.5.zip"
+fi
 
 # 6) 本地试编译（**xelatex** 两遍——arXiv 受支持处理器中没有 lualatex），
 #    检查 Missing character / 错误。
