@@ -2,10 +2,10 @@ cff-version: 1.2.0
 message: "If you use this code or data, please cite the paper and the software release as follows."
 type: software
 title: "Sovereign Epistemic Acquisition (SEA): simulation code, frozen experiment records, and consistency-audit tooling"
-version: 1.7.0
-date-released: 2026-10-23
+version: 1.9.0
+date-released: 2026-11-17
 license: MIT
-doi: 10.5281/zenodo.23620920
+# Historical v1.7 Zenodo DOI is documented in RELEASE_v1.9.md; no v1.9 DOI is asserted.
 authors:
   - family-names: Hu
     given-names: Wen
@@ -27,4 +27,4 @@ preferred-citation:
       given-names: Ya
   year: 2026
   license: CC-BY-4.0
-  notes: "Working manuscript version 1.9; the software version and DOI above still identify the immutable v1.7 release, and a new v1.9 release identifier is pending. Conditional framework and audit paper: existing pilots are semi-oracle, retrospective, within-corpus mechanism checks; direct matched baselines, human data, and independent human mathematical review remain pending."
+  notes: "Public candidate snapshot v1.9.0 on GitHub and Gitee; the historical Zenodo v1.7 DOI does not include this revision. Conditional framework and audit paper: existing pilots are semi-oracle, retrospective, within-corpus mechanism checks; direct matched baselines, human data, independent human mathematical review, and a v1.9-specific DOI remain pending."

@@ -634,7 +634,7 @@ SEA nevertheless offers a useful discipline. It requires an information system t
 
 ## Data and Code Availability
 
-The earlier v1.7 archive and DOI are real but do not include this revision or its new audits: version DOI <https://doi.org/10.5281/zenodo.23620920>; concept DOI <https://doi.org/10.5281/zenodo.23620919>. **No immutable public release of the present working revision is claimed.** A release must assign a new commit and persistent archive, then replace this paragraph with its identifier. Internal frozen protocols are not called public preregistration without a registry URL.
+The current public candidate snapshot is **`v1.9.0`**, maintained at <https://github.com/hurrywhen/sea-nuaa> and <https://gitee.com/jiangsu-yunhefeng-intelligent_0/sea-nuaa>. The tag, source files, and file-level hashes are recorded in `RELEASE_v1.9.md` and the artifact manifest linked from `docs/REPRODUCIBILITY_v1.9.md`. This is a public source-and-data release, not independent mathematical verification or a completed end-to-end experiment. The earlier v1.7 archive and DOI are real but do not include this revision or its new audits: version DOI <https://doi.org/10.5281/zenodo.23620920>; concept DOI <https://doi.org/10.5281/zenodo.23620919>. No v1.9-specific DOI is asserted here unless a separate persistent record is actually created. Internal frozen protocols are not called public preregistration without a registry URL.
 
 The working tree contains the following read-only or independently regenerated checks:
 

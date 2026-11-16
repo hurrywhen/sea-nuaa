@@ -6,7 +6,7 @@
 - PDF：`latex/SEA_EN_v1.9_draft.pdf`
 - 审稿回复：`docs/审稿回复与修改说明_v1.9.md`
 - 证据状态：`sim/pilot/results/evidence_status_v1.9.json`
-- 本工作树**不是** v1.7 DOI 归档的一部分，也尚不是带持久标识的 v1.9 公共复现包。
+- 当前公开候选快照为 **`v1.9.0`**：[GitHub](https://github.com/hurrywhen/sea-nuaa) / [Gitee](https://gitee.com/jiangsu-yunhefeng-intelligent_0/sea-nuaa)。公开标签和文件哈希可用于复核；这不是 v1.7 DOI 归档的一部分，**v1.9 专属 DOI 仍未登记**。
 - 以下脚本不调用 LLM、不创建人类数据；新增分析均为同语料、事后、描述性审计，不是前瞻确证实验。
 
 ## 2. 环境
@@ -94,7 +94,7 @@ python3 tools/check_pdf_textlayer.py \
 2. S2d/S4/S5、完整消融、独立时间窗和知识截止后/私域语料；
 3. 匿名化记忆审计和严格 point-in-time 特征；
 4. 公共注册 URL；
-5. 不可变 commit、全部数据快照、全部 292 分片与日志、模型/量化/访问日期、哈希 manifest 和持久 DOI/URL；
+5. v1.9 专属 DOI 和公共实验注册 URL（公开 `v1.9.0` 源/数据标签、292+5 分片与哈希已具备）；
 6. 干净环境第三方重跑。
 
 因此，当前文档只能称**可复核的工作修订**，不能称独立核验后的公开定稿。

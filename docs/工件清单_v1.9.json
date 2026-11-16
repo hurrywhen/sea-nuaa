@@ -1,8 +1,8 @@
 {
   "schema": "sea.v19.working-artifact-manifest/v1",
   "release_status": "PUBLIC_CANDIDATE_RELEASE__PRERELEASE_NOT_INDEPENDENTLY_REVIEWED",
-  "generated_utc": "2026-11-16T22:43:06.316172+00:00",
-  "git_head_at_generation": "04adbe7da939bc2f71283a7ed7aa68d39ee80de5",
+  "generated_utc": "2026-11-16T22:49:07.074279+00:00",
+  "git_head_at_generation": "cd1c5956fa5069d62bba4b7b9ae628dab45d76ef",
   "git_tree_dirty_at_generation": true,
   "persistent_release_identifier": "v1.9.0",
   "public_repositories": {
@@ -21,13 +21,13 @@
   "core_files": [
     {
       "path": "CITATION.cff",
-      "bytes": 1281,
-      "sha256": "f607663854d3cbee74755471f627a05ace961bd77814e82f5379b46522e89005"
+      "bytes": 1322,
+      "sha256": "cb4b7b92a33138848ab4eb789152db49e5682727dd7aff6d708dea14ef7be675"
     },
     {
       "path": "README.md",
-      "bytes": 9622,
-      "sha256": "3682e2ff6389a387d78b276ca91adc261c8f090937bfd38eb9d3c6bc50189bf1"
+      "bytes": 9951,
+      "sha256": "bdea8eab1d16764a626960294def222d639b66d48d0073487ce2ae067be9aa84"
     },
     {
       "path": "RELEASE_v1.9.md",
@@ -46,38 +46,38 @@
     },
     {
       "path": "docs/REPRODUCIBILITY_v1.9.md",
-      "bytes": 5690,
-      "sha256": "476c6d9f52692a6ea79aa705ec9c1d5d63e0108dc9767ba31d55bae53d21f071"
+      "bytes": 5847,
+      "sha256": "342ba7bf988945e124df0c7650eb2fb751f6522bc20de3995f27c7ecb53e9749"
     },
     {
       "path": "docs/审稿回复与修改说明_v1.9.md",
-      "bytes": 22489,
-      "sha256": "f697d8a10242285c70c59f064c944200bb7fc7d94d07db6e640aa56613d2073e"
+      "bytes": 22673,
+      "sha256": "2b7f43d61ad6b23a767fe4577b4a99442402fb2d9625e6fee63969ed67b95b99"
     },
     {
       "path": "input/sovereign_epistemic_acquisition_EN_v1.9.md",
-      "bytes": 87946,
-      "sha256": "1fa19770e37ec2db7fa47ee89a87bc6a57475cc7bd0247c1f557b844481ea932"
+      "bytes": 88303,
+      "sha256": "a4517bead495fe82ec9043799ffd6942cf9e17c99004f8c28d63a5b325005a76"
     },
     {
       "path": "latex/SEA_EN_v1.9_draft.pdf",
-      "bytes": 257240,
-      "sha256": "256ef65649480b6d1582334acacbc4025be7d60c8156ec7b1d93e86b2d21fe2a"
+      "bytes": 268671,
+      "sha256": "42c0dfbd83562fdca7f8eadb3b3b6e424201400ec47c9595d2f3355b416abb19"
     },
     {
       "path": "latex/SEA_v1.9_arxiv_source.tar.gz",
-      "bytes": 26723616,
-      "sha256": "d9613c6fca474b4ebc3042e182d55bb2d29396c11ec02da11ec811c25582fc59"
+      "bytes": 26723036,
+      "sha256": "ffa2f36b12ea73642e8780335cae8f9cc2d590ff050cf7ab7ba4a54695fb9f99"
     },
     {
       "path": "latex/arxiv_v1.9/main.tex",
-      "bytes": 105013,
-      "sha256": "b3beefecb341008ef2c289663f815eb24f82c909a0be6b2b05d0d81ca70dc792"
+      "bytes": 105401,
+      "sha256": "312eb7e9a4ae0b370c9eb628536e6b1902fbc9432992fb2c46a6e03e1d6d8a68"
     },
     {
       "path": "sim/pilot/results/evidence_status_v1.9.json",
-      "bytes": 7737,
-      "sha256": "bbc71db3e277182539ec2dbdbe13d2938985c93eab589c2c363ef4fcc5e018dc"
+      "bytes": 7967,
+      "sha256": "9cdf629ea918254ec3b0624d623c25604cd5bf9073fd6094352210cfc5c78dc1"
     },
     {
       "path": "sim/pilot/results/v19_financial_caliber_audit/REPORT.md",
@@ -161,13 +161,13 @@
     },
     {
       "path": "tools/audit_v19.py",
-      "bytes": 8351,
-      "sha256": "2da3577c965feb7e1cf330f965641a433831a3ce60cd1b437ca06e6da4aa1606"
+      "bytes": 8468,
+      "sha256": "90be6541f6d931038428940eca109a7f5c2dd24c16ecdf1c3b8b499e8dd054c0"
     },
     {
       "path": "tools/audit_v19_report.json",
-      "bytes": 10032,
-      "sha256": "94c47a2391ed2f89a1d3e27c2312dc0cf5d902082199a3c064af0e9675bafd84"
+      "bytes": 10041,
+      "sha256": "39386dba52b5639a36684f78c5de8d3bb4b19fd208d58b75ae7a884213d4db00"
     },
     {
       "path": "tools/build_review_pdf.sh",
@@ -186,8 +186,8 @@
     },
     {
       "path": "tools/make_v19_manifest.py",
-      "bytes": 6460,
-      "sha256": "9cac774550a8fe1ba4ef74c4cef18a3051b167094a8fd007345124bb5de9219c"
+      "bytes": 6500,
+      "sha256": "fcafba42c9673c91a4f486d7257f8ebcbf8be9bc32a9aeb2fe57fabeaeda7fb9"
     },
     {
       "path": "tools/reproduce_v19_math.py",
@@ -1694,6 +1694,6 @@
     "No S2d/S4/S5 or full matched ablation results",
     "No post-cutoff/private-corpus or completed memory audit",
     "No human participant data",
-    "No immutable public v1.9 archive or public preregistration URL"
+    "No v1.9-specific DOI, public experimental preregistration URL, or third-party independent reproduction"
   ]
 }

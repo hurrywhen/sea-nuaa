@@ -107,7 +107,7 @@ def main() -> None:
             "No S2d/S4/S5 or full matched ablation results",
             "No post-cutoff/private-corpus or completed memory audit",
             "No human participant data",
-            "No immutable public v1.9 archive or public preregistration URL",
+            "No v1.9-specific DOI, public experimental preregistration URL, or third-party independent reproduction",
         ],
     }
     OUT_JSON.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

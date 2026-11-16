@@ -6,7 +6,12 @@
     "overall_SEA_structural_effect_identified": false,
     "prospective_cross_corpus_confirmation": false,
     "independent_human_mathematical_review": "pending",
-    "immutable_v1.9_public_release": "pending",
+    "immutable_v1.9_public_release": "PUBLIC_CANDIDATE_TAG_v1.9.0__DOI_PENDING",
+    "public_repositories": {
+      "github": "https://github.com/hurrywhen/sea-nuaa",
+      "gitee": "https://gitee.com/jiangsu-yunhefeng-intelligent_0/sea-nuaa"
+    },
+    "public_tag": "v1.9.0",
     "recall_term_required": "retrospective proxy-opportunity recall under the stated target, configuration, upstream digest, and consumption unit"
   },
   "claims": [

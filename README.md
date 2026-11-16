@@ -4,6 +4,8 @@
 
 **Sovereign Epistemic Acquisition: Conditional Design for Pull, Push, and Weighted Recall**
 
+**当前公开候选快照 `v1.9.0`**：[GitHub](https://github.com/hurrywhen/sea-nuaa) · [Gitee](https://gitee.com/jiangsu-yunhefeng-intelligent_0/sea-nuaa) · [发布说明](RELEASE_v1.9.md)。这是可复核的公开源/数据快照，不是独立数学复审或端到端有效性认证；v1.9 专属 DOI 待后续登记。
+
 人机协同信息获取项目之理论源头工作仓库。（项目原名"主权认识过滤（SEF）"，v1.0 起框架升级为"主权认知获取（SEA）"，SEF 成为其 push 过滤子模块。）
 
 ## 项目简介

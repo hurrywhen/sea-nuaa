@@ -9,7 +9,7 @@
     {
       "name": "substantially_shorter_than_v18",
       "passed": true,
-      "detail": "11054"
+      "detail": "11085"
     },
     {
       "name": "no_continue_marker",
@@ -477,7 +477,7 @@
       "detail": ""
     },
     {
-      "name": "evidence_release_pending",
+      "name": "evidence_public_candidate_release",
       "passed": true,
       "detail": ""
     },

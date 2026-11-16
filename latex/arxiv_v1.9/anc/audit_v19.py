@@ -106,7 +106,9 @@ def main() -> int:
     check("evidence_no_human_data", evidence["global_scope"]["human_subjects_data"] == "none")
     check("evidence_no_overall_effect", evidence["global_scope"]["overall_SEA_structural_effect_identified"] is False)
     check("evidence_math_review_pending", evidence["global_scope"]["independent_human_mathematical_review"] == "pending")
-    check("evidence_release_pending", evidence["global_scope"]["immutable_v1.9_public_release"] == "pending")
+    check("evidence_public_candidate_release", evidence["global_scope"]["immutable_v1.9_public_release"]
+          == "PUBLIC_CANDIDATE_TAG_v1.9.0__DOI_PENDING"
+          and evidence["global_scope"]["public_tag"] == "v1.9.0")
     h8 = next(c for c in evidence["claims"] if c["id"] == "TRANSFER-H8-H9")["H8"]
     check("H8_direction_and_interval_correct", "negative across the three named families" in h8
           and "outside the target effect interval" in h8)
