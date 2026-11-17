@@ -1,4 +1,4 @@
-"""A6 次模清单构建（定理 7.3）+ A7 滚动清单管理器。
+"""A6 次模清单构建（历史 A6 标识）+ A7 滚动清单管理器。
 
 A6：覆盖函数次模 ⇒ 贪心 (1−1/e)≈0.632 保证；P12 证伪项监控（比值持续 <0.63 即告警）。
 粒度教训（实测）：机构 0.231–0.269 ≫ 作者 0.02——粒度错误会摧毁 p̂_min。
@@ -11,7 +11,7 @@ from itertools import combinations
 
 
 def greedy_cover(cov: dict[str, set], k: int) -> tuple[list[str], set]:
-    """懒贪心最大化覆盖（定理 7.3）。cov: 实体 -> 覆盖的命题集合。"""
+    """懒贪心最大化覆盖（历史 A6 标识）。cov: 实体 -> 覆盖的命题集合。"""
     selected: list[str] = []
     covered: set = set()
     for _ in range(min(k, len(cov))):

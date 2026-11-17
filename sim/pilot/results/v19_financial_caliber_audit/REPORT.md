@@ -17,10 +17,12 @@ The proposition value 121/133 = 0.9097744361 pools seven runs with 19 targets ea
 
 | Configuration | Parametric S2p agent–target recall | Supervised feature-scorer mean recall | Budget-conflict alarms |
 |---|---:|---:|---:|
-| Historical | 120/(7×18) = 0.952380952 | 0.722222222 | 7/7 |
-| Expanded | 121/(7×19) = 0.909774436 | 0.789473684 | 7/7 |
+| Historical frozen-row aggregate | 120/(7×18) = 0.952380952 | 0.722222222 | 7/7 |
+| Expanded: S2p rebuilt; S2p-feat frozen rows | 121/(7×19) = 0.909774436 | 0.789473684 | 7/7 |
 
-The parametric score uses realized legal/market labels and is semi-oracle. Both m=5 configurations use 150 monthly slots rather than a strict daily cap. Supply (4.6/4.733 propositions per day) exceeds the Channel-I cap (3/day), and every m=5 run alarms. Neither configuration establishes an R4-compliant 95% delivery guarantee. The supervised feature scorer is trained on day<15 realized labels and evaluated descriptively over the full month. Its identical deterministic selection is repeated across seven agent rows, not seven independent feature experiments; it is neither label-free nor held-out evidence.
+The historical row aggregates `sim/pilot/results/v19_financial_caliber_audit/historical_p2_rows_8ffc7f5.csv`, copied byte-for-byte from `sim/pilot/results/p2_rows.csv` at source commit `8ffc7f5`. Its pinned SHA-256 is `80e953d19efb44787d4fb8b03e37ee6cbfbfc325488769df8a0e89281b495024`; byte and row counts are also checked. It is not an independently rebuilt historical selection. Only the expanded parametric S2p selections are reconstructed and checked against the current `p2_rows.csv`; expanded S2p-feat values are also frozen-row aggregates, not independently rebuilt feature-scorer selections. Git history is not needed.
+
+The parametric score uses realized legal/market labels and is semi-oracle. Both m=5 configurations use 150 monthly slots rather than a strict daily cap. The inherited historical supply constant (4.6/day, not verified from the pinned CSV) and reconstructed expanded supply (4.733/day) exceed the Channel-I cap (3/day), and every m=5 run alarms. Neither configuration establishes an R4-compliant 95% delivery guarantee. The supervised feature scorer is trained on day<15 realized labels and evaluated descriptively over the full month. Its identical deterministic selection is repeated across seven agent rows, not seven independent feature experiments; it is neither label-free nor held-out evidence.
 
 ## Per-run reconstruction
 
@@ -34,7 +36,7 @@ The parametric score uses realized legal/market labels and is semi-oracle. Both 
 | 23 | 17/19 = 0.894736842 | 16/18 = 0.888888889 |
 | 27 | 17/19 = 0.894736842 | 16/18 = 0.888888889 |
 
-Every reconstructed proposition recall equals the frozen `p2_rows.csv` value to 1e-12. The company-day column is a post-hoc unit-sensitivity description, not a new confirmatory result.
+Every expanded-configuration reconstructed proposition recall equals the frozen `p2_rows.csv` value to 1e-12. The company-day column is a post-hoc unit-sensitivity description, not a new confirmatory result.
 
 ## Coverage matrix interpretation
 

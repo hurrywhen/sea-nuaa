@@ -23,6 +23,9 @@ DATE_STR="3 November 2026"
 if [ "$VERSION" = "v1.9" ]; then
   DATE_STR="16 November 2026"
 fi
+if [ "$VERSION" = "v1.10" ]; then
+  DATE_STR="17 November 2026"
+fi
 if [ ! -f "$SRC" ]; then
   echo "[fail] 源稿不存在：$SRC" >&2
   exit 2
@@ -108,25 +111,34 @@ cat > "$OUTDIR/00README.XXX" <<'EOF'
 main.tex toplevelfile
 EOF
 
-# 5) anc/ 附件：按版本封装；v1.9 候选包另含全部 292 分片和数据快照。
-if [ "$VERSION" = "v1.9" ]; then
-  cp docs/REPRODUCIBILITY_v1.9.md "$OUTDIR/anc/"
-  cp docs/审稿回复与修改说明_v1.9.md "$OUTDIR/anc/review_response_v1.9_zh.md"
-  cp docs/MINIMAL_VALID_EXPERIMENT_v1.9.md docs/LITERATURE_SEARCH_v1.9.md "$OUTDIR/anc/"
+# 5) anc/ 附件：v1.9/v1.10 候选包含全部 292 分片和数据快照。
+if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ]; then
+  cp "docs/REPRODUCIBILITY_${VERSION}.md" "$OUTDIR/anc/"
+  cp "docs/审稿回复与修改说明_${VERSION}.md" "$OUTDIR/anc/review_response_${VERSION}_zh.md"
+  cp "docs/MINIMAL_VALID_EXPERIMENT_${VERSION}.md" "docs/LITERATURE_SEARCH_${VERSION}.md" "$OUTDIR/anc/"
   cp docs/AI智能体实验设计.md docs/主验证唯一键处置与重分析规约.md "$OUTDIR/anc/"
   cp docs/UNIQUE_KEY_REANALYSIS_SPEC_ZH.md "$OUTDIR/anc/"
-  cp sim/pilot/results/evidence_status_v1.9.json "$OUTDIR/anc/"
-  cp -r sim/theory_v1.9 "$OUTDIR/anc/"
+  cp "sim/pilot/results/evidence_status_${VERSION}.json" "$OUTDIR/anc/"
+  cp -r "sim/theory_${VERSION}" "$OUTDIR/anc/"
   cp -r sim/pilot/results/frozen_reanalysis_v1 "$OUTDIR/anc/"
   cp -r sim/pilot/results/v19_financial_caliber_audit "$OUTDIR/anc/"
   cp -r sim/pilot/results/v19_upstream_digest_audit "$OUTDIR/anc/"
   cp -r sim/pilot/results/v19_recall_value_tradeoff "$OUTDIR/anc/"
-  cp tools/reproduce_v19_math.py tools/test_v19_math.py tools/audit_v19.py "$OUTDIR/anc/"
-  cp tools/audit_v19_report.json "$OUTDIR/anc/"
+  cp tools/reproduce_v19_math.py tools/test_v19_math.py "$OUTDIR/anc/"
+  AUDIT_VERSION="v110"
+  if [ "$VERSION" = "v1.9" ]; then AUDIT_VERSION="v19"; fi
+  cp "tools/audit_${AUDIT_VERSION}.py" "tools/audit_${AUDIT_VERSION}_report.json" "$OUTDIR/anc/"
   mkdir -p "$OUTDIR/anc/replay_shards" "$OUTDIR/anc/data" "$OUTDIR/anc/src" "$OUTDIR/anc/logs"
+  if [ "$VERSION" = "v1.10" ]; then
+    cp docs/SUPPLEMENT_NORMATIVE_AND_TRANSFER_v1.10.md "$OUTDIR/anc/"
+    cp -r sim/pilot/results/v110_consumption_caliber "$OUTDIR/anc/"
+    cp sim/pilot/results/governance_conformance_v1.10.json "$OUTDIR/anc/"
+    cp tools/reproduce_v110_sap.py tools/test_v110_sap.py tools/check_pdf_layout.py "$OUTDIR/anc/"
+    cp -r sim/sea_governance "$OUTDIR/anc/src/"
+  fi
   cp sim/pilot/results/llm_replay_*.jsonl "$OUTDIR/anc/replay_shards/"
-  cp sim/pilot/results/llm_replay_summary_*.json "$OUTDIR/anc/logs/"
-  cp sim/pilot/results/dispatch_*.log "$OUTDIR/anc/logs/"
+  find sim/pilot/results -maxdepth 1 -name 'llm_replay_summary_*.json' -exec cp -t "$OUTDIR/anc/logs/" {} +
+  find sim/pilot/results -maxdepth 1 -name 'dispatch_*.log' -exec cp -t "$OUTDIR/anc/logs/" {} +
   cp sim/pilot/data/corpus_lite.json sim/pilot/data/p2_env_lite.json \
      sim/pilot/data/manifold_resolved.json sim/pilot/data/pageviews.json "$OUTDIR/anc/data/"
   cp sim/sea_pilot/*.py sim/sea_pilot/requirements-replay-integrity.txt \

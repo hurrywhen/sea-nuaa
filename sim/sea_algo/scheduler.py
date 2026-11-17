@@ -1,9 +1,9 @@
-"""A4 Pandora/Whittle 调度器（命题 8.1 Pandora 配额；§8.6 Whittle 指数；定理 8.1 影子价格）。
+"""历史 A4 Pandora/阈值调度器（稳定实验标识；不对应 v1.10 的章节编号）。
 
 两点分布（收益 V·Bernoulli(p̂)，开箱成本 c）的 Weitzman 保留值：
     z = V − c/p̂        （由 p̂(V−z) = c 解出）
 准入规则 z ≥ ν 等价于校准阈值  p̂ ≥ c/(V−ν)  ——指数策略退化为阈值策略，
-这正是注意力无套利定理（定理 8.1）的算法面：跨通道套利被同一影子价格 ν 禁止。
+这只是受限模型中的共同影子价格直觉；v1.10 不据此主张跨通道联合最优。
 p̂ 按（family × 首类）walk-forward 估计，Laplace 向全局基率收缩。未用完名额交还 A5。
 """
 from __future__ import annotations

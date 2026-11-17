@@ -2,12 +2,14 @@
 """Post-hoc caliber audit for the financial retrospective proxy replay.
 
 This script runs no model and downloads no data.  It reconstructs the deterministic
-S2p selection from the frozen lightweight environment, verifies the proposition-
-level recalls already stored in ``p2_rows.csv``, and reports company-day and
-proposition denominators separately.  It also exports the observed source-class
-by critical-proposition coverage matrix.  The binary matrix is a descriptive
-cross-tabulation, not an estimate of a proposition-conditional probability floor
-or of independence between source classes.
+expanded-configuration S2p selection from the frozen lightweight environment,
+verifies the proposition-level recalls already stored in ``p2_rows.csv``, and reports
+company-day and proposition denominators separately.  The historical configuration
+is an aggregate of an independent, integrity-checked frozen CSV; its selections are
+not independently reconstructed.  No Git checkout or Git executable is required.
+The script also exports the observed source-class by critical-proposition coverage
+matrix.  The binary matrix is a descriptive cross-tabulation, not an estimate of a
+proposition-conditional probability floor or of independence between source classes.
 
 Default: print the JSON summary only.  ``--write`` creates a dedicated artifact
 set; existing files require ``--force``.
@@ -17,10 +19,10 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import io
 import json
 import math
 import os
-import subprocess
 from fractions import Fraction
 from pathlib import Path
 from typing import Any
@@ -40,6 +42,21 @@ except ImportError:  # direct script execution
 
 ROOT = Path(__file__).resolve().parents[2]
 OUTDIR = ROOT / "sim" / "pilot" / "results" / "v19_financial_caliber_audit"
+HISTORICAL_ROWS_REL = (
+    "sim/pilot/results/v19_financial_caliber_audit/"
+    "historical_p2_rows_8ffc7f5.csv"
+)
+HISTORICAL_ROWS_PATH = ROOT / HISTORICAL_ROWS_REL
+HISTORICAL_SOURCE_COMMIT = "8ffc7f5"
+HISTORICAL_SOURCE_PATH = "sim/pilot/results/p2_rows.csv"
+HISTORICAL_GENERATION_RULE = (
+    "Byte-for-byte copy of `git show "
+    "8ffc7f5:sim/pilot/results/p2_rows.csv`; no parsing, filtering, newline "
+    "conversion, or regeneration. Git history is optional provenance, not a runtime input."
+)
+HISTORICAL_SHA256 = "80e953d19efb44787d4fb8b03e37ee6cbfbfc325488769df8a0e89281b495024"
+HISTORICAL_BYTES = 382663
+HISTORICAL_ROW_COUNT = 1260
 CLASSES = ("regulator", "wire", "fin_media", "tech_media", "aggregator", "general", "other")
 STATUS = "POST_HOC_CALIBER_AUDIT__SAME_CORPUS_DESCRIPTIVE"
 
@@ -65,7 +82,43 @@ def _ratio(hits: int, total: int) -> dict[str, Any]:
     }
 
 
+def _read_historical_rows(
+    path: Path | None = None,
+) -> tuple[list[dict[str, str]], dict[str, Any]]:
+    """Read the independent historical CSV only after verifying its exact bytes."""
+    path = HISTORICAL_ROWS_PATH if path is None else path
+    raw = path.read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
+    if len(raw) != HISTORICAL_BYTES:
+        raise ValueError(
+            f"Historical frozen CSV byte-count mismatch: expected {HISTORICAL_BYTES}, "
+            f"got {len(raw)} ({path})"
+        )
+    if digest != HISTORICAL_SHA256:
+        raise ValueError(
+            f"Historical frozen CSV SHA-256 mismatch: expected {HISTORICAL_SHA256}, "
+            f"got {digest} ({path})"
+        )
+    rows = list(csv.DictReader(io.StringIO(raw.decode("utf-8"), newline="")))
+    if len(rows) != HISTORICAL_ROW_COUNT:
+        raise ValueError(
+            f"Historical frozen CSV row-count mismatch: expected {HISTORICAL_ROW_COUNT}, "
+            f"got {len(rows)} ({path})"
+        )
+    provenance = {
+        "sha256": digest,
+        "bytes": len(raw),
+        "rows": len(rows),
+        "source_commit": HISTORICAL_SOURCE_COMMIT,
+        "source_path": HISTORICAL_SOURCE_PATH,
+        "generation_rule": HISTORICAL_GENERATION_RULE,
+        "integrity_check": "pinned SHA-256, byte count, and CSV data-row count verified",
+    }
+    return rows, provenance
+
+
 def audit() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
+    old_rows, historical_provenance = _read_historical_rows()
     os.environ["SEA_FORCE_LITE"] = "1"
     env = build_all(verbose=False)
     props = env["props"]
@@ -128,12 +181,9 @@ def audit() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]
     pooled_day_hits = sum(r["company_day"]["hits"] for r in m5)
     pooled_day_opps = sum(r["company_day"]["opportunities"] for r in m5)
 
-    # Read the earlier frozen configuration from git history without changing the
-    # worktree. The earlier headline is 120/(7x18), not a 21-target corpus.
-    old_text = subprocess.check_output(
-        ["git", "show", "8ffc7f5:sim/pilot/results/p2_rows.csv"],
-        cwd=ROOT, text=True)
-    old_rows = list(csv.DictReader(old_text.splitlines()))
+    # Aggregate the earlier configuration from its independent frozen CSV. This is
+    # not an independent reconstruction of historical selections. The earlier
+    # headline is 120/(7x18), not a 21-target corpus.
     old_m5 = [r for r in old_rows if r["arm"] == "S2p" and r["rho"] == "0.4"
               and r["truth"] == "market" and r["budget_per_day"] == "5"]
     old_recall = sum(float(r["recall_mkt_port"]) for r in old_m5) / len(old_m5)
@@ -151,8 +201,19 @@ def audit() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]
     new_feat = [r for r in frozen if r["arm"] == "S2p-feat" and r["rho"] == "0.4"
                 and r["truth"] == "market" and r["budget_per_day"] == "5"]
     semi_oracle_comparison = {
-        "historical_git_commit": "8ffc7f5",
+        "historical_git_commit": HISTORICAL_SOURCE_COMMIT,
+        "historical_frozen_input": HISTORICAL_ROWS_REL,
+        "historical_selection_independently_rebuilt": False,
+        "expanded_selection_independently_rebuilt": True,
+        "expanded_feature_scorer_selection_independently_rebuilt": False,
+        "feature_scorer_evidence_basis": (
+            "Historical and expanded S2p-feat values are frozen-row aggregates; "
+            "only expanded parametric S2p selections are independently rebuilt."
+        ),
         "historical_m5": {
+            "evidence_basis": (
+                "frozen-row aggregate only; historical selections were not independently rebuilt"
+            ),
             "agent_proxy_configurations": len(old_m5),
             "proposition_targets_per_run": old_target_count,
             "agent_target_hits": old_hits,
@@ -164,6 +225,10 @@ def audit() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]
             "strict_daily_cap_enforced": False,
         },
         "expanded_m5": {
+            "evidence_basis": (
+                "expanded parametric S2p selections independently rebuilt and verified "
+                "against p2_rows.csv; expanded S2p-feat values only aggregated from frozen rows"
+            ),
             "agent_proxy_configurations": len(m5),
             "proposition_targets_per_run": 19,
             "agent_target_hits": pooled_prop_hits,
@@ -176,7 +241,12 @@ def audit() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]
         },
         "channel1_supply_per_day": {
             "historical": 4.6,
+            "historical_evidence_basis": (
+                "inherited legacy environment constant; not verified from the pinned "
+                "historical p2_rows.csv, which has no supply field"
+            ),
             "expanded": env["supply"]["portfolio_props_per_day"],
+            "expanded_evidence_basis": "reconstructed from the expanded frozen environment",
             "channel1_cap_at_m5": 3,
         },
         "comparison_status": "non-paired descriptive configurations; not a news-expansion causal effect",
@@ -222,6 +292,10 @@ def audit() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]
         "new_experiment": False,
         "new_llm_calls": 0,
         "selection_reconstruction_verified_against_p2_rows": True,
+        "selection_reconstruction_scope": (
+            "Expanded parametric S2p only. Historical S2p and both S2p-feat configurations "
+            "are frozen-row aggregates, not independently rebuilt selections."
+        ),
         "target_definitions": {
             "proposition": "pid=(ticker,date,family), market_critical and in_portfolio",
             "company_day": "unique (ticker,date) among those propositions",
@@ -269,6 +343,7 @@ def audit() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]
     for rel in ("sim/pilot/data/p2_env_lite.json", "sim/pilot/results/p2_rows.csv"):
         path = ROOT / rel
         summary["inputs"][rel] = {"sha256": _sha256(path), "bytes": path.stat().st_size}
+    summary["inputs"][HISTORICAL_ROWS_REL] = historical_provenance
     return summary, coverage, comparisons
 
 
@@ -308,16 +383,25 @@ def render(summary: dict[str, Any]) -> str:
         "",
         "| Configuration | Parametric S2p agent–target recall | Supervised feature-scorer mean recall | Budget-conflict alarms |",
         "|---|---:|---:|---:|",
-        f"| Historical | 120/(7×18) = {semi_oracle_comparison['historical_m5']['mean_recall']:.9f} | "
+        f"| Historical frozen-row aggregate | 120/(7×18) = {semi_oracle_comparison['historical_m5']['mean_recall']:.9f} | "
         f"{semi_oracle_comparison['historical_m5']['feature_scorer_mean_recall']:.9f} | "
         f"{semi_oracle_comparison['historical_m5']['budget_conflict_alarms']}/7 |",
-        f"| Expanded | 121/(7×19) = {semi_oracle_comparison['expanded_m5']['mean_recall']:.9f} | "
+        f"| Expanded: S2p rebuilt; S2p-feat frozen rows | 121/(7×19) = {semi_oracle_comparison['expanded_m5']['mean_recall']:.9f} | "
         f"{semi_oracle_comparison['expanded_m5']['feature_scorer_mean_recall']:.9f} | "
         f"{semi_oracle_comparison['expanded_m5']['budget_conflict_alarms']}/7 |",
         "",
+        f"The historical row aggregates `{HISTORICAL_ROWS_REL}`, copied byte-for-byte "
+        f"from `sim/pilot/results/p2_rows.csv` at source commit `{HISTORICAL_SOURCE_COMMIT}`. "
+        f"Its pinned SHA-256 is `{HISTORICAL_SHA256}`; byte and row counts are also checked. "
+        "It is not an independently rebuilt historical selection. Only the expanded "
+        "parametric S2p selections are reconstructed and checked against the current "
+        "`p2_rows.csv`; expanded S2p-feat values are also frozen-row aggregates, not "
+        "independently rebuilt feature-scorer selections. Git history is not needed.",
+        "",
         "The parametric score uses realized legal/market labels and is semi-oracle. "
         "Both m=5 configurations use 150 monthly slots rather than a strict daily cap. "
-        "Supply (4.6/4.733 propositions per day) exceeds the Channel-I cap (3/day), "
+        "The inherited historical supply constant (4.6/day, not verified from the pinned "
+        "CSV) and reconstructed expanded supply (4.733/day) exceed the Channel-I cap (3/day), "
         "and every m=5 run alarms. Neither configuration establishes an R4-compliant "
         "95% delivery guarantee. The supervised feature scorer is trained on day<15 "
         "realized labels and evaluated descriptively over the full month. Its identical "
@@ -335,8 +419,9 @@ def render(summary: dict[str, Any]) -> str:
                      f"{r['company_day']['ratio']:.9f} |")
     lines += [
         "",
-        "Every reconstructed proposition recall equals the frozen `p2_rows.csv` value "
-        "to 1e-12. The company-day column is a post-hoc unit-sensitivity description, "
+        "Every expanded-configuration reconstructed proposition recall equals the "
+        "frozen `p2_rows.csv` value to 1e-12. The company-day column is a post-hoc "
+        "unit-sensitivity description, "
         "not a new confirmatory result.",
         "",
         "## Coverage matrix interpretation",

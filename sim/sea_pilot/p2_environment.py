@@ -231,7 +231,8 @@ def build_all(verbose: bool = True):
     lite_path = os.path.join(config.DATA_DIR, "p2_env_lite.json")
     subs_missing = not os.path.isdir(os.path.join(RAW_P2, "submissions"))
     if (subs_missing or os.environ.get("SEA_FORCE_LITE") == "1") and os.path.exists(lite_path):
-        d = json.load(open(lite_path, encoding="utf-8"))
+        with open(lite_path, encoding="utf-8") as handle:
+            d = json.load(handle)
         return _finish_env(d["props"], d["tickers"], {tuple(x) for x in d["mvd"]},
                            set(d["portfolio"]), d["n_docs_total"], d["n_news"],
                            d["n_filings"], verbose, lite=True)

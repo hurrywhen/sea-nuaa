@@ -40,7 +40,11 @@ def main() -> int:
     pdf, src = sys.argv[1], sys.argv[2]
     captions = list(CAPTIONS)
     keystrings = list(KEYSTRINGS)
-    if "v1.9" in os.path.basename(pdf):
+    if "v1.10" in os.path.basename(pdf):
+        captions = [f"Table {i}." for i in range(1, 16)]
+        keystrings = ["4.389337888", "0.909774", "121/133", "71,970",
+                      "14/14", "17/22", "v1.10.0", "normalized expected leaked"]
+    elif "v1.9" in os.path.basename(pdf):
         captions = []
         keystrings = ["4.389337888", "0.28480", "0.909774", "121/133", "171 randomized"]
     if not os.path.exists(pdf):

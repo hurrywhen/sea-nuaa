@@ -1,8 +1,8 @@
 {
   "schema": "sea.v19.working-artifact-manifest/v1",
   "release_status": "PUBLIC_CANDIDATE_RELEASE__PRERELEASE_NOT_INDEPENDENTLY_REVIEWED",
-  "generated_utc": "2026-11-16T22:49:07.074279+00:00",
-  "git_head_at_generation": "cd1c5956fa5069d62bba4b7b9ae628dab45d76ef",
+  "generated_utc": "2026-11-16T22:47:40.600365+00:00",
+  "git_head_at_generation": "8c37f79c888727a0ca9b12689cca451d81e940d7",
   "git_tree_dirty_at_generation": true,
   "persistent_release_identifier": "v1.9.0",
   "public_repositories": {
@@ -26,8 +26,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 9951,
-      "sha256": "bdea8eab1d16764a626960294def222d639b66d48d0073487ce2ae067be9aa84"
+      "bytes": 10481,
+      "sha256": "bd094e6b20b430e13b84fbf7c4051ee8bda8d9f67365ed9c4c37efb95d92caf6"
     },
     {
       "path": "RELEASE_v1.9.md",
@@ -86,13 +86,13 @@
     },
     {
       "path": "sim/pilot/results/v19_financial_caliber_audit/critical_coverage_matrix.csv",
-      "bytes": 11433,
-      "sha256": "303acd5532af942bbeac0419efd77f630686e3f99713e664f92b24c84ea1f65b"
+      "bytes": 11609,
+      "sha256": "80947cc6232ecf32bdd4ff5b6c1c9ff47e4e0f3d2866f403cb86e68252693957"
     },
     {
       "path": "sim/pilot/results/v19_financial_caliber_audit/run_recall_by_unit.csv",
-      "bytes": 2494,
-      "sha256": "12d221890cebeb729d2061751645b52e09e861fca1b879f1c5f635d20db442c3"
+      "bytes": 2555,
+      "sha256": "6f55d2409a5ba5ae5571102f558947a9718dba1c1eb91804e6c402aec3673fa0"
     },
     {
       "path": "sim/pilot/results/v19_financial_caliber_audit/summary.json",
@@ -106,8 +106,8 @@
     },
     {
       "path": "sim/pilot/results/v19_recall_value_tradeoff/run_metrics.csv",
-      "bytes": 10315,
-      "sha256": "1af723b74b3c097f0e9033f6d5e1454db1d58ce36774caa4e88d67ac6fd1d3d4"
+      "bytes": 10396,
+      "sha256": "b655fcae5447a4811635612104f5bd9ddd0ce6b5a414173a29ffc3ff79c8a0b8"
     },
     {
       "path": "sim/pilot/results/v19_recall_value_tradeoff/summary.json",
@@ -121,8 +121,8 @@
     },
     {
       "path": "sim/pilot/results/v19_upstream_digest_audit/run_upstream_coverage.csv",
-      "bytes": 8492,
-      "sha256": "13a1ff91aaddbc6407d63c0ccdde1f200dda54e9826af651eb2301da6e8c2850"
+      "bytes": 8573,
+      "sha256": "f1a0411698fb29731a69390e88288e62f8a3e1c386e9c66f9528c928c79f6286"
     },
     {
       "path": "sim/pilot/results/v19_upstream_digest_audit/summary.json",
@@ -185,9 +185,19 @@
       "sha256": "10e85f897d4d65da1fe2bea07b81fb2f0272d9d0e9f02b0375a0dba945dde85d"
     },
     {
+      "path": "tools/make_public.py",
+      "bytes": 18909,
+      "sha256": "0e0d844d2cfe3532bb896d6be81cfc6aad81f4c1bb942d43a2ba51d31385df7b"
+    },
+    {
       "path": "tools/make_v19_manifest.py",
       "bytes": 6500,
       "sha256": "fcafba42c9673c91a4f486d7257f8ebcbf8be9bc32a9aeb2fe57fabeaeda7fb9"
+    },
+    {
+      "path": "tools/publish_v19.py",
+      "bytes": 7464,
+      "sha256": "f859d2ac8c48125104dcea771fbd0cd951936604c3c91760ed41023bf15d39e5"
     },
     {
       "path": "tools/reproduce_v19_math.py",
