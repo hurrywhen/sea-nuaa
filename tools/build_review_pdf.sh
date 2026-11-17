@@ -13,6 +13,7 @@ cd "$(dirname "$0")/.."
 MODE="${1:-zh}"
 BUILD_DATE="$(date +%F)"
 PDFVER="${2:-v1.8}"
+PDFAUTHORS="Wen Hu; Xutong Wang; Ya Yu"
 
 if [ "$MODE" = "en" ]; then
   SRC="input/sovereign_epistemic_acquisition_EN_${PDFVER}.md"
@@ -22,7 +23,7 @@ if [ "$MODE" = "en" ]; then
   CONTENTS="Contents"
   FIRSTPART='^# Part I'
   STAMP="*Review artifact: **${PDFVER}** · built ${BUILD_DATE} · working revision — verify the source hash and evidence-status matrix before review; earlier PDFs are separate versions.*"
-  PDFTITLE="Sovereign Epistemic Acquisition (SEA) ${PDFVER} - built ${BUILD_DATE}"
+  PDFTITLE="Sovereign Epistemic Acquisition: Conditional Components, Governance Audits, and Weighted Omission (${PDFVER}; built ${BUILD_DATE})"
 else
   SRC="input/主权认知获取_统一理论_${PDFVER}.md"
   OUT="latex/主权认知获取_统一理论_${PDFVER}_内审稿.pdf"
@@ -96,7 +97,15 @@ cat > "$TMP/preamble.tex" <<TEX
 \renewcommand{\contentsname}{$CONTENTS}
 \sloppy
 \setlength{\parskip}{2pt}
-\AtBeginDocument{\hypersetup{pdftitle={$PDFTITLE},pdfsubject={Review artifact $PDFVER (built $BUILD_DATE)},pdfkeywords={SEA; SAP; epistemic sovereignty; $PDFVER}}}
+\newcommand{\Needspace}[1]{%
+  \par
+  \ifdim\pagegoal>\pagetotal
+    \ifdim\dimexpr\pagegoal-\pagetotal\relax<#1\relax
+      \newpage
+    \fi
+  \fi
+}
+\AtBeginDocument{\hypersetup{pdftitle={$PDFTITLE},pdfauthor={$PDFAUTHORS},pdfsubject={Review artifact $PDFVER (built $BUILD_DATE)},pdfkeywords={SEA; SAP; epistemic sovereignty; $PDFVER}}}
 TEX
 
 # 3) pandoc -> xelatex

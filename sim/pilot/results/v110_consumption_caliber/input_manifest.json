@@ -1,5 +1,5 @@
 {
- "schema": "sea.v110.selected-proxy-input-manifest/v1",
+ "schema": "sea.v110.selected-proxy-input-manifest/v2",
  "raw_replay_shards": [
   {
    "path": "sim/pilot/results/llm_replay_c_r01a.jsonl",
@@ -2645,7 +2645,7 @@
  ],
  "analysis_script": {
   "path": "sim/sea_pilot/audit_v110_consumption_caliber.py",
-  "sha256": "53a3e7d20826e82325cb7a9f66833b5521028d343b77493fc29e686f3f7472d0"
+  "sha256": "aa0678d6c71498574ddc7ca4bcfa0c222d6129f0db32a0eb724110f120a24660"
  },
  "all_292_raw_shards_match_frozen_reanalysis_manifest": true,
  "skipped_non_main_tags": [

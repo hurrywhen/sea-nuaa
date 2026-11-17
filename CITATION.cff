@@ -2,12 +2,12 @@ cff-version: 1.2.0
 message: "If you use this code or data, please cite the paper and the software release as follows."
 type: software
 title: "Sovereign Epistemic Acquisition (SEA): simulation code, frozen experiment records, and consistency-audit tooling"
-version: 1.10.0
+version: 1.11.0
 date-released: 2026-11-17
 license: MIT
 repository-code: "https://github.com/hurrywhen/sea-nuaa"
-url: "https://github.com/hurrywhen/sea-nuaa/releases/tag/v1.10.0"
-# Historical v1.7 Zenodo DOI is documented in RELEASE_v1.10.md; no v1.10 DOI is asserted.
+url: "https://github.com/hurrywhen/sea-nuaa/releases/tag/v1.11.0"
+# Historical v1.7 Zenodo DOI is documented in RELEASE_v1.11.md; no v1.11 DOI is asserted.
 authors:
   - family-names: Hu
     given-names: Wen
@@ -20,7 +20,7 @@ authors:
 preferred-citation:
   type: article
   title: "Sovereign Epistemic Acquisition: Conditional Components, Governance Audits, and Weighted Omission"
-  url: "https://github.com/hurrywhen/sea-nuaa/releases/tag/v1.10.0"
+  url: "https://github.com/hurrywhen/sea-nuaa/releases/tag/v1.11.0"
   authors:
     - family-names: Hu
       given-names: Wen
@@ -30,4 +30,4 @@ preferred-citation:
       given-names: Ya
   year: 2026
   license: CC-BY-4.0
-  notes: "Public candidate snapshot v1.10.0 on GitHub and Gitee (https://gitee.com/jiangsu-yunhefeng-intelligent_0/sea-nuaa); the historical Zenodo v1.7 DOI does not include this revision. Conditional components, governance conformance, and evidence audits: historical picked records are selected proxies, not actual consumption. Direct matched baselines, independent human mathematical review, third-party reproduction, human data, and a v1.10-specific DOI remain pending."
+  notes: "Public candidate snapshot v1.11.0 on GitHub and Gitee (https://gitee.com/jiangsu-yunhefeng-intelligent_0/sea-nuaa); the historical Zenodo v1.7 DOI does not include this revision. Conditional components, governance conformance, and evidence audits: historical picked records are selected proxies, not actual consumption. Direct matched baselines, independent human mathematical review, third-party reproduction, human data, and a v1.11-specific DOI remain pending."

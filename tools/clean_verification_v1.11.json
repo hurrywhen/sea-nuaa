@@ -1,0 +1,301 @@
+{
+  "schema": "sea.v111.clean-public-verification/v1",
+  "status": "PASS",
+  "scope": "Author-run verification in a sanitized public copy with no .git directory; not third-party reproduction.",
+  "git_directory_present": false,
+  "financial_PATH_contains_git_executable": false,
+  "financial_historical_sha256": "80e953d19efb44787d4fb8b03e37ee6cbfbfc325488769df8a0e89281b495024",
+  "arxiv_hash_manifest_entries_verified": 716,
+  "checks": [
+    {
+      "name": "math-and-SAP-tests",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "tools/test_v19_math.py",
+        "tools/test_v110_sap.py"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "test_subset_choice_reference_and_zero_temperature_limit (tools.test_v19_math.V19MathTests.test_subset_choice_reference_and_zero_temperature_limit) ... ok",
+        "test_survival_function_and_grid_tail_metadata (tools.test_v19_math.V19MathTests.test_survival_function_and_grid_tail_metadata) ... ok",
+        "test_weighted_average_is_not_product_of_average (tools.test_v19_math.V19MathTests.test_weighted_average_is_not_product_of_average) ... ok",
+        "test_every_omission_has_one_first_failed_stage (tools.test_v110_sap.V110SapExampleTests.test_every_omission_has_one_first_failed_stage) ... ok",
+        "test_noncomposition_counterexample (tools.test_v110_sap.V110SapExampleTests.test_noncomposition_counterexample) ... ok",
+        "test_stage_recalls_and_omission_decomposition (tools.test_v110_sap.V110SapExampleTests.test_stage_recalls_and_omission_decomposition) ... ok",
+        "test_symmetric_channel_and_attendance_measurement (tools.test_v110_sap.V110SapExampleTests.test_symmetric_channel_and_attendance_measurement) ... ok",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 13 tests in 0.146s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "name": "reproduce-math",
+      "command": [
+        "python3",
+        "tools/reproduce_v19_math.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote mathematical reproduction artifacts to <clean-public-root>/sim/theory_v1.9"
+      ]
+    },
+    {
+      "name": "reproduce-SAP",
+      "command": [
+        "python3",
+        "tools/reproduce_v110_sap.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote <clean-public-root>/sim/theory_v1.10/sap_example.json"
+      ]
+    },
+    {
+      "name": "governance-replay-financial-caliber-tests",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "sea_governance.test_reference",
+        "sea_pilot.test_replay_frozen",
+        "sea_pilot.test_audit_v19_financial_caliber",
+        "sea_pilot.test_audit_v110_consumption_caliber"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "test_independent_csv_matches_pinned_provenance (sea_pilot.test_audit_v19_financial_caliber.TestFrozenHistoricalInput.test_independent_csv_matches_pinned_provenance) ... ok",
+        "test_same_size_modification_is_rejected (sea_pilot.test_audit_v19_financial_caliber.TestFrozenHistoricalInput.test_same_size_modification_is_rejected) ... ok",
+        "test_canonical_names_and_legacy_input_aliases (sea_pilot.test_audit_v110_consumption_caliber.ConsumptionCaliberTest.test_canonical_names_and_legacy_input_aliases) ... ok",
+        "test_csv_and_ledger_do_not_emit_legacy_names (sea_pilot.test_audit_v110_consumption_caliber.ConsumptionCaliberTest.test_csv_and_ledger_do_not_emit_legacy_names) ... ok",
+        "test_future_schema_closes_attendance_and_primary_missing_rule (sea_pilot.test_audit_v110_consumption_caliber.ConsumptionCaliberTest.test_future_schema_closes_attendance_and_primary_missing_rule) ... ok",
+        "test_generated_summary_uses_only_canonical_calibers (sea_pilot.test_audit_v110_consumption_caliber.ConsumptionCaliberTest.test_generated_summary_uses_only_canonical_calibers) ... ok",
+        "test_rename_preserves_designated_numeric_result (sea_pilot.test_audit_v110_consumption_caliber.ConsumptionCaliberTest.test_rename_preserves_designated_numeric_result) ... ok",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 42 tests in 0.215s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "name": "governance-report",
+      "command": [
+        "python3",
+        "-m",
+        "sea_governance.conformance",
+        "--output",
+        "pilot/results/governance_conformance_v1.10.json"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "    \"sea_governance.test_reference.TestS2WritesAndRollback.test_s3_revenue_objective_term_is_rejected_even_with_authorization\",",
+        "    \"sea_governance.test_reference.TestS3Counterfactuals.test_deterministic_integer_ranking_and_candidate_id_tie_break\",",
+        "    \"sea_governance.test_reference.TestS3Counterfactuals.test_s3_changed_candidate_ecology_is_separately_logged_and_classified\",",
+        "    \"sea_governance.test_reference.TestS3Counterfactuals.test_s3_fixed_supply_platform_invariance_and_rejected_platform_write\",",
+        "    \"sea_governance.test_reference.TestS4AuditAndRecourse.test_missing_evidence_is_rejected_before_append\",",
+        "    \"sea_governance.test_reference.TestS4AuditAndRecourse.test_reordering_and_anchored_truncation_are_detected\",",
+        "    \"sea_governance.test_reference.TestS4AuditAndRecourse.test_s4_all_decisions_have_evidence_and_valid_hash_chain\",",
+        "    \"sea_governance.test_reference.TestS4AuditAndRecourse.test_s4_contestation_and_recourse_records_are_linked\",",
+        "    \"sea_governance.test_reference.TestS4AuditAndRecourse.test_tampering_with_payload_is_detected_without_mutating_internal_log\"",
+        "  ],",
+        "  \"tests_run\": 14",
+        "}"
+      ]
+    },
+    {
+      "name": "consumption-audit",
+      "command": [
+        "python3",
+        "sim/sea_pilot/audit_v110_consumption_caliber.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote 7 selected-proxy audit artifacts to sim/pilot/results/v110_consumption_caliber"
+      ]
+    },
+    {
+      "name": "financial-audit",
+      "command": [
+        "python3",
+        "sim/sea_pilot/audit_v19_financial_caliber.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote 4 artifacts to <clean-public-root>/sim/pilot/results/v19_financial_caliber_audit"
+      ]
+    },
+    {
+      "name": "upstream-audit",
+      "command": [
+        "python3",
+        "sim/sea_pilot/audit_v19_upstream_digest.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote 3 artifacts to <clean-public-root>/sim/pilot/results/v19_upstream_digest_audit"
+      ]
+    },
+    {
+      "name": "citation-return-audit",
+      "command": [
+        "python3",
+        "sim/sea_pilot/audit_v19_recall_value_tradeoff.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote 3 artifacts to <clean-public-root>/sim/pilot/results/v19_recall_value_tradeoff"
+      ]
+    },
+    {
+      "name": "release-audit",
+      "command": [
+        "python3",
+        "tools/audit_v111.py"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "v1.11 audit: 112/112 passed; failures=0",
+        "report: <clean-public-root>/tools/audit_v111_report.json"
+      ]
+    },
+    {
+      "name": "review-PDF-build",
+      "command": [
+        "bash",
+        "tools/build_review_pdf.sh",
+        "en",
+        "v1.11"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "[preprocess] 992 -> 995 行, 目录替换=True, 身份戳=True",
+        "[ok] 已生成 latex/SEA_EN_v1.11_draft.pdf",
+        "Pages:           39",
+        "Page size:       595.276 x 841.89 pts (A4)"
+      ]
+    },
+    {
+      "name": "PDF-text-layer",
+      "command": [
+        "python3",
+        "tools/check_pdf_textlayer.py",
+        "latex/SEA_EN_v1.11_draft.pdf",
+        "input/sovereign_epistemic_acquisition_EN_v1.11.md"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "PDF=latex/SEA_EN_v1.11_draft.pdf 页数≈39 文本层字符=87653 源稿字符=97567 比=0.90",
+        "标题 18 个，断裂 0；问题 0"
+      ]
+    },
+    {
+      "name": "PDF-layout",
+      "command": [
+        "python3",
+        "tools/check_pdf_layout.py",
+        "latex/SEA_EN_v1.11_draft.pdf",
+        "--json",
+        "tools/pdf_layout_v1.11.json"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "PDF layout PASS: 39 pages; no word within 20 pt of left/right edge"
+      ]
+    },
+    {
+      "name": "arXiv-build",
+      "command": [
+        "bash",
+        "tools/make_arxiv_source.sh",
+        "v1.11"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "[preprocess] 目录替换=True",
+        "[fonts] 3 处字体声明已改为文件名加载（arXiv 兼容）",
+        "[ok] xelatex 试编译通过：39 页；Missing character 告警 0 处",
+        "[ok] 源包：latex/SEA_v1.11_arxiv_source.tar.gz（28M）；目录：latex/arxiv_v1.11",
+        "[note] arXiv 提交时处理器选择 **XeLaTeX**；anc/ 为附件目录"
+      ]
+    },
+    {
+      "name": "arXiv-hash-manifest",
+      "command": [
+        "sha256sum",
+        "-c",
+        "anc/SHA256SUMS"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "anc/v110_consumption_caliber/summary.json: 成功",
+        "anc/v19_financial_caliber_audit/critical_coverage_matrix.csv: 成功",
+        "anc/v19_financial_caliber_audit/historical_p2_rows_8ffc7f5.csv: 成功",
+        "anc/v19_financial_caliber_audit/REPORT.md: 成功",
+        "anc/v19_financial_caliber_audit/run_recall_by_unit.csv: 成功",
+        "anc/v19_financial_caliber_audit/summary.json: 成功",
+        "anc/v19_recall_value_tradeoff/REPORT.md: 成功",
+        "anc/v19_recall_value_tradeoff/run_metrics.csv: 成功",
+        "anc/v19_recall_value_tradeoff/summary.json: 成功",
+        "anc/v19_upstream_digest_audit/REPORT.md: 成功",
+        "anc/v19_upstream_digest_audit/run_upstream_coverage.csv: 成功",
+        "anc/v19_upstream_digest_audit/summary.json: 成功"
+      ]
+    },
+    {
+      "name": "financial-default-without-git-or-PATH-git",
+      "command": [
+        "/usr/bin/python3",
+        "sim/sea_pilot/audit_v19_financial_caliber.py"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "      \"acceptance_hour_lt_13\": 28,",
+        "      \"acceptance_hour_unknown_news\": 53,",
+        "      \"targets\": 175",
+        "    },",
+        "    \"portfolio_market_proxy\": {",
+        "      \"acceptance_hour_ge_13\": 7,",
+        "      \"acceptance_hour_lt_13\": 4,",
+        "      \"acceptance_hour_unknown_news\": 8,",
+        "      \"targets\": 19",
+        "    }",
+        "  }",
+        "}"
+      ]
+    },
+    {
+      "name": "financial-write-without-git-or-PATH-git",
+      "command": [
+        "/usr/bin/python3",
+        "sim/sea_pilot/audit_v19_financial_caliber.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote 4 artifacts to <clean-public-root>/sim/pilot/results/v19_financial_caliber_audit"
+      ]
+    }
+  ],
+  "rebuilt_clean_pdf_sha256": "5db0909d28f8f31cce2ad9d3fa81dc3044cc8ea77f3370ddaed8ffdcc5906f37",
+  "rebuilt_clean_arxiv_source_sha256": "a35dd9d8ea6bb3cef6164b81cfb65648b79186532cada39bf48fc132ce833719",
+  "binary_hash_note": "Hashes describe the clean-room rebuild, not a required byte match to a separately timed publisher build. The pinned financial input hash must and does match exactly."
+}

@@ -1,8 +1,8 @@
 {
   "schema": "sea.v110.candidate-artifact-manifest/v1",
   "release_status": "PUBLIC_CANDIDATE_RELEASE__PRERELEASE_NOT_INDEPENDENTLY_REVIEWED",
-  "generated_utc": "2026-11-17T02:20:44.886322+00:00",
-  "git_head_at_generation": "106b4893aad8d16f60f438db2861495d1edf5595",
+  "generated_utc": "2026-11-17T02:19:13.706465+00:00",
+  "git_head_at_generation": "5aa29a40d155407d2bd23e567643c312964f7ec4",
   "git_tree_dirty_at_generation": true,
   "persistent_release_identifier": "v1.10.0",
   "public_repositories": {
@@ -27,8 +27,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 7024,
-      "sha256": "6a2bba3ac10d8e46e8a9a81a5f6f8c8cb66cc6174defb715b719cf46dd6594eb"
+      "bytes": 7554,
+      "sha256": "c1179d36254b0675ff8dca699565b0235705d62a2cdead85e2712809dce7dffa"
     },
     {
       "path": "RELEASE_v1.10.md",
@@ -68,12 +68,12 @@
     {
       "path": "latex/SEA_EN_v1.10_draft.pdf",
       "bytes": 321685,
-      "sha256": "ba6ec87cc5f481dfa884dd4d2978b1cb1bd8938a0eeee59ab8916f8e79c872ae"
+      "sha256": "00e6f4a9a3fe3fc4a8732cde947d623c6cd466dc339972ffe76122d6255aec5e"
     },
     {
       "path": "latex/SEA_v1.10_arxiv_source.tar.gz",
-      "bytes": 28497341,
-      "sha256": "cc9681908c4984994136902bf6bed5c58146cad36229c054fc701f1f63069329"
+      "bytes": 28691510,
+      "sha256": "2e406bcc40bedab7c1faeb5091e5d60fbe13ee9ffa02e19950e3fcd564e8348c"
     },
     {
       "path": "latex/arxiv_v1.10/main.tex",
@@ -112,13 +112,13 @@
     },
     {
       "path": "sim/pilot/results/v110_consumption_caliber/run_metrics.csv",
-      "bytes": 78983,
-      "sha256": "aa9df1f6917eee56623f0fe223fbcbe2df0f9ef2929a73c46daed584f484e183"
+      "bytes": 79304,
+      "sha256": "a5ea5c0cc950badd348d147b88e35a7bccc6b99c8ecf893e93f9fa9aedab27bc"
     },
     {
       "path": "sim/pilot/results/v110_consumption_caliber/scenario_effects.csv",
-      "bytes": 13561,
-      "sha256": "10d658ed3c03f8f2e5e1f9e953fbb2172913cb77d987e29d81a7be773f93f22e"
+      "bytes": 13630,
+      "sha256": "4b640084efddfd1fbf76d34b488d33f71164c175027c8bc9eae1fab6017abb9e"
     },
     {
       "path": "sim/pilot/results/v110_consumption_caliber/summary.json",
@@ -132,8 +132,8 @@
     },
     {
       "path": "sim/pilot/results/v19_financial_caliber_audit/critical_coverage_matrix.csv",
-      "bytes": 11433,
-      "sha256": "303acd5532af942bbeac0419efd77f630686e3f99713e664f92b24c84ea1f65b"
+      "bytes": 11609,
+      "sha256": "80947cc6232ecf32bdd4ff5b6c1c9ff47e4e0f3d2866f403cb86e68252693957"
     },
     {
       "path": "sim/pilot/results/v19_financial_caliber_audit/historical_p2_rows_8ffc7f5.csv",
@@ -142,8 +142,8 @@
     },
     {
       "path": "sim/pilot/results/v19_financial_caliber_audit/run_recall_by_unit.csv",
-      "bytes": 2494,
-      "sha256": "12d221890cebeb729d2061751645b52e09e861fca1b879f1c5f635d20db442c3"
+      "bytes": 2555,
+      "sha256": "6f55d2409a5ba5ae5571102f558947a9718dba1c1eb91804e6c402aec3673fa0"
     },
     {
       "path": "sim/pilot/results/v19_financial_caliber_audit/summary.json",
@@ -157,8 +157,8 @@
     },
     {
       "path": "sim/pilot/results/v19_recall_value_tradeoff/run_metrics.csv",
-      "bytes": 10315,
-      "sha256": "1af723b74b3c097f0e9033f6d5e1454db1d58ce36774caa4e88d67ac6fd1d3d4"
+      "bytes": 10396,
+      "sha256": "b655fcae5447a4811635612104f5bd9ddd0ce6b5a414173a29ffc3ff79c8a0b8"
     },
     {
       "path": "sim/pilot/results/v19_recall_value_tradeoff/summary.json",
@@ -172,8 +172,8 @@
     },
     {
       "path": "sim/pilot/results/v19_upstream_digest_audit/run_upstream_coverage.csv",
-      "bytes": 8492,
-      "sha256": "13a1ff91aaddbc6407d63c0ccdde1f200dda54e9826af651eb2301da6e8c2850"
+      "bytes": 8573,
+      "sha256": "f1a0411698fb29731a69390e88288e62f8a3e1c386e9c66f9528c928c79f6286"
     },
     {
       "path": "sim/pilot/results/v19_upstream_digest_audit/summary.json",
@@ -184,6 +184,11 @@
       "path": "sim/sea_governance/__init__.py",
       "bytes": 554,
       "sha256": "c5ce312412a50ed304c4f59c23f00372dd79785e2fb29dd12bd0726f4046d7db"
+    },
+    {
+      "path": "sim/sea_governance/__pycache__/reference.cpython-312.pyc",
+      "bytes": 36276,
+      "sha256": "34c9e57bf95ddcfffe5e7823f29ddc40e9641ec4d5f676460b0a361ff543d36c"
     },
     {
       "path": "sim/sea_governance/conformance.py",
@@ -276,9 +281,19 @@
       "sha256": "e546833ff4bcf5b1482f1152b2e88a0624e14795bc737b0b8406d36a11c068f1"
     },
     {
+      "path": "tools/make_public.py",
+      "bytes": 19340,
+      "sha256": "2edfd0b0ac6c77937c6605f6d0e207a621808032a4c8eb0c376fc03be255abf5"
+    },
+    {
       "path": "tools/make_v110_manifest.py",
       "bytes": 7072,
       "sha256": "a68f9ea5f8055c0e0b6a9ccd11de45c607e2ef2c470e3e92cf2a11e521f3ca27"
+    },
+    {
+      "path": "tools/publish_v110.py",
+      "bytes": 8901,
+      "sha256": "19310edd0952c1e66a23f2a04df998cb3992ad392c5d498c6790fff3aa0d9326"
     },
     {
       "path": "tools/reproduce_v110_sap.py",

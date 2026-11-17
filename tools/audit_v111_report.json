@@ -1,0 +1,571 @@
+{
+  "schema": "sea.v111.release-audit/v1",
+  "n_checks": 112,
+  "n_passed": 112,
+  "n_failed": 0,
+  "status": "PASS",
+  "failures": [],
+  "scope": "Internal consistency only; not independent proof, reproduction, or effectiveness validation.",
+  "checks": [
+    {
+      "name": "exists:input/sovereign_epistemic_acquisition_EN_v1.11.md",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/pilot/results/evidence_status_v1.11.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/pilot/results/v110_consumption_caliber/summary.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/pilot/results/v19_financial_caliber_audit/summary.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/pilot/results/governance_conformance_v1.10.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/theory_v1.10/sap_example.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:RELEASE_v1.11.md",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:docs/REPRODUCIBILITY_v1.11.md",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:docs/MINIMAL_VALID_EXPERIMENT_v1.11.md",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:docs/LITERATURE_SEARCH_v1.11.md",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:docs/SUPPLEMENT_NORMATIVE_AND_TRANSFER_v1.11.md",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:docs/SUPPLEMENT_FORMAL_AND_SECONDARY_v1.11.md",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/pilot/results/v110_consumption_caliber/future_logging_schema.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/pilot/results/v110_consumption_caliber/key_ledger.jsonl.gz",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/pilot/results/v110_consumption_caliber/scenario_effects.csv",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/sea_governance/reference.py",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/sea_governance/test_reference.py",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/sea_pilot/audit_v110_consumption_caliber.py",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/sea_pilot/test_audit_v110_consumption_caliber.py",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/sea_pilot/audit_v19_financial_caliber.py",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:sim/pilot/results/v19_financial_caliber_audit/historical_p2_rows_8ffc7f5.csv",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:tools/reproduce_v110_sap.py",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:tools/test_v110_sap.py",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:tools/check_pdf_layout.py",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "release:route",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "release:tag_and_doi_boundary",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "release:no_effect_or_human_claim",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "release:manuscript_version",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "release:historical_doi_not_mislabeled",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "governance:14_pass",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "governance:four_properties",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "governance:manuscript_result",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "governance:scope_limit",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "legacy:no_stale_reference:定理 6.1 分工",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "legacy:no_stale_reference:定理 8.2：",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "legacy:no_stale_reference:引理 12.1 修正",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "legacy:no_stale_reference:§15.3",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "legacy:no_stale_reference:定理 11.1",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "legacy:no_stale_reference:定理 7.3",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "legacy:version_boundary",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "sap:pipeline_recalls",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "sap:omission_decomposition",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "sap:noncomposition",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "sap:manuscript_example",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "sap:initial_joint_and_write_timing",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "sap:zero_probability_histories",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "algorithm:decomposed_complexity",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "sap:symmetric_channel_and_measured_absence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "sap:multi_item_target_partition",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "financial:hash",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "financial:bytes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "financial:1260_rows",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "financial:no_git_subprocess",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "financial:provenance",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "financial:historical_values",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "financial:expanded_values",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "financial:budget_caliber",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "financial:manuscript_no_git_dependency",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "financial:feature_and_supply_provenance",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:key_identities",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:record_accounting",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:no_consumption_observation",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:no_efficiency_backfill",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:rule_A_denominators",
+      "passed": true,
+      "detail": "{'recall': 71573, 'return': 70676, 'sign': 71618}"
+    },
+    {
+      "name": "consumption:strict_singleton",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:G_denominators",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:accurate_retrospective_names",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:primary_delta:O",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:primary_keys:O",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:primary_delta:C",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:primary_keys:C",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:primary_delta:Q",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:primary_keys:Q",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:primary_delta:G",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:primary_keys:G",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:17_sign_stability:O",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:17_sign_stability:C",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:17_sign_stability:Q",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:17_sign_stability:G",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:interval_label",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:selected_not_consumed",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:future_stages",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:attendance_instrument",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:primary_missing_rule",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "consumption:future_efficiency",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "structure:11_tables",
+      "passed": true,
+      "detail": "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]"
+    },
+    {
+      "name": "structure:three_figures",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "structure:11_equation_tags",
+      "passed": true,
+      "detail": "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]"
+    },
+    {
+      "name": "structure:no_theorem_mix",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "structure:51_references",
+      "passed": true,
+      "detail": "51"
+    },
+    {
+      "name": "structure:oracle_relaxation",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "structure:explicit_monotone_quantifiers",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "structure:narrative_review",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "literature:Lewis et al. (2020)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "literature:Peng et al. (2025)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "literature:Lin et al. (2026)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "literature:Clopper & Pearson, 1934",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "literature:Kuhn & Tucker, 1951",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "literature:McNemar, 1947",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "literature:Cochran, 1954",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "literature:Mantel & Haenszel, 1959",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "literature:Efron, 1979",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "protocol:one_primary",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "protocol:attendance_registration",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "protocol:closed_primary_missing_rule",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "structure:deferred_proofs_and_secondary_tables",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "protocol:efficiency",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "layout:no_long_bash_source_lines",
+      "passed": true,
+      "detail": "[]"
+    },
+    {
+      "name": "layout:pdf_exists",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "layout:no_edge_overflow",
+      "passed": true,
+      "detail": "[]"
+    },
+    {
+      "name": "layout:a4",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "layout:author_metadata",
+      "passed": true,
+      "detail": ""
+    }
+  ]
+}

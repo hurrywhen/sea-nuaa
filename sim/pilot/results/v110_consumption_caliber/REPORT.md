@@ -1,6 +1,6 @@
 # Frozen replay selected-proxy consumption-caliber audit
 
-**Status: `POST_HOC_SELECTED_PROXY_ITT_SENSITIVITY__WITHIN_CORPUS_EXPLORATORY`.** No model calls, interventions, or new delivery/open/consumption observations.
+**Status: `POST_HOC_SELECTED_PROXY_RETROSPECTIVE_DESCRIPTIVE__WITHIN_CORPUS_EXPLORATORY`.** No model calls, interventions, or new delivery/open/consumption observations.
 
 `picked` identifies a **selected proxy only**. Neither selected recall nor selected citation-weighted return is actual consumption, decision utility, welfare, or an end-to-end effect.
 
@@ -26,7 +26,7 @@ An existing key has at least one structurally parseable policy record. There are
 
 Nonempty duplicate groups: **1608**; excess nonempty records: **1633**. Metric conflicts are recall **341**, citation return **1238**, paired sign **296**, and any six-field conflict **1389**. No conflict is silently assigned zero.
 
-## 3. Complete all-existing-key zero-empty sensitivity (`ITT_ALL_RECORD_MEAN`)
+## 3. Complete all-existing-key zero-empty sensitivity (`ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY`)
 
 Every existing key contributes once to recall and return. Within a key, every raw policy record has equal weight, including each `picked=[]` record as zero selected hits/return. If `h̄_k` is the record-averaged selected hits for key k, run recall is `sum_k h̄_k / sum_k n_crit,k` (a ratio of sums), **not** `mean_k(h̄_k/n_crit,k)`; keys with more critical opportunities therefore have greater weight. Citation return is the equal-key mean of within-key attempt-mean contrasts. This gives complete existing-key support but estimates a recorded-attempt mean; it does not identify the historically correct attempt. Paired sign is not applicable to fractional means.
 
@@ -39,7 +39,7 @@ Every existing key contributes once to recall and return. Within a key, every ra
 
 Family estimates are unweighted run means. Intervals are exploratory 10,000-draw whole-run percentile bootstrap intervals (seed 42); Q/G have only 10 runs. They omit corpus, duplicate-arbitration, missingness, and model-dependence uncertainty.
 
-## 4. Conflict-refusing zero-empty sensitivity (`ITT_METRIC_RESOLVED` = frozen G)
+## 4. Conflict-refusing zero-empty sensitivity (`METRIC_RESOLVED_ZERO_EMPTY` = frozen G)
 
 Empty-only keys are zero-filled. Nonempty duplicates enter a metric only when that metric's sufficient statistic is consistent; empty rows sharing a nonempty key do not create a new key or overwrite the nonempty Rule-A value. Exact recall/return/sign denominators are **71629 / 70732 / 71674**. The 30 no-row keys and each affected conflict remain excluded, not zero-filled.
 
@@ -54,7 +54,7 @@ Raw recomputation matches frozen scenario G for **80/80 runs** across denominato
 
 ## 5. Secondary existing calibers: nonempty Rule A versus strict singleton
 
-These are existing frozen outputs, not replacements for the selected-proxy ITT sensitivity. Rule A uses different resolved cohorts by metric: **71,573 recall, 70,676 return, 71,618 sign**. Strict singleton uses exactly one nonempty record per key and therefore a common **70,306-key** cohort. Their population difference prevents interpreting numerical changes as an isolated duplicate effect.
+These are existing frozen outputs, not replacements for the designated retrospective descriptive caliber. Rule A uses different resolved cohorts by metric: **71,573 recall, 70,676 return, 71,618 sign**. Strict singleton uses exactly one nonempty record per key and therefore a common **70,306-key** cohort. Their population difference prevents interpreting numerical changes as an isolated duplicate effect.
 
 | Caliber | Family | n recall / return / sign | Selected recall | Parametric recall | Δrecall [CI] | Δcitation return [CI] |
 |---|---|---:|---:|---:|---:|---:|
@@ -84,7 +84,7 @@ All 68 scenario×family estimates, intervals, and exact metric denominators are 
 
 ## 7. Prospective logging schema (not historical backfill)
 
-`future_logging_schema.json` is a JSON Schema for one policy attempt with explicit attempt identity, parser/execution/transport status, empty-selection reason, and per-item **selected → delivered → opened → attended/consumed** event objects. It also requires explicit `calls`, `input_tokens`, `output_tokens`, `cost{amount,currency}`, `latency_ms`, and `retries`; unknown measurements are null, not zero.
+`future_logging_schema.json` is a JSON Schema for one policy attempt with explicit attempt identity, parser/execution/transport status, empty-selection reason, and per-item **selected → delivered → opened → attended/consumed** event objects. Attended is the single terminal consumption event and carries instrument/version, threshold, validation, blinding, and evidence fields. The registered primary outcome is all-assigned failure-composite omission; unknown raw attendance is not rewritten as observed non-consumption. The schema also requires explicit `calls`, `input_tokens`, `output_tokens`, `cost{amount,currency}`, `latency_ms`, and `retries`; unknown measurements are null, not zero.
 The old replay fails the historical information requirement for this chain, so no synthetic old events or efficiency values are emitted.
 
 ## 8. Reproduction and files

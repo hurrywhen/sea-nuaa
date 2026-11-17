@@ -23,7 +23,7 @@ DATE_STR="3 November 2026"
 if [ "$VERSION" = "v1.9" ]; then
   DATE_STR="16 November 2026"
 fi
-if [ "$VERSION" = "v1.10" ]; then
+if [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11" ]; then
   DATE_STR="17 November 2026"
 fi
 if [ ! -f "$SRC" ]; then
@@ -67,6 +67,15 @@ cat > "$TMP/preamble.tex" <<'TEX'
 \renewcommand{\contentsname}{Contents}
 \sloppy
 \setlength{\parskip}{2pt}
+\newcommand{\Needspace}[1]{%
+  \par
+  \ifdim\pagegoal>\pagetotal
+    \ifdim\dimexpr\pagegoal-\pagetotal\relax<#1\relax
+      \newpage
+    \fi
+  \fi
+}
+\AtBeginDocument{\hypersetup{pdftitle={Sovereign Epistemic Acquisition: Conditional Components, Governance Audits, and Weighted Omission},pdfauthor={Wen Hu; Xutong Wang; Ya Yu},pdfkeywords={SEA; SAP; epistemic sovereignty; weighted omission}}}
 TEX
 
 # 3) pandoc -> main.tex（standalone 文档；默认字体，日期固定避免 \today）
@@ -111,15 +120,17 @@ cat > "$OUTDIR/00README.XXX" <<'EOF'
 main.tex toplevelfile
 EOF
 
-# 5) anc/ 附件：v1.9/v1.10 候选包含全部 292 分片和数据快照。
-if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ]; then
+# 5) anc/ 附件：v1.9/v1.10/v1.11 候选包含全部 292 分片和数据快照。
+if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11" ]; then
   cp "docs/REPRODUCIBILITY_${VERSION}.md" "$OUTDIR/anc/"
   cp "docs/审稿回复与修改说明_${VERSION}.md" "$OUTDIR/anc/review_response_${VERSION}_zh.md"
   cp "docs/MINIMAL_VALID_EXPERIMENT_${VERSION}.md" "docs/LITERATURE_SEARCH_${VERSION}.md" "$OUTDIR/anc/"
   cp docs/AI智能体实验设计.md docs/主验证唯一键处置与重分析规约.md "$OUTDIR/anc/"
   cp docs/UNIQUE_KEY_REANALYSIS_SPEC_ZH.md "$OUTDIR/anc/"
   cp "sim/pilot/results/evidence_status_${VERSION}.json" "$OUTDIR/anc/"
-  cp -r "sim/theory_${VERSION}" "$OUTDIR/anc/"
+  THEORY_VERSION="$VERSION"
+  if [ "$VERSION" = "v1.11" ]; then THEORY_VERSION="v1.10"; fi
+  cp -r "sim/theory_${THEORY_VERSION}" "$OUTDIR/anc/"
   cp -r sim/pilot/results/frozen_reanalysis_v1 "$OUTDIR/anc/"
   cp -r sim/pilot/results/v19_financial_caliber_audit "$OUTDIR/anc/"
   cp -r sim/pilot/results/v19_upstream_digest_audit "$OUTDIR/anc/"
@@ -127,14 +138,18 @@ if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ]; then
   cp tools/reproduce_v19_math.py tools/test_v19_math.py "$OUTDIR/anc/"
   AUDIT_VERSION="v110"
   if [ "$VERSION" = "v1.9" ]; then AUDIT_VERSION="v19"; fi
+  if [ "$VERSION" = "v1.11" ]; then AUDIT_VERSION="v111"; fi
   cp "tools/audit_${AUDIT_VERSION}.py" "tools/audit_${AUDIT_VERSION}_report.json" "$OUTDIR/anc/"
   mkdir -p "$OUTDIR/anc/replay_shards" "$OUTDIR/anc/data" "$OUTDIR/anc/src" "$OUTDIR/anc/logs"
-  if [ "$VERSION" = "v1.10" ]; then
-    cp docs/SUPPLEMENT_NORMATIVE_AND_TRANSFER_v1.10.md "$OUTDIR/anc/"
+  if [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11" ]; then
+    cp "docs/SUPPLEMENT_NORMATIVE_AND_TRANSFER_${VERSION}.md" "$OUTDIR/anc/"
     cp -r sim/pilot/results/v110_consumption_caliber "$OUTDIR/anc/"
     cp sim/pilot/results/governance_conformance_v1.10.json "$OUTDIR/anc/"
     cp tools/reproduce_v110_sap.py tools/test_v110_sap.py tools/check_pdf_layout.py "$OUTDIR/anc/"
     cp -r sim/sea_governance "$OUTDIR/anc/src/"
+    if [ "$VERSION" = "v1.11" ]; then
+      cp docs/SUPPLEMENT_FORMAL_AND_SECONDARY_v1.11.md "$OUTDIR/anc/"
+    fi
   fi
   cp sim/pilot/results/llm_replay_*.jsonl "$OUTDIR/anc/replay_shards/"
   find sim/pilot/results -maxdepth 1 -name 'llm_replay_summary_*.json' -exec cp -t "$OUTDIR/anc/logs/" {} +
@@ -143,6 +158,8 @@ if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ]; then
      sim/pilot/data/manifold_resolved.json sim/pilot/data/pageviews.json "$OUTDIR/anc/data/"
   cp sim/sea_pilot/*.py sim/sea_pilot/requirements-replay-integrity.txt \
      sim/sea_pilot/runtime-replay-integrity.txt "$OUTDIR/anc/src/"
+  find "$OUTDIR" -type d -name __pycache__ -prune -exec rm -rf {} +
+  find "$OUTDIR" -type f -name '*.pyc' -delete
   ( cd "$OUTDIR" && find anc -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > anc/SHA256SUMS )
 else
   cp docs/补充材料S2_一致性审计报告_v1.5.md "$OUTDIR/anc/supplement_S2_consistency_audit_v1.5.md"
