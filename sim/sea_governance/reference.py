@@ -1,4 +1,4 @@
-"""Minimal deterministic governance reference for SEA v1.10 S1--S4.
+"""Minimal deterministic governance reference for SEA v1.12 S1--S4.
 
 This is an offline, standard-library-only reference interface, not a deployed
 service.  Authorization records are structural fixtures, not authenticated
@@ -18,12 +18,13 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
+import re
 from typing import Any, Iterable, Mapping, Optional, Sequence
 
 
-SPECIFICATION = "SEA v1.10 minimal governance reference"
-INTERFACE_VERSION = "sea-governance-reference/1"
-AUDIT_SCHEMA = "sea-governance-audit/1"
+SPECIFICATION = "SEA v1.12 minimal governance reference"
+INTERFACE_VERSION = "sea-governance-reference/2"
+AUDIT_SCHEMA = "sea-governance-audit/2"
 GENESIS_HASH = "0" * 64
 REFLECTIVE_PRINCIPAL = "R"
 OBJECTIVE_TERMS = (
@@ -131,6 +132,47 @@ def _digest(domain: str, value: Any) -> str:
     return hashlib.sha256(material).hexdigest()
 
 
+def canonical_json(value: Any) -> str:
+    """Public canonical-JSON rule shared by the paper, executor and verifier."""
+    return _canonical_json(value)
+
+
+def domain_digest(domain: str, value: Any) -> str:
+    """Public domain-separated SHA-256 rule used by all audit records."""
+    return _digest(domain, value)
+
+
+_LOGICAL_TIMESTAMP = re.compile(r"logical:([0-9]{8})")
+_RFC3339_TIMESTAMP = re.compile(
+    r"([0-9]{4})-([0-9]{2})-([0-9]{2})T"
+    r"([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])Z"
+)
+
+
+def _timestamp_key(timestamp: Any) -> Optional[tuple[str, Any]]:
+    """Return a structural ordering key; never consult a wall clock.
+
+    Guard writes use either deterministic ``logical:NNNNNNNN`` timestamps or
+    RFC3339 UTC seconds. A single reference instance cannot mix the two clock
+    domains, because no ordering between them is invented.
+    """
+    if not isinstance(timestamp, str):
+        return None
+    logical = _LOGICAL_TIMESTAMP.fullmatch(timestamp)
+    if logical:
+        return "logical", int(logical.group(1))
+    match = _RFC3339_TIMESTAMP.fullmatch(timestamp)
+    if match:
+        year, month, day, hour, minute, second = map(int, match.groups())
+        try:
+            import datetime as dt
+            moment = dt.datetime(year, month, day, hour, minute, second, tzinfo=dt.timezone.utc)
+        except ValueError:
+            return None
+        return "rfc3339", moment
+    return None
+
+
 def _clone(value: Any) -> Any:
     return copy.deepcopy(value)
 
@@ -140,7 +182,7 @@ def proposal_digest(operation: str, proposal: Any) -> str:
     if not isinstance(operation, str) or not operation:
         raise ValueError("operation must be a nonempty string")
     return _digest(
-        "sea-governance-proposal/1",
+        "sea-governance-proposal/2",
         {"operation": operation, "proposal": _canonicalize(proposal)},
     )
 
@@ -272,13 +314,15 @@ class GovernanceReference:
                 "objective": _clone(self._objective),
                 "timestamp": "genesis",
                 "authorization_id": None,
-                "evidence": ["defaults:sea-v1.10"],
+                "evidence": ["defaults:sea-v1.12"],
                 "restored_from": None,
                 "audit_sequence": None,
             }
         ]
         self._current_version = 0
         self._records: list[dict[str, Any]] = []
+        self._used_authorization_ids: set[str] = set()
+        self._last_guard_timestamp: Optional[tuple[str, Any]] = None
 
     # S1: inspectability -------------------------------------------------
     def inspect_objective(self) -> dict[str, Any]:
@@ -303,7 +347,7 @@ class GovernanceReference:
     def version_token(self) -> str:
         """Unambiguously bind an authorization to version number and bytes."""
         return _digest(
-            "sea-governance-version/1",
+            "sea-governance-version/2",
             {"version": self._current_version, "objective": self._objective},
         )
 
@@ -329,9 +373,18 @@ class GovernanceReference:
             "previous_hash": self._records[-1]["record_hash"] if self._records else GENESIS_HASH,
         }
         record = dict(body)
-        record["record_hash"] = _digest("sea-governance-record/1", body)
+        record["record_hash"] = _digest("sea-governance-record/2", body)
         self._records.append(record)
         return sequence
+
+    def append_record(self, event: str, payload: Mapping[str, Any], *,
+                      evidence: Sequence[str], timestamp: Optional[str] = None) -> int:
+        """Append an observed executor event using the one public hash specification.
+
+        This records evidence; it does not itself authorize an objective write or
+        assert that a payload is true outside the declared synthetic/reference run.
+        """
+        return self._append(event, payload, evidence, timestamp)
 
     def audit_records(self) -> list[dict[str, Any]]:
         """Return a detached export; there is no public edit/delete operation."""
@@ -379,7 +432,7 @@ class GovernanceReference:
                 errors.append(f"record {index}: missing evidence pointer")
             try:
                 body = {key: _clone(value) for key, value in record.items() if key != "record_hash"}
-                expected = _digest("sea-governance-record/1", body)
+                expected = _digest("sea-governance-record/2", body)
                 if record.get("record_hash") != expected:
                     errors.append(f"record {index}: record_hash mismatch")
             except (TypeError, ValueError) as exc:
@@ -503,17 +556,42 @@ class GovernanceReference:
         return [item["candidate_id"] for item in delivered]
 
     # S2: authorized objective writes and rollback ----------------------
+    def _authorization_error(self, authorization: Optional[Authorization],
+                             operation: str, proposal: Any, actor: str) -> Optional[str]:
+        if not isinstance(authorization, Authorization):
+            return "missing_or_malformed_authorization"
+        if actor != REFLECTIVE_PRINCIPAL or authorization.principal != actor:
+            return "actor_principal_mismatch"
+        if authorization.operation != operation:
+            return "operation_mismatch"
+        if not authorization.authorization_id:
+            return "missing_authorization_id"
+        if authorization.authorization_id in self._used_authorization_ids:
+            return "authorization_reuse"
+        if authorization.version_token != self.version_token():
+            return "stale_version_token"
+        if authorization.proposal_hash != proposal_digest(operation, proposal):
+            return "proposal_hash_mismatch"
+        timestamp = _timestamp_key(authorization.timestamp)
+        if timestamp is None:
+            return "invalid_timestamp"
+        if self._last_guard_timestamp is not None:
+            previous_family, previous_value = self._last_guard_timestamp
+            family, value = timestamp
+            if family != previous_family or value <= previous_value:
+                return "nonmonotonic_timestamp"
+        return None
+
     def _authorization_valid(self, authorization: Optional[Authorization],
-                             operation: str, proposal: Any) -> bool:
-        return (
-            isinstance(authorization, Authorization)
-            and authorization.principal == REFLECTIVE_PRINCIPAL
-            and authorization.operation == operation
-            and bool(authorization.authorization_id)
-            and bool(authorization.timestamp)
-            and authorization.version_token == self.version_token()
-            and authorization.proposal_hash == proposal_digest(operation, proposal)
-        )
+                             operation: str, proposal: Any, actor: str) -> bool:
+        return self._authorization_error(authorization, operation, proposal, actor) is None
+
+    def _consume_authorization(self, authorization: Authorization) -> None:
+        """Consume a guard-admitted authorization exactly once."""
+        self._used_authorization_ids.add(authorization.authorization_id)
+        timestamp = _timestamp_key(authorization.timestamp)
+        assert timestamp is not None
+        self._last_guard_timestamp = timestamp
 
     @staticmethod
     def _authorization_dict(authorization: Optional[Authorization]) -> Optional[dict[str, Any]]:
@@ -538,11 +616,18 @@ class GovernanceReference:
             "old_value": _clone(self._objective),
             "old_version_token": self.version_token(),
         }
-        if not self._authorization_valid(authorization, "objective_write", normalized_patch):
-            payload = dict(base, accepted=False, reason="unauthorized", new_value=_clone(self._objective))
+        authorization_error = self._authorization_error(
+            authorization, "objective_write", normalized_patch, actor)
+        if authorization_error is not None:
+            payload = dict(base, accepted=False, reason="unauthorized",
+                           guard_reject_reason=authorization_error,
+                           new_value=_clone(self._objective))
             sequence = self._append("override", payload, evidence, None)
             return {"accepted": False, "reason": "unauthorized",
+                    "guard_reject_reason": authorization_error,
                     "version": self._current_version, "audit_sequence": sequence}
+        assert isinstance(authorization, Authorization)
+        self._consume_authorization(authorization)
         try:
             updated = _merge_objective(self._objective, normalized_patch)
         except (TypeError, ValueError) as exc:
@@ -588,22 +673,30 @@ class GovernanceReference:
                 "version": new_version, "audit_sequence": sequence}
 
     def rollback(self, target_version: int, *, authorization: Optional[Authorization],
-                 evidence: Sequence[str]) -> dict[str, Any]:
+                 evidence: Sequence[str], actor: str = REFLECTIVE_PRINCIPAL) -> dict[str, Any]:
         """Append a new version whose objective exactly restores a prior snapshot."""
         _integer(target_version, "target_version", nonnegative=True)
+        _nonempty_string(actor, "actor")
         _evidence(evidence)
         proposal = {"target_version": target_version}
         base = {
             "target_version": target_version,
+            "actor": actor,
             "authorization": self._authorization_dict(authorization),
             "old_value": _clone(self._objective),
             "old_version_token": self.version_token(),
         }
-        if not self._authorization_valid(authorization, "rollback", proposal):
-            payload = dict(base, accepted=False, reason="unauthorized", new_value=_clone(self._objective))
+        authorization_error = self._authorization_error(authorization, "rollback", proposal, actor)
+        if authorization_error is not None:
+            payload = dict(base, accepted=False, reason="unauthorized",
+                           guard_reject_reason=authorization_error,
+                           new_value=_clone(self._objective))
             sequence = self._append("rollback", payload, evidence, None)
             return {"accepted": False, "reason": "unauthorized",
+                    "guard_reject_reason": authorization_error,
                     "version": self._current_version, "audit_sequence": sequence}
+        assert isinstance(authorization, Authorization)
+        self._consume_authorization(authorization)
         if target_version >= len(self._versions):
             payload = dict(base, accepted=False, reason="unknown_version", new_value=_clone(self._objective))
             sequence = self._append("rollback", payload, evidence, authorization.timestamp)

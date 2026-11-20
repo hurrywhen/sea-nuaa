@@ -1,0 +1,578 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://example.invalid/sea.future-policy-delivery-consumption-attempt-v3.schema.json",
+ "title": "Prospective SEA policy-attempt delivery and consumption log",
+ "description": "Future-only attempt/item schema. Unknown and not_attempted are explicit; no selected event implies delivery, opening, attendance, or consumption. Historical replay rows must not be backfilled without independent evidence.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema_version",
+  "run_key",
+  "attempt_id",
+  "policy_record_id",
+  "policy_execution",
+  "outcome_protocol",
+  "items",
+  "efficiency"
+ ],
+ "properties": {
+  "schema_version": {
+   "const": "sea.future-policy-delivery-consumption-attempt/v3"
+  },
+  "run_key": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "family",
+    "run",
+    "agent",
+    "sim_day"
+   ],
+   "properties": {
+    "family": {
+     "type": "string",
+     "minLength": 1
+    },
+    "run": {
+     "type": "integer",
+     "minimum": 1
+    },
+    "agent": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "sim_day": {
+     "type": "integer",
+     "minimum": 0
+    }
+   }
+  },
+  "attempt_id": {
+   "type": "string",
+   "minLength": 1
+  },
+  "policy_record_id": {
+   "type": "string",
+   "minLength": 1
+  },
+  "policy_execution": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "started_at",
+    "ended_at",
+    "execution_status",
+    "parser_status",
+    "transport_status",
+    "empty_selection_reason",
+    "raw_output_artifact_sha256"
+   ],
+   "properties": {
+    "started_at": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "format": "date-time"
+    },
+    "ended_at": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "format": "date-time"
+    },
+    "execution_status": {
+     "type": "string",
+     "enum": [
+      "success",
+      "explicit_abstention",
+      "parse_failure",
+      "execution_failure",
+      "transport_failure",
+      "unknown"
+     ]
+    },
+    "parser_status": {
+     "type": "string",
+     "enum": [
+      "success",
+      "failure",
+      "not_attempted",
+      "unknown"
+     ]
+    },
+    "transport_status": {
+     "type": "string",
+     "enum": [
+      "success",
+      "failure",
+      "not_attempted",
+      "not_applicable",
+      "unknown"
+     ]
+    },
+    "empty_selection_reason": {
+     "type": "string",
+     "enum": [
+      "not_applicable",
+      "explicit_abstention",
+      "parse_failure",
+      "execution_failure",
+      "transport_failure",
+      "unknown"
+     ]
+    },
+    "raw_output_artifact_sha256": {
+     "anyOf": [
+      {
+       "type": "string",
+       "pattern": "^[0-9a-f]{64}$"
+      },
+      {
+       "type": "null"
+      }
+     ]
+    }
+   }
+  },
+  "outcome_protocol": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "assignment_id",
+    "primary_rule",
+    "instrument_registry_sha256",
+    "threshold_sensitivity_ids",
+    "attendance_decision_rule",
+    "machine_event_term"
+   ],
+   "properties": {
+    "assignment_id": {
+     "type": "string",
+     "minLength": 1
+    },
+    "primary_rule": {
+     "const": "ALL_ASSIGNED_FAILURE_COMPOSITE_CONFIRMED_CONSUMPTION_OMISSION_V1"
+    },
+    "instrument_registry_sha256": {
+     "type": "string",
+     "pattern": "^[0-9a-f]{64}$"
+    },
+    "threshold_sensitivity_ids": {
+     "type": "array",
+     "minItems": 1,
+     "uniqueItems": true,
+     "items": {
+      "type": "string",
+      "minLength": 1
+     }
+    },
+    "attendance_decision_rule": {
+     "const": "VALID_READING_AND_CONTENT_LINKED_CONFIRMATION"
+    },
+    "machine_event_term": {
+     "const": "machine_ingestion_and_task_reference_not_human_attention"
+    }
+   }
+  },
+  "items": {
+   "type": "array",
+   "description": "One entry per candidate item; empty selected lists remain distinguishable by policy_execution.",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "item_id",
+     "selected",
+     "delivered",
+     "opened",
+     "attended"
+    ],
+    "properties": {
+     "item_id": {
+      "type": "string",
+      "minLength": 1
+     },
+     "selected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "status",
+       "event_id",
+       "timestamp",
+       "rank",
+       "selection_source"
+      ],
+      "properties": {
+       "status": {
+        "type": "string",
+        "enum": [
+         "selected",
+         "not_selected",
+         "unknown"
+        ]
+       },
+       "event_id": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "timestamp": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "format": "date-time"
+       },
+       "rank": {
+        "type": [
+         "integer",
+         "null"
+        ],
+        "minimum": 0
+       },
+       "selection_source": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      }
+     },
+     "delivered": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "status",
+       "event_id",
+       "timestamp",
+       "channel",
+       "message_id",
+       "error_code"
+      ],
+      "properties": {
+       "status": {
+        "type": "string",
+        "enum": [
+         "success",
+         "failure",
+         "not_attempted",
+         "not_applicable",
+         "unknown"
+        ]
+       },
+       "event_id": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "timestamp": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "format": "date-time"
+       },
+       "channel": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "message_id": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "error_code": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      }
+     },
+     "opened": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "status",
+       "event_id",
+       "timestamp",
+       "instrument"
+      ],
+      "properties": {
+       "status": {
+        "type": "string",
+        "enum": [
+         "success",
+         "failure",
+         "not_attempted",
+         "not_applicable",
+         "unknown"
+        ]
+       },
+       "event_id": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "timestamp": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "format": "date-time"
+       },
+       "instrument": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      }
+     },
+     "attended": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Operational attendance measurement only; not latent comprehension or learning. Opening is not sufficient. Failed or invalid measurement is unknown, not observed non-consumption.",
+      "required": [
+       "status",
+       "measurement_status",
+       "event_id",
+       "timestamp",
+       "duration_ms",
+       "instrument",
+       "instrument_version",
+       "threshold_id",
+       "validation_status",
+       "assessor_blinding",
+       "evidence_pointer"
+      ],
+      "properties": {
+       "status": {
+        "type": "string",
+        "enum": [
+         "success",
+         "failure",
+         "not_attempted",
+         "not_applicable",
+         "unknown"
+        ]
+       },
+       "measurement_status": {
+        "type": "string",
+        "enum": [
+         "complete",
+         "incomplete",
+         "invalid",
+         "not_attempted",
+         "unknown"
+        ]
+       },
+       "event_id": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "timestamp": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "format": "date-time"
+       },
+       "duration_ms": {
+        "type": [
+         "number",
+         "null"
+        ],
+        "minimum": 0
+       },
+       "instrument": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "instrument_version": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "threshold_id": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "validation_status": {
+        "type": "string",
+        "enum": [
+         "validated",
+         "not_validated",
+         "expired",
+         "unknown"
+        ]
+       },
+       "assessor_blinding": {
+        "type": "string",
+        "enum": [
+         "arm_and_model_blind",
+         "not_blind",
+         "not_applicable",
+         "unknown"
+        ]
+       },
+       "evidence_pointer": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      }
+     },
+     "machine_ingestion_and_task_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Separate machine event: complete content entered a declared task context and a task operation referenced the receipt. It is not human attention, comprehension, or proof of downstream information use.",
+      "required": [
+       "status",
+       "content_sha256",
+       "context_receipt_sha256",
+       "task_reference_sha256",
+       "evidence_pointer"
+      ],
+      "properties": {
+       "status": {
+        "type": "string",
+        "enum": [
+         "present",
+         "absent",
+         "unknown"
+        ]
+       },
+       "content_sha256": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "pattern": "^[0-9a-f]{64}$"
+       },
+       "context_receipt_sha256": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "pattern": "^[0-9a-f]{64}$"
+       },
+       "task_reference_sha256": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "pattern": "^[0-9a-f]{64}$"
+       },
+       "evidence_pointer": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  "efficiency": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "measurement_status",
+    "calls",
+    "input_tokens",
+    "output_tokens",
+    "cost",
+    "latency_ms",
+    "retries"
+   ],
+   "properties": {
+    "measurement_status": {
+     "type": "string",
+     "enum": [
+      "complete",
+      "partial",
+      "unavailable"
+     ]
+    },
+    "calls": {
+     "type": [
+      "integer",
+      "null"
+     ],
+     "minimum": 0
+    },
+    "input_tokens": {
+     "type": [
+      "integer",
+      "null"
+     ],
+     "minimum": 0
+    },
+    "output_tokens": {
+     "type": [
+      "integer",
+      "null"
+     ],
+     "minimum": 0
+    },
+    "cost": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "amount",
+      "currency"
+     ],
+     "properties": {
+      "amount": {
+       "type": [
+        "number",
+        "null"
+       ],
+       "minimum": 0
+      },
+      "currency": {
+       "type": [
+        "string",
+        "null"
+       ],
+       "minLength": 3
+      }
+     }
+    },
+    "latency_ms": {
+     "type": [
+      "number",
+      "null"
+     ],
+     "minimum": 0
+    },
+    "retries": {
+     "type": [
+      "integer",
+      "null"
+     ],
+     "minimum": 0
+    }
+   }
+  }
+ },
+ "$comment": "Validation must additionally enforce timestamp order and prohibit downstream success after an upstream failure/not_attempted status. Attended is the operational terminal attendance measurement, not latent actual consumption. Positive/negative attendance requires complete validated measurement; instrument failure remains unknown. The registered primary analysis codes unknown terminal outcomes as failure-composite omission without rewriting raw attendance. Nullable measurements require an explicit partial/unavailable measurement_status; null is not zero."
+}

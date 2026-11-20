@@ -1,6 +1,6 @@
 {
  "$schema": "https://json-schema.org/draft/2020-12/schema",
- "$id": "https://example.invalid/sea.future-policy-delivery-consumption-attempt-v2.schema.json",
+ "$id": "https://example.invalid/sea.future-policy-delivery-consumption-attempt-v3.schema.json",
  "title": "Prospective SEA policy-attempt delivery and consumption log",
  "description": "Future-only attempt/item schema. Unknown and not_attempted are explicit; no selected event implies delivery, opening, attendance, or consumption. Historical replay rows must not be backfilled without independent evidence.",
  "type": "object",
@@ -17,7 +17,7 @@
  ],
  "properties": {
   "schema_version": {
-   "const": "sea.future-policy-delivery-consumption-attempt/v2"
+   "const": "sea.future-policy-delivery-consumption-attempt/v3"
   },
   "run_key": {
    "type": "object",
@@ -143,7 +143,9 @@
     "assignment_id",
     "primary_rule",
     "instrument_registry_sha256",
-    "threshold_sensitivity_ids"
+    "threshold_sensitivity_ids",
+    "attendance_decision_rule",
+    "machine_event_term"
    ],
    "properties": {
     "assignment_id": {
@@ -165,6 +167,12 @@
       "type": "string",
       "minLength": 1
      }
+    },
+    "attendance_decision_rule": {
+     "const": "VALID_READING_AND_CONTENT_LINKED_CONFIRMATION"
+    },
+    "machine_event_term": {
+     "const": "machine_ingestion_and_task_reference_not_human_attention"
     }
    }
   },
@@ -332,7 +340,7 @@
      "attended": {
       "type": "object",
       "additionalProperties": false,
-      "description": "The single terminal attendance/actual-consumption measurement. Opening is not sufficient. Failed or invalid measurement is unknown, not observed non-consumption.",
+      "description": "Operational attendance measurement only; not latent comprehension or learning. Opening is not sufficient. Failed or invalid measurement is unknown, not observed non-consumption.",
       "required": [
        "status",
        "measurement_status",
@@ -430,6 +438,55 @@
         ]
        }
       }
+     },
+     "machine_ingestion_and_task_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Separate machine event: complete content entered a declared task context and a task operation referenced the receipt. It is not human attention, comprehension, or proof of downstream information use.",
+      "required": [
+       "status",
+       "content_sha256",
+       "context_receipt_sha256",
+       "task_reference_sha256",
+       "evidence_pointer"
+      ],
+      "properties": {
+       "status": {
+        "type": "string",
+        "enum": [
+         "present",
+         "absent",
+         "unknown"
+        ]
+       },
+       "content_sha256": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "pattern": "^[0-9a-f]{64}$"
+       },
+       "context_receipt_sha256": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "pattern": "^[0-9a-f]{64}$"
+       },
+       "task_reference_sha256": {
+        "type": [
+         "string",
+         "null"
+        ],
+        "pattern": "^[0-9a-f]{64}$"
+       },
+       "evidence_pointer": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      }
      }
     }
    }
@@ -517,5 +574,5 @@
    }
   }
  },
- "$comment": "Validation must additionally enforce timestamp order and prohibit downstream success after an upstream failure/not_attempted status. Attended is the only terminal consumption event. Positive/negative attendance requires complete validated measurement; instrument failure remains unknown. The registered primary analysis codes unknown terminal outcomes as failure-composite omission without rewriting raw attendance. Nullable measurements require an explicit partial/unavailable measurement_status; null is not zero."
+ "$comment": "Validation must additionally enforce timestamp order and prohibit downstream success after an upstream failure/not_attempted status. Attended is the operational terminal attendance measurement, not latent actual consumption. Positive/negative attendance requires complete validated measurement; instrument failure remains unknown. The registered primary analysis codes unknown terminal outcomes as failure-composite omission without rewriting raw attendance. Nullable measurements require an explicit partial/unavailable measurement_status; null is not zero."
 }

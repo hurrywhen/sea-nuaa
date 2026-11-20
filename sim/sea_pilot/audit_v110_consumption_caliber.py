@@ -7,7 +7,7 @@ and never turns ``picked`` into delivered, opened, attended, or actually consume
 items.  Empty ``picked`` lists are a zero **selected proxy**, not proof of zero
 historical consumption or of a valid abstention.
 
-Two retrospective descriptive calibers are computed on unique ``(family, run, agent, sim_day)`` keys:
+Three retrospective descriptive calibers are computed on unique ``(family, run, agent, sim_day)`` keys:
 
 * ``ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY``: every existing key contributes once; within a key,
   every structurally parseable policy record contributes equally, including an
@@ -16,11 +16,15 @@ Two retrospective descriptive calibers are computed on unique ``(family, run, ag
 * ``METRIC_RESOLVED_ZERO_EMPTY``: empty-only keys are zero-filled, while conflicting
   nonempty duplicates remain unresolved separately for recall, citation return,
   and paired sign.  This is frozen scenario G and is checked against all 80 of
-  its frozen run rows.  Missing keys are never zero-filled in either caliber.
+  its frozen run rows.  Missing keys are not zero-filled in this caliber.
+* ``ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW``: all 72,000 expected keys contribute;
+  existing keys use the same recorded-attempt mean, and the 30 no-row keys are
+  assigned selected-proxy zero as a conservative selection-failure sensitivity.
+  This is still not actual consumption or a prospective all-assigned analysis.
 
 Existing nonempty Rule A and strict-singleton scenario C remain secondary.  All
 17 existing frozen scenarios are summarized without rerunning them.  A
-prospective selected -> delivered -> opened -> attended/consumed JSON Schema,
+prospective selected -> delivered -> opened -> operational attendance JSON Schema,
 including efficiency measurements, is emitted; no historical values are
 backfilled into that schema.
 
@@ -76,14 +80,22 @@ FROZEN_DIR = RESULTS / "frozen_reanalysis_v1"
 FROZEN_SUMMARY = FROZEN_DIR / "summary.json"
 FROZEN_RUN_METRICS = FROZEN_DIR / "run_metrics.csv"
 OUTDIR = RESULTS / "v110_consumption_caliber"
-VERSION = "1.1.0"
-SCHEMA = "sea.v110.selected-proxy-consumption-caliber/v2"
+VERSION = "1.2.0"
+SCHEMA = "sea.v110.selected-proxy-consumption-caliber/v3"
 STATUS = "POST_HOC_SELECTED_PROXY_RETROSPECTIVE_DESCRIPTIVE__WITHIN_CORPUS_EXPLORATORY"
 NOMINAL_PER_RUN = 900
 NOMINAL_TOTAL = 72000
 BOOTSTRAP_B = 10000
 BOOTSTRAP_SEED = 42
-NEW_CALIBERS = ("ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY", "METRIC_RESOLVED_ZERO_EMPTY")
+NEW_CALIBERS = (
+    "ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY",
+    "METRIC_RESOLVED_ZERO_EMPTY",
+    "ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW",
+)
+MEAN_CALIBERS = {
+    "ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY",
+    "ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW",
+}
 # Input-only aliases for external code written against v1.10. Outputs never use
 # the misleading historical intention-to-treat labels.
 LEGACY_CALIBER_ALIASES = {
@@ -598,6 +610,21 @@ def _new_run_row(
                    if state.full_delta_return is not None]
         signs: list[int] = []
         sign_applicable = False
+    elif caliber == "ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW":
+        recall_values = []
+        returns = []
+        for state in state_group:
+            if state.full_hits_llm is not None:
+                recall_values.append((state.full_hits_llm, float(state.canonical.hits_param),
+                                      float(state.canonical.n_crit)))
+                returns.append(state.full_delta_return)
+            else:
+                # Conservative selected-proxy failure assignment for no-row keys.
+                recall_values.append((0.0, float(state.canonical.hits_param),
+                                      float(state.canonical.n_crit)))
+                returns.append(-float(state.canonical.value_param))
+        signs = []
+        sign_applicable = False
     elif caliber == "METRIC_RESOLVED_ZERO_EMPTY":
         recall_values = [state.resolved_recall for state in state_group
                          if state.resolved_recall is not None]
@@ -635,18 +662,21 @@ def _new_run_row(
         "sign_conflicts": structure["sign_conflicts_nonempty"],
         "any_six_field_conflicts": structure["any_six_field_conflicts_nonempty"],
         "excluded_conflict_recall": (
-            0 if caliber == "ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY" else structure["recall_conflicts_nonempty"]
+            0 if caliber in MEAN_CALIBERS else structure["recall_conflicts_nonempty"]
         ),
         "excluded_conflict_return": (
-            0 if caliber == "ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY" else structure["return_conflicts_nonempty"]
+            0 if caliber in MEAN_CALIBERS else structure["return_conflicts_nonempty"]
         ),
         "excluded_conflict_sign": (
-            0 if caliber == "ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY" else structure["sign_conflicts_nonempty"]
+            0 if caliber in MEAN_CALIBERS else structure["sign_conflicts_nonempty"]
         ) if sign_applicable else None,
     }
     if caliber == "ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY":
         if row["n_recall"] != row["existing_keys"] or row["n_return"] != row["existing_keys"]:
             raise AssertionError(f"Incomplete all-existing-key support at {family}/run {run}")
+    if caliber == "ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW":
+        if row["n_recall"] != row["expected_keys"] or row["n_return"] != row["expected_keys"]:
+            raise AssertionError(f"Incomplete all-expected-key support at {family}/run {run}")
     return row
 
 
@@ -990,7 +1020,7 @@ def _future_logging_schema() -> dict[str, Any]:
     }
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://example.invalid/sea.future-policy-delivery-consumption-attempt-v2.schema.json",
+        "$id": "https://example.invalid/sea.future-policy-delivery-consumption-attempt-v3.schema.json",
         "title": "Prospective SEA policy-attempt delivery and consumption log",
         "description": (
             "Future-only attempt/item schema. Unknown and not_attempted are explicit; no selected "
@@ -1004,7 +1034,7 @@ def _future_logging_schema() -> dict[str, Any]:
             "outcome_protocol", "items", "efficiency",
         ],
         "properties": {
-            "schema_version": {"const": "sea.future-policy-delivery-consumption-attempt/v2"},
+            "schema_version": {"const": "sea.future-policy-delivery-consumption-attempt/v3"},
             "run_key": {
                 "type": "object", "additionalProperties": False,
                 "required": ["family", "run", "agent", "sim_day"],
@@ -1047,7 +1077,8 @@ def _future_logging_schema() -> dict[str, Any]:
                 "type": "object", "additionalProperties": False,
                 "required": [
                     "assignment_id", "primary_rule", "instrument_registry_sha256",
-                    "threshold_sensitivity_ids",
+                    "threshold_sensitivity_ids", "attendance_decision_rule",
+                    "machine_event_term",
                 ],
                 "properties": {
                     "assignment_id": {"type": "string", "minLength": 1},
@@ -1060,6 +1091,12 @@ def _future_logging_schema() -> dict[str, Any]:
                     "threshold_sensitivity_ids": {
                         "type": "array", "minItems": 1, "uniqueItems": True,
                         "items": {"type": "string", "minLength": 1},
+                    },
+                    "attendance_decision_rule": {
+                        "const": "VALID_READING_AND_CONTENT_LINKED_CONFIRMATION"
+                    },
+                    "machine_event_term": {
+                        "const": "machine_ingestion_and_task_reference_not_human_attention"
                     },
                 },
             },
@@ -1103,7 +1140,7 @@ def _future_logging_schema() -> dict[str, Any]:
                         "attended": {
                             "type": "object", "additionalProperties": False,
                             "description": (
-                                "The single terminal attendance/actual-consumption measurement. "
+                                "Operational attendance measurement only; not latent comprehension or learning. "
                                 "Opening is not sufficient. Failed or invalid measurement is unknown, not observed non-consumption."
                             ),
                             "required": [
@@ -1130,6 +1167,23 @@ def _future_logging_schema() -> dict[str, Any]:
                                     "type": "string",
                                     "enum": ["arm_and_model_blind", "not_blind", "not_applicable", "unknown"],
                                 },
+                                "evidence_pointer": {"type": ["string", "null"]},
+                            },
+                        },
+                        "machine_ingestion_and_task_reference": {
+                            "type": "object", "additionalProperties": False,
+                            "description": (
+                                "Separate machine event: complete content entered a declared task context and a task "
+                                "operation referenced the receipt. It is not human attention, comprehension, or proof "
+                                "of downstream information use."
+                            ),
+                            "required": ["status", "content_sha256", "context_receipt_sha256",
+                                         "task_reference_sha256", "evidence_pointer"],
+                            "properties": {
+                                "status": {"type": "string", "enum": ["present", "absent", "unknown"]},
+                                "content_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+                                "context_receipt_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+                                "task_reference_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
                                 "evidence_pointer": {"type": ["string", "null"]},
                             },
                         },
@@ -1162,8 +1216,8 @@ def _future_logging_schema() -> dict[str, Any]:
         },
         "$comment": (
             "Validation must additionally enforce timestamp order and prohibit downstream success "
-            "after an upstream failure/not_attempted status. Attended is the only terminal consumption "
-            "event. Positive/negative attendance requires complete validated measurement; instrument "
+            "after an upstream failure/not_attempted status. Attended is the operational terminal attendance "
+            "measurement, not latent actual consumption. Positive/negative attendance requires complete validated measurement; instrument "
             "failure remains unknown. The registered primary analysis codes unknown terminal outcomes "
             "as failure-composite omission without rewriting raw attendance. Nullable measurements "
             "require an explicit partial/unavailable measurement_status; null is not zero."
@@ -1197,6 +1251,16 @@ def _ledger_rows(states: Sequence[KeyState]) -> Iterator[dict[str, Any]]:
                 "delta_citation_return": state.full_delta_return,
                 "paired_sign": None,
                 "paired_sign_status": "NOT_APPLICABLE_FRACTIONAL_ATTEMPT_MEAN",
+            },
+            "ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW": {
+                "hits_llm": 0.0 if not state.existing else state.full_hits_llm,
+                "hits_param": state.canonical.hits_param,
+                "n_crit": state.canonical.n_crit,
+                "delta_citation_return": (-float(state.canonical.value_param)
+                                          if not state.existing else state.full_delta_return),
+                "paired_sign": None,
+                "paired_sign_status": "NOT_APPLICABLE_FRACTIONAL_ATTEMPT_MEAN",
+                "no_row_zero_assignment": not state.existing,
             },
             "METRIC_RESOLVED_ZERO_EMPTY": {
                 "recall_hits_llm_hits_param_n_crit": state.resolved_recall,
@@ -1285,7 +1349,8 @@ def render_report(summary: dict[str, Any]) -> str:
         "",
         "An existing key has at least one structurally parseable policy record. There are "
         f"**{structure['existing_keys']} = {structure['nonempty_keys']} nonempty-key + {structure['empty_only_keys']} empty-only** "
-        f"existing keys. **{structure['missing_keys']}** no-row keys remain missing, not zero. "
+        f"existing keys. **{structure['missing_keys']}** no-row keys remain missing in the existing-key and resolved calibers; "
+        "only the explicitly named conservative all-expected-key caliber assigns them selected-proxy zero. "
         f"The {structure['empty_records_on_nonempty_keys']} empty records sharing nonempty keys are counted in the all-record-mean "
         "caliber and reported separately in the resolved caliber; they are not extra independent keys.",
         "",
@@ -1309,6 +1374,11 @@ def render_report(summary: dict[str, Any]) -> str:
         f"citation return **{structure['return_conflicts_nonempty']}**, paired sign **{structure['sign_conflicts_nonempty']}**, "
         f"and any six-field conflict **{structure['any_six_field_conflicts_nonempty']}**. No conflict is silently assigned zero.",
         "",
+        "Key flow: 72,000 expected keys = 71,970 existing keys + 30 no-row keys; "
+        "71,970 existing keys = 71,914 nonempty-selection keys + 56 empty-only keys. "
+        "The 73,704 raw records include 157 empty records, of which 101 share nonempty keys. "
+        "The three calibers differ only in no-row and conflict disposition, not in the frozen raw inputs.",
+        "",
         "## 3. Complete all-existing-key zero-empty sensitivity (`ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY`)",
         "",
         "Every existing key contributes once to recall and return. Within a key, every raw policy record has equal weight, "
@@ -1325,7 +1395,19 @@ def render_report(summary: dict[str, Any]) -> str:
         "Family estimates are unweighted run means. Intervals are exploratory 10,000-draw whole-run percentile bootstrap intervals "
         "(seed 42); Q/G have only 10 runs. They omit corpus, duplicate-arbitration, missingness, and model-dependence uncertainty.",
         "",
-        "## 4. Conflict-refusing zero-empty sensitivity (`METRIC_RESOLVED_ZERO_EMPTY` = frozen G)",
+        "## 4. Conservative all-expected-key zero-empty/no-row sensitivity (`ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW`)",
+        "",
+        "This post-hoc descriptive convention extends the recorded-attempt mean to all 72,000 expected keys by assigning "
+        "selected-proxy zero to the 30 no-row keys. It answers a different data-quality question from the existing-key caliber: "
+        "what if absence of a record is treated as selection failure? It is not a recovered historical all-assigned analysis, "
+        "not actual consumption, and not a prospective primary endpoint. Conflict records remain attempt means, as in the "
+        "existing-key caliber; the conflict-refusing caliber below answers a separate question.",
+        "",
+    ]
+    lines += _new_report_table(summary["new_calibers"]["ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW"])
+    lines += [
+        "",
+        "## 5. Conflict-refusing zero-empty sensitivity (`METRIC_RESOLVED_ZERO_EMPTY` = frozen G)",
         "",
         "Empty-only keys are zero-filled. Nonempty duplicates enter a metric only when that metric's sufficient statistic is consistent; "
         "empty rows sharing a nonempty key do not create a new key or overwrite the nonempty Rule-A value. Exact recall/return/sign "
@@ -1340,7 +1422,7 @@ def render_report(summary: dict[str, Any]) -> str:
         f"Raw recomputation matches frozen scenario G for **80/80 runs** across denominators, sufficient sums, recall, and return "
         f"(maximum absolute numeric error {validation['max_absolute_numeric_error']:.3g}).",
         "",
-        "## 5. Secondary existing calibers: nonempty Rule A versus strict singleton",
+        "## 6. Secondary existing calibers: nonempty Rule A versus strict singleton",
         "",
         "These are existing frozen outputs, not replacements for the designated retrospective descriptive caliber. Rule A uses different resolved "
         "cohorts by metric: **71,573 recall, 70,676 return, 71,618 sign**. Strict singleton uses exactly one nonempty record per key "
@@ -1361,7 +1443,7 @@ def render_report(summary: dict[str, Any]) -> str:
             )
     lines += [
         "",
-        "## 6. All 17 frozen scenarios: effect ranges and point-estimate sign changes",
+        "## 7. All 17 frozen scenarios: effect ranges and point-estimate sign changes",
         "",
         "Ranges below use run-equal point estimates copied from `frozen_reanalysis_v1/summary.json`; no scenario was rerun or hidden. "
         "Sign change means a change in point-estimate sign across scenarios, not whether an interval contains zero.",
@@ -1389,16 +1471,16 @@ def render_report(summary: dict[str, Any]) -> str:
         "All 68 scenario×family estimates, intervals, and exact metric denominators are in `scenario_effects.csv`; min/max scenario IDs "
         "and sign vectors are machine-readable in `summary.json`.",
         "",
-        "## 7. Prospective logging schema (not historical backfill)",
+        "## 8. Prospective logging schema (not historical backfill)",
         "",
         "`future_logging_schema.json` is a JSON Schema for one policy attempt with explicit attempt identity, parser/execution/transport "
-        "status, empty-selection reason, and per-item **selected → delivered → opened → attended/consumed** event objects. "
+        "status, empty-selection reason, and per-item **selected → delivered → opened → operational attendance** event objects. "
         "Attended is the single terminal consumption event and carries instrument/version, threshold, validation, blinding, and evidence fields. "
         "The registered primary outcome is all-assigned failure-composite omission; unknown raw attendance is not rewritten as observed non-consumption. "
         "The schema also requires explicit `calls`, `input_tokens`, `output_tokens`, `cost{amount,currency}`, `latency_ms`, and `retries`; unknown measurements are null, not zero.",
         "The old replay fails the historical information requirement for this chain, so no synthetic old events or efficiency values are emitted.",
         "",
-        "## 8. Reproduction and files",
+        "## 9. Reproduction and files",
         "",
         "```bash",
         "PYTHONDONTWRITEBYTECODE=1 python3 sim/sea_pilot/audit_v110_consumption_caliber.py --write",
@@ -1499,6 +1581,15 @@ def build_analysis() -> tuple[
             "estimand_caution": "Resolved existing-key selected-proxy sensitivity, not actual consumption.",
             **_aggregate_new(new_run_rows["METRIC_RESOLVED_ZERO_EMPTY"]),
         },
+        "ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW": {
+            "definition": (
+                "All 72,000 expected keys; existing keys use the recorded-attempt mean; "
+                "30 no-row keys are assigned selected-proxy zero as a conservative selection-failure sensitivity."
+            ),
+            "analysis_role": "Post-hoc conservative descriptive sensitivity; not a prospective primary outcome or actual-consumption analysis.",
+            "estimand_caution": "No-row zero is an assumption about selection failure, not recovered historical consumption.",
+            **_aggregate_new(new_run_rows["ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW"]),
+        },
     }
     validation_g = _validate_resolved_is_frozen_g(
         new_run_rows["METRIC_RESOLVED_ZERO_EMPTY"], frozen_run_rows
@@ -1591,8 +1682,10 @@ def build_analysis() -> tuple[
             "schema_sha256": _sha256_json(future_schema),
             "prospective_only": True,
             "historical_backfill_performed": False,
-            "required_stage_chain": ["selected", "delivered", "opened", "attended/consumed"],
+            "required_stage_chain": ["selected", "delivered", "opened", "operational_attendance"],
             "primary_missing_outcome_rule": "ALL_ASSIGNED_FAILURE_COMPOSITE_CONFIRMED_CONSUMPTION_OMISSION_V1",
+            "attendance_decision_rule": "VALID_READING_AND_CONTENT_LINKED_CONFIRMATION",
+            "machine_event_term": "machine_ingestion_and_task_reference_not_human_attention",
             "attendance_measurement_fields": [
                 "instrument", "instrument_version", "threshold_id", "validation_status",
                 "assessor_blinding", "evidence_pointer",

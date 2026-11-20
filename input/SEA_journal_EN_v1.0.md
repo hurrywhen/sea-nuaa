@@ -1,3 +1,5 @@
+> **SUPERSEDED / 已被取代：** This is a historical version, not the current authoritative manuscript. Current version: `input/sovereign_epistemic_acquisition_EN_v1.12.md`. See `archive/README.md`. Do not cite this version’s claims without checking v1.12.
+
 ---
 title: "Sovereign Acquisition under Bounded Attention: Unifying Push–Pull Filtering, Coverage, and Value of Information"
 author: "Wen Hu$^{1,2}$, Xutong Wang$^{1}$, and Ya Yu$^{1}$"

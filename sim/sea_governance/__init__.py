@@ -1,4 +1,4 @@
-"""SEA v1.10 deterministic offline S1--S4 governance reference interface."""
+"""SEA v1.12 deterministic offline S1--S4 governance reference interface."""
 
 from .reference import (
     AUDIT_SCHEMA,
@@ -10,6 +10,8 @@ from .reference import (
     SPECIFICATION,
     Authorization,
     GovernanceReference,
+    canonical_json,
+    domain_digest,
     proposal_digest,
 )
 
@@ -23,5 +25,7 @@ __all__ = [
     "SPECIFICATION",
     "Authorization",
     "GovernanceReference",
+    "canonical_json",
+    "domain_digest",
     "proposal_digest",
 ]

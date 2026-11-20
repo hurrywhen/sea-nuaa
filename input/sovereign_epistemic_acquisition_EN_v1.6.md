@@ -1,3 +1,5 @@
+> **SUPERSEDED / 已被取代：** This is a historical version, not the current authoritative manuscript. Current version: `input/sovereign_epistemic_acquisition_EN_v1.12.md`. See `archive/README.md`. Do not cite this version’s claims without checking v1.12.
+
 # Sovereign Epistemic Acquisition: A Conditional Framework for Active Information Acquisition and Sovereign Filtering under Bounded Agency, with Preliminary Validation
 
 **Wen Hu**<sup>1,2</sup>&nbsp;&nbsp;**Xutong Wang**<sup>1</sup>&nbsp;&nbsp;**Ya Yu**<sup>1</sup>

@@ -14,7 +14,7 @@
 
 ## 2. Existing-key accounting and unresolved duplicates
 
-An existing key has at least one structurally parseable policy record. There are **71970 = 71914 nonempty-key + 56 empty-only** existing keys. **30** no-row keys remain missing, not zero. The 101 empty records sharing nonempty keys are counted in the all-record-mean caliber and reported separately in the resolved caliber; they are not extra independent keys.
+An existing key has at least one structurally parseable policy record. There are **71970 = 71914 nonempty-key + 56 empty-only** existing keys. **30** no-row keys remain missing in the existing-key and resolved calibers; only the explicitly named conservative all-expected-key caliber assigns them selected-proxy zero. The 101 empty records sharing nonempty keys are counted in the all-record-mean caliber and reported separately in the resolved caliber; they are not extra independent keys.
 
 | Family | Expected | Nonempty keys | Empty-only | Existing frame | Missing | Empty rows on nonempty keys | Stored parse-error rows |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -25,6 +25,8 @@ An existing key has at least one structurally parseable policy record. There are
 | **Total** | **72000** | **71914** | **56** | **71970** | **30** | **101** | **154** |
 
 Nonempty duplicate groups: **1608**; excess nonempty records: **1633**. Metric conflicts are recall **341**, citation return **1238**, paired sign **296**, and any six-field conflict **1389**. No conflict is silently assigned zero.
+
+Key flow: 72,000 expected keys = 71,970 existing keys + 30 no-row keys; 71,970 existing keys = 71,914 nonempty-selection keys + 56 empty-only keys. The 73,704 raw records include 157 empty records, of which 101 share nonempty keys. The three calibers differ only in no-row and conflict disposition, not in the frozen raw inputs.
 
 ## 3. Complete all-existing-key zero-empty sensitivity (`ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY`)
 
@@ -39,7 +41,18 @@ Every existing key contributes once to recall and return. Within a key, every ra
 
 Family estimates are unweighted run means. Intervals are exploratory 10,000-draw whole-run percentile bootstrap intervals (seed 42); Q/G have only 10 runs. They omit corpus, duplicate-arbitration, missingness, and model-dependence uncertainty.
 
-## 4. Conflict-refusing zero-empty sensitivity (`METRIC_RESOLVED_ZERO_EMPTY` = frozen G)
+## 4. Conservative all-expected-key zero-empty/no-row sensitivity (`ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW`)
+
+This post-hoc descriptive convention extends the recorded-attempt mean to all 72,000 expected keys by assigning selected-proxy zero to the 30 no-row keys. It answers a different data-quality question from the existing-key caliber: what if absence of a record is treated as selection failure? It is not a recovered historical all-assigned analysis, not actual consumption, and not a prospective primary endpoint. Conflict records remain attempt means, as in the existing-key caliber; the conflict-refusing caliber below answers a separate question.
+
+| Family | n recall / return / sign | sum n_crit | Selected recall | Parametric recall | Δrecall [95% run CI] | Δcitation return [95% run CI] |
+|---|---:|---:|---:|---:|---:|---:|
+| O | 27000 / 27000 / NA | 25530 | 0.443105 [0.432829, 0.453589] | 0.413405 [0.380933, 0.445290] | +0.029700 [-0.004409, +0.064344] | -0.182199 [-0.298424, -0.063222] |
+| C | 27000 / 27000 / NA | 25560 | 0.532182 [0.525533, 0.539015] | 0.403169 [0.372829, 0.434271] | +0.129014 [+0.098454, +0.158164] | +0.657917 [+0.531025, +0.792166] |
+| Q | 9000 / 9000 / NA | 8310 | 0.513909 [0.502175, 0.525385] | 0.403200 [0.369002, 0.433873] | +0.110709 [+0.080555, +0.144612] | +0.395332 [+0.257951, +0.520688] |
+| G | 9000 / 9000 / NA | 8610 | 0.516255 [0.493673, 0.536152] | 0.430856 [0.374713, 0.485166] | +0.085398 [+0.018970, +0.144181] | -0.260004 [-0.462863, -0.072922] |
+
+## 5. Conflict-refusing zero-empty sensitivity (`METRIC_RESOLVED_ZERO_EMPTY` = frozen G)
 
 Empty-only keys are zero-filled. Nonempty duplicates enter a metric only when that metric's sufficient statistic is consistent; empty rows sharing a nonempty key do not create a new key or overwrite the nonempty Rule-A value. Exact recall/return/sign denominators are **71629 / 70732 / 71674**. The 30 no-row keys and each affected conflict remain excluded, not zero-filled.
 
@@ -52,7 +65,7 @@ Empty-only keys are zero-filled. Nonempty duplicates enter a metric only when th
 
 Raw recomputation matches frozen scenario G for **80/80 runs** across denominators, sufficient sums, recall, and return (maximum absolute numeric error 9.71e-17).
 
-## 5. Secondary existing calibers: nonempty Rule A versus strict singleton
+## 6. Secondary existing calibers: nonempty Rule A versus strict singleton
 
 These are existing frozen outputs, not replacements for the designated retrospective descriptive caliber. Rule A uses different resolved cohorts by metric: **71,573 recall, 70,676 return, 71,618 sign**. Strict singleton uses exactly one nonempty record per key and therefore a common **70,306-key** cohort. Their population difference prevents interpreting numerical changes as an isolated duplicate effect.
 
@@ -67,7 +80,7 @@ These are existing frozen outputs, not replacements for the designated retrospec
 | STRICT_SINGLETON_NONEMPTY | Q | 8641 / 8641 / 8641 | 0.517713 [0.504656, 0.529774] | 0.402091 [0.366588, 0.433916] | +0.115622 [+0.082768, +0.152260] | +0.420392 [+0.285632, +0.543034] |
 | STRICT_SINGLETON_NONEMPTY | G | 8574 / 8574 / 8574 | 0.518663 [0.496025, 0.538126] | 0.429116 [0.373883, 0.482775] | +0.089547 [+0.021819, +0.149491] | -0.219101 [-0.425724, -0.026358] |
 
-## 6. All 17 frozen scenarios: effect ranges and point-estimate sign changes
+## 7. All 17 frozen scenarios: effect ranges and point-estimate sign changes
 
 Ranges below use run-equal point estimates copied from `frozen_reanalysis_v1/summary.json`; no scenario was rerun or hidden. Sign change means a change in point-estimate sign across scenarios, not whether an interval contains zero.
 
@@ -82,12 +95,12 @@ For every family and both contrasts, the minimum occurs at `I_favor_param` and `
 
 All 68 scenario×family estimates, intervals, and exact metric denominators are in `scenario_effects.csv`; min/max scenario IDs and sign vectors are machine-readable in `summary.json`.
 
-## 7. Prospective logging schema (not historical backfill)
+## 8. Prospective logging schema (not historical backfill)
 
-`future_logging_schema.json` is a JSON Schema for one policy attempt with explicit attempt identity, parser/execution/transport status, empty-selection reason, and per-item **selected → delivered → opened → attended/consumed** event objects. Attended is the single terminal consumption event and carries instrument/version, threshold, validation, blinding, and evidence fields. The registered primary outcome is all-assigned failure-composite omission; unknown raw attendance is not rewritten as observed non-consumption. The schema also requires explicit `calls`, `input_tokens`, `output_tokens`, `cost{amount,currency}`, `latency_ms`, and `retries`; unknown measurements are null, not zero.
+`future_logging_schema.json` is a JSON Schema for one policy attempt with explicit attempt identity, parser/execution/transport status, empty-selection reason, and per-item **selected → delivered → opened → operational attendance** event objects. Attended is the single terminal consumption event and carries instrument/version, threshold, validation, blinding, and evidence fields. The registered primary outcome is all-assigned failure-composite omission; unknown raw attendance is not rewritten as observed non-consumption. The schema also requires explicit `calls`, `input_tokens`, `output_tokens`, `cost{amount,currency}`, `latency_ms`, and `retries`; unknown measurements are null, not zero.
 The old replay fails the historical information requirement for this chain, so no synthetic old events or efficiency values are emitted.
 
-## 8. Reproduction and files
+## 9. Reproduction and files
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 sim/sea_pilot/audit_v110_consumption_caliber.py --write

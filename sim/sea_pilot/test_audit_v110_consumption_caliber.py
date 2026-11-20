@@ -27,7 +27,8 @@ class ConsumptionCaliberTest(unittest.TestCase):
 
     def test_canonical_names_and_legacy_input_aliases(self) -> None:
         self.assertEqual(audit.NEW_CALIBERS, (
-            "ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY", "METRIC_RESOLVED_ZERO_EMPTY"))
+            "ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY", "METRIC_RESOLVED_ZERO_EMPTY",
+            "ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW"))
         for legacy, canonical in audit.LEGACY_CALIBER_ALIASES.items():
             with self.subTest(legacy=legacy):
                 self.assertEqual(audit.canonical_caliber(legacy), canonical)
@@ -39,7 +40,7 @@ class ConsumptionCaliberTest(unittest.TestCase):
     def test_generated_summary_uses_only_canonical_calibers(self) -> None:
         summary = json.loads((audit.OUTDIR / "summary.json").read_text(encoding="utf-8"))
         self.assertEqual(set(summary["new_calibers"]), set(audit.NEW_CALIBERS))
-        self.assertEqual(summary["schema"], "sea.v110.selected-proxy-consumption-caliber/v2")
+        self.assertEqual(summary["schema"], "sea.v110.selected-proxy-consumption-caliber/v3")
         self.assertNotIn("POST_HOC_SELECTED_PROXY_ITT", summary["status"])
         self.assertIn("Designated retrospective descriptive caliber",
                       summary["new_calibers"]["ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY"]["analysis_role"])
@@ -47,12 +48,13 @@ class ConsumptionCaliberTest(unittest.TestCase):
     def test_csv_and_ledger_do_not_emit_legacy_names(self) -> None:
         with (audit.OUTDIR / "run_metrics.csv").open(encoding="utf-8", newline="") as handle:
             rows = list(csv.DictReader(handle))
-        self.assertEqual(len(rows), 320)
-        self.assertEqual({row["caliber"] for row in rows[:160]}, set(audit.NEW_CALIBERS))
+        self.assertEqual(len(rows), 400)
+        self.assertEqual({row["caliber"] for row in rows[:240]}, set(audit.NEW_CALIBERS))
         with gzip.open(audit.OUTDIR / "key_ledger.jsonl.gz", "rt", encoding="utf-8") as handle:
             first = json.loads(handle.readline())
         self.assertIn("ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY", first)
         self.assertIn("METRIC_RESOLVED_ZERO_EMPTY", first)
+        self.assertIn("ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW", first)
         self.assertNotIn("ITT_ALL_RECORD_MEAN", first)
         self.assertNotIn("ITT_METRIC_RESOLVED", first)
 
@@ -62,6 +64,10 @@ class ConsumptionCaliberTest(unittest.TestCase):
         protocol = schema["properties"]["outcome_protocol"]["properties"]
         self.assertEqual(protocol["primary_rule"]["const"],
                          "ALL_ASSIGNED_FAILURE_COMPOSITE_CONFIRMED_CONSUMPTION_OMISSION_V1")
+        self.assertEqual(protocol["attendance_decision_rule"]["const"],
+                         "VALID_READING_AND_CONTENT_LINKED_CONFIRMATION")
+        self.assertEqual(protocol["machine_event_term"]["const"],
+                         "machine_ingestion_and_task_reference_not_human_attention")
         item = schema["properties"]["items"]["items"]
         self.assertEqual(set(item["required"]), {"item_id", "selected", "delivered", "opened", "attended"})
         required = set(item["properties"]["attended"]["required"])
@@ -76,6 +82,15 @@ class ConsumptionCaliberTest(unittest.TestCase):
                                0.0297197743, places=9)
         self.assertAlmostEqual(families["G"]["equal_run"]["delta_return"]["estimate"],
                                -0.251347, places=6)
+
+
+    def test_conservative_no_row_caliber_covers_all_expected_keys(self) -> None:
+        summary = json.loads((audit.OUTDIR / "summary.json").read_text(encoding="utf-8"))
+        families = summary["new_calibers"]["ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW"]["families"]
+        self.assertEqual(sum(item["n_recall"] for item in families.values()), 72000)
+        self.assertEqual(sum(item["n_return"] for item in families.values()), 72000)
+        existing = summary["new_calibers"]["ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY"]["families"]
+        self.assertEqual(sum(item["n_recall"] for item in existing.values()), 71970)
 
 
 if __name__ == "__main__":

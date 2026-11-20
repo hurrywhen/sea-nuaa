@@ -1,0 +1,154 @@
+{
+  "adjudication": {
+    "accepted_fine": [
+      "p1",
+      "p2",
+      "p3",
+      "p4",
+      "p5",
+      "p6"
+    ],
+    "merged_from": {
+      "p3": [
+        "p3a",
+        "p3b"
+      ]
+    },
+    "rejected": [
+      "p3a",
+      "p3b"
+    ],
+    "rule": "Merge split candidates unless independently testable; frozen before outcome inspection."
+  },
+  "candidate_units": [
+    "p1",
+    "p2",
+    "p3",
+    "p3a",
+    "p3b",
+    "p4",
+    "p5",
+    "p6"
+  ],
+  "coarse_groups": [
+    {
+      "group_id": "g1",
+      "members": [
+        "p1",
+        "p2"
+      ],
+      "weight": 0.3333333333333333
+    },
+    {
+      "group_id": "g2",
+      "members": [
+        "p3",
+        "p4"
+      ],
+      "weight": 0.3333333333333333
+    },
+    {
+      "group_id": "g3",
+      "members": [
+        "p5"
+      ],
+      "weight": 0.16666666666666666
+    },
+    {
+      "group_id": "g4",
+      "members": [
+        "p6"
+      ],
+      "weight": 0.16666666666666666
+    }
+  ],
+  "documents": [
+    {
+      "content_sha256": "e108c1c1cc26077b4546c80bf5cf05ff3945da0a970e1a3cf4e479d1e2b5eb31",
+      "document_id": "doc1",
+      "text": "Synthetic document one states proposition p1 and proposition p2."
+    },
+    {
+      "content_sha256": "ff3bb44be36e1cfa49207006f9923813c57250113e217adc54842b7433d8ace5",
+      "document_id": "doc2",
+      "text": "Synthetic document two states compound proposition p3, which a clause rule may split into p3a and p3b."
+    },
+    {
+      "content_sha256": "3c1c3ca0bea27d4efe9714f0cda9a35c10804f0591bbded2449197bbcc1adec7",
+      "document_id": "doc3",
+      "text": "Synthetic document three states proposition p4 and proposition p5."
+    },
+    {
+      "content_sha256": "1886c0c47b312a6af66b311aa53b77f52197be1e141945a3b260800129d680f2",
+      "document_id": "doc4",
+      "text": "Synthetic document four states proposition p6."
+    }
+  ],
+  "evidence_scope": "SYNTHETIC_TARGET_CONSTRUCTION__HUMAN_VALIDATION_PENDING",
+  "extractor_rules": {
+    "clause_rule": {
+      "description": "Adds a clause-level split candidate for compound p3.",
+      "included": [
+        "p1",
+        "p2",
+        "p3",
+        "p3a",
+        "p4",
+        "p5",
+        "p6"
+      ]
+    },
+    "sentence_rule": {
+      "description": "One proposition per claim-bearing sentence.",
+      "included": [
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "p5",
+        "p6"
+      ]
+    }
+  },
+  "fine_targets": [
+    {
+      "canonical_text": "Synthetic proposition p1.",
+      "target_id": "p1",
+      "weight": 0.16666666666666666
+    },
+    {
+      "canonical_text": "Synthetic proposition p2.",
+      "target_id": "p2",
+      "weight": 0.16666666666666666
+    },
+    {
+      "canonical_text": "Synthetic proposition p3.",
+      "target_id": "p3",
+      "weight": 0.16666666666666666
+    },
+    {
+      "canonical_text": "Synthetic proposition p4.",
+      "target_id": "p4",
+      "weight": 0.16666666666666666
+    },
+    {
+      "canonical_text": "Synthetic proposition p5.",
+      "target_id": "p5",
+      "weight": 0.16666666666666666
+    },
+    {
+      "canonical_text": "Synthetic proposition p6.",
+      "target_id": "p6",
+      "weight": 0.16666666666666666
+    }
+  ],
+  "human_validation_status": "pending",
+  "synthetic_consumption_fine": {
+    "p1": 1,
+    "p2": 0,
+    "p3": 1,
+    "p4": 0,
+    "p5": 1,
+    "p6": 0
+  }
+}

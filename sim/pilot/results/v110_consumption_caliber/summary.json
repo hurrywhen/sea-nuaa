@@ -1,6 +1,6 @@
 {
- "schema": "sea.v110.selected-proxy-consumption-caliber/v2",
- "script_version": "1.1.0",
+ "schema": "sea.v110.selected-proxy-consumption-caliber/v3",
+ "script_version": "1.2.0",
  "status": "POST_HOC_SELECTED_PROXY_RETROSPECTIVE_DESCRIPTIVE__WITHIN_CORPUS_EXPLORATORY",
  "new_model_calls": 0,
  "new_delivery_open_attendance_or_consumption_observations": 0,
@@ -741,6 +741,265 @@
       "recall_param": 0.4318101310662416,
       "delta_recall": 0.08537017357421182,
       "delta_return": -0.23620178073852238
+     }
+    }
+   }
+  },
+  "ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW": {
+   "definition": "All 72,000 expected keys; existing keys use the recorded-attempt mean; 30 no-row keys are assigned selected-proxy zero as a conservative selection-failure sensitivity.",
+   "analysis_role": "Post-hoc conservative descriptive sensitivity; not a prospective primary outcome or actual-consumption analysis.",
+   "estimand_caution": "No-row zero is an assumption about selection failure, not recovered historical consumption.",
+   "families": {
+    "O": {
+     "expected_keys": 27000,
+     "existing_keys": 26996,
+     "nonempty_keys": 26985,
+     "empty_only_keys": 11,
+     "missing_keys": 4,
+     "raw_records": 27415,
+     "nonempty_records": 27385,
+     "empty_records": 30,
+     "empty_records_on_nonempty_keys": 19,
+     "mixed_empty_nonempty_keys": 19,
+     "nonempty_duplicate_excess": 400,
+     "all_record_excess_over_existing_keys": 419,
+     "nonempty_duplicate_key_groups": 393,
+     "recall_conflicts_nonempty": 77,
+     "return_conflicts_nonempty": 317,
+     "sign_conflicts_nonempty": 67,
+     "any_six_field_conflicts_nonempty": 351,
+     "n_recall": 27000,
+     "n_return": 27000,
+     "n_sign": null,
+     "sum_n_crit_recall": 25530.0,
+     "equal_run": {
+      "recall_llm": {
+       "estimate": 0.44310543587845913,
+       "ci95": [
+        0.4328294518031785,
+        0.4535887998913942
+       ],
+       "n_runs": 30
+      },
+      "recall_param": {
+       "estimate": 0.41340541524454205,
+       "ci95": [
+        0.3809332740083458,
+        0.4452901261066502
+       ],
+       "n_runs": 30
+      },
+      "delta_recall": {
+       "estimate": 0.029700020633917093,
+       "ci95": [
+        -0.004409018593215115,
+        0.06434377259164134
+       ],
+       "n_runs": 30
+      },
+      "delta_return": {
+       "estimate": -0.1821991438546583,
+       "ci95": [
+        -0.29842431244985296,
+        -0.06322199558451003
+       ],
+       "n_runs": 30
+      }
+     },
+     "pooled_agent_day_sensitivity": {
+      "recall_llm": 0.4428907168037603,
+      "recall_param": 0.41245593419506466,
+      "delta_recall": 0.030434782608695653,
+      "delta_return": -0.1821991438546583
+     }
+    },
+    "C": {
+     "expected_keys": 27000,
+     "existing_keys": 26987,
+     "nonempty_keys": 26979,
+     "empty_only_keys": 8,
+     "missing_keys": 13,
+     "raw_records": 27497,
+     "nonempty_records": 27459,
+     "empty_records": 38,
+     "empty_records_on_nonempty_keys": 30,
+     "mixed_empty_nonempty_keys": 30,
+     "nonempty_duplicate_excess": 480,
+     "all_record_excess_over_existing_keys": 510,
+     "nonempty_duplicate_key_groups": 480,
+     "recall_conflicts_nonempty": 128,
+     "return_conflicts_nonempty": 402,
+     "sign_conflicts_nonempty": 110,
+     "any_six_field_conflicts_nonempty": 428,
+     "n_recall": 27000,
+     "n_return": 27000,
+     "n_sign": null,
+     "sum_n_crit_recall": 25560.0,
+     "equal_run": {
+      "recall_llm": {
+       "estimate": 0.5321824110098922,
+       "ci95": [
+        0.5255334508585022,
+        0.539014898459461
+       ],
+       "n_runs": 30
+      },
+      "recall_param": {
+       "estimate": 0.40316884363936634,
+       "ci95": [
+        0.3728290002784811,
+        0.43427107098328827
+       ],
+       "n_runs": 30
+      },
+      "delta_recall": {
+       "estimate": 0.12901356737052572,
+       "ci95": [
+        0.09845365718866998,
+        0.15816436767398065
+       ],
+       "n_runs": 30
+      },
+      "delta_return": {
+       "estimate": 0.6579172215113769,
+       "ci95": [
+        0.5310247679424442,
+        0.7921663528144515
+       ],
+       "n_runs": 30
+      }
+     },
+     "pooled_agent_day_sensitivity": {
+      "recall_llm": 0.531631455399061,
+      "recall_param": 0.40375586854460094,
+      "delta_recall": 0.1278755868544601,
+      "delta_return": 0.6579172215113768
+     }
+    },
+    "Q": {
+     "expected_keys": 9000,
+     "existing_keys": 8998,
+     "nonempty_keys": 8978,
+     "empty_only_keys": 20,
+     "missing_keys": 2,
+     "raw_records": 9365,
+     "nonempty_records": 9321,
+     "empty_records": 44,
+     "empty_records_on_nonempty_keys": 24,
+     "mixed_empty_nonempty_keys": 24,
+     "nonempty_duplicate_excess": 343,
+     "all_record_excess_over_existing_keys": 367,
+     "nonempty_duplicate_key_groups": 337,
+     "recall_conflicts_nonempty": 62,
+     "return_conflicts_nonempty": 245,
+     "sign_conflicts_nonempty": 52,
+     "any_six_field_conflicts_nonempty": 290,
+     "n_recall": 9000,
+     "n_return": 9000,
+     "n_sign": null,
+     "sum_n_crit_recall": 8310.0,
+     "equal_run": {
+      "recall_llm": {
+       "estimate": 0.5139091669635792,
+       "ci95": [
+        0.5021752493169878,
+        0.525385148972788
+       ],
+       "n_runs": 10
+      },
+      "recall_param": {
+       "estimate": 0.40319997098028243,
+       "ci95": [
+        0.3690020322856808,
+        0.4338733778272154
+       ],
+       "n_runs": 10
+      },
+      "delta_recall": {
+       "estimate": 0.11070919598329684,
+       "ci95": [
+        0.08055541585006268,
+        0.1446120275241382
+       ],
+       "n_runs": 10
+      },
+      "delta_return": {
+       "estimate": 0.3953323859059149,
+       "ci95": [
+        0.25795095305034577,
+        0.5206876949473423
+       ],
+       "n_runs": 10
+      }
+     },
+     "pooled_agent_day_sensitivity": {
+      "recall_llm": 0.5139590854392299,
+      "recall_param": 0.4043321299638989,
+      "delta_recall": 0.10962695547533093,
+      "delta_return": 0.39533238590591496
+     }
+    },
+    "G": {
+     "expected_keys": 9000,
+     "existing_keys": 8989,
+     "nonempty_keys": 8972,
+     "empty_only_keys": 17,
+     "missing_keys": 11,
+     "raw_records": 9427,
+     "nonempty_records": 9382,
+     "empty_records": 45,
+     "empty_records_on_nonempty_keys": 28,
+     "mixed_empty_nonempty_keys": 28,
+     "nonempty_duplicate_excess": 410,
+     "all_record_excess_over_existing_keys": 438,
+     "nonempty_duplicate_key_groups": 398,
+     "recall_conflicts_nonempty": 74,
+     "return_conflicts_nonempty": 274,
+     "sign_conflicts_nonempty": 67,
+     "any_six_field_conflicts_nonempty": 320,
+     "n_recall": 9000,
+     "n_return": 9000,
+     "n_sign": null,
+     "sum_n_crit_recall": 8610.0,
+     "equal_run": {
+      "recall_llm": {
+       "estimate": 0.5162547493614305,
+       "ci95": [
+        0.4936732732013623,
+        0.5361517134951042
+       ],
+       "n_runs": 10
+      },
+      "recall_param": {
+       "estimate": 0.43085648148148153,
+       "ci95": [
+        0.374712643678161,
+        0.4851655092592592
+       ],
+       "n_runs": 10
+      },
+      "delta_recall": {
+       "estimate": 0.0853982678799489,
+       "ci95": [
+        0.01897011527511707,
+        0.1441814921243082
+       ],
+       "n_runs": 10
+      },
+      "delta_return": {
+       "estimate": -0.26000423730315514,
+       "ci95": [
+        -0.4628625988713028,
+        -0.07292196293296792
+       ],
+       "n_runs": 10
+      }
+     },
+     "pooled_agent_day_sensitivity": {
+      "recall_llm": 0.5147115756871855,
+      "recall_param": 0.43205574912891986,
+      "delta_recall": 0.08265582655826562,
+      "delta_return": -0.2600042373031551
      }
     }
    }
@@ -1614,16 +1873,18 @@
  },
  "future_logging_schema": {
   "artifact": "future_logging_schema.json",
-  "schema_sha256": "0825d496d0df1fe158396fc763c52019d688857f05deb1960dd07163d89c5082",
+  "schema_sha256": "f82bd6b8e360e4d8005280e4b0b59e2ca309fa0a19251472fc6aa5cc6b35054f",
   "prospective_only": true,
   "historical_backfill_performed": false,
   "required_stage_chain": [
    "selected",
    "delivered",
    "opened",
-   "attended/consumed"
+   "operational_attendance"
   ],
   "primary_missing_outcome_rule": "ALL_ASSIGNED_FAILURE_COMPOSITE_CONFIRMED_CONSUMPTION_OMISSION_V1",
+  "attendance_decision_rule": "VALID_READING_AND_CONTENT_LINKED_CONFIRMATION",
+  "machine_event_term": "machine_ingestion_and_task_reference_not_human_attention",
   "attendance_measurement_fields": [
    "instrument",
    "instrument_version",
@@ -1652,7 +1913,7 @@
    "future_logging_schema.json",
    "input_manifest.json"
   ],
-  "run_metric_rows": 320,
+  "run_metric_rows": 400,
   "scenario_effect_rows": 68,
   "key_ledger_rows": 72000
  },
@@ -1666,7 +1927,7 @@
   "numpy_version": "2.3.5",
   "platform": "Linux-7.0.0-34-generic-x86_64-with-glibc2.39",
   "analysis_script": "sim/sea_pilot/audit_v110_consumption_caliber.py",
-  "analysis_script_sha256": "aa0678d6c71498574ddc7ca4bcfa0c222d6129f0db32a0eb724110f120a24660",
+  "analysis_script_sha256": "7bc822ec750f4f73a06701e7eeb210880e7e8e2512e7aded3d406e45072ed1b9",
   "frozen_summary_sha256": "b0864b1a9449151ca5be365a19e659e73ebaa86cdf076783405623734019eec8",
   "frozen_run_metrics_sha256": "b71dfe3046d94ea9443b3bd464029141d162140b451f6acca24f6dd016c7d429",
   "input_manifest_sha256": "d87e6d563f757fcadd12091280bceacbc2f22df2ecfe037e561e705ae7d16e83"

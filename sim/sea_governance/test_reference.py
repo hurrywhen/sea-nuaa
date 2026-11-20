@@ -1,4 +1,4 @@
-"""Synthetic conformance and negative tests for SEA v1.10 governance S1--S4.
+"""Synthetic conformance and negative tests for SEA v1.12 governance S1--S4.
 
 Run from ``sim``::
 
@@ -8,12 +8,14 @@ No repository data, network resource, wall clock, or randomness is used.
 """
 from __future__ import annotations
 
+import hashlib
 import unittest
 
 from sea_governance import (
     Authorization,
     GovernanceReference,
     OBJECTIVE_TERMS,
+    canonical_json,
     proposal_digest,
 )
 
@@ -47,7 +49,7 @@ def user_state():
 
 
 def authorize(operation, proposal, governance=None, *, identifier="sigma-1",
-              timestamp="t-authorization"):
+              timestamp="logical:00000010"):
     return Authorization(
         authorization_id=identifier,
         principal="R",
@@ -58,7 +60,7 @@ def authorize(operation, proposal, governance=None, *, identifier="sigma-1",
     )
 
 
-def authorized_write(governance, patch, *, timestamp="t-write"):
+def authorized_write(governance, patch, *, timestamp="logical:00000010"):
     return governance.write_objective(
         patch,
         actor="R",
@@ -78,7 +80,7 @@ class TestS1Inspectability(unittest.TestCase):
         self.assertEqual(inspected["version"], 0)
         self.assertEqual(inspected["version_token"], governance.version_token())
         self.assertEqual(len(inspected["objective_sha256"]), 64)
-        self.assertEqual(inspected["versions"][0]["evidence"], ["defaults:sea-v1.10"])
+        self.assertEqual(inspected["versions"][0]["evidence"], ["defaults:sea-v1.12"])
         self.assertIn("defaults_source", inspected["provenance"])
         self.assertIn("objective_expression", inspected["provenance"])
         self.assertIn("time_source", inspected["provenance"])
@@ -139,7 +141,7 @@ class TestS2WritesAndRollback(unittest.TestCase):
 
         rollback_auth = authorize(
             "rollback", {"target_version": 0}, governance, identifier="sigma-rollback",
-            timestamp="t-rollback",
+            timestamp="logical:00000020",
         )
         restored = governance.rollback(
             0, authorization=rollback_auth, evidence=["proposal:rollback"]
@@ -156,10 +158,10 @@ class TestS2WritesAndRollback(unittest.TestCase):
 
         override_record = governance.audit_records()[write["audit_sequence"] - 1]
         rollback_record = governance.audit_records()[restored["audit_sequence"] - 1]
-        self.assertEqual(override_record["timestamp"], "t-write")
+        self.assertEqual(override_record["timestamp"], "logical:00000010")
         self.assertEqual(override_record["payload"]["old_value"], original_objective)
         self.assertNotEqual(override_record["payload"]["new_value"], original_objective)
-        self.assertEqual(rollback_record["timestamp"], "t-rollback")
+        self.assertEqual(rollback_record["timestamp"], "logical:00000020")
         self.assertEqual(rollback_record["payload"]["new_value"], original_objective)
         self.assertEqual(rollback_record["payload"]["restored_from"], 0)
         self.assertTrue(governance.verify_audit()["valid"])
@@ -194,6 +196,61 @@ class TestS2WritesAndRollback(unittest.TestCase):
         record = governance.audit_records()[-1]
         self.assertNotEqual(record["payload"]["authorization"]["version_token"],
                             record["payload"]["old_version_token"])
+
+    def test_s2_actor_must_match_authorization_principal(self):
+        governance = GovernanceReference()
+        patch = {"weights": {"relevance": 0}}
+        authorization = authorize("objective_write", patch, governance)
+        result = governance.write_objective(
+            patch, actor="platform", authorization=authorization,
+            evidence=["attempt:stolen-principal"],
+        )
+        self.assertFalse(result["accepted"])
+        self.assertEqual(result["guard_reject_reason"], "actor_principal_mismatch")
+        self.assertEqual(governance.inspect_objective()["version"], 0)
+        record = governance.audit_records()[-1]
+        self.assertEqual(record["payload"]["actor"], "platform")
+        self.assertEqual(record["payload"]["authorization"]["principal"], "R")
+        self.assertFalse(record["payload"]["accepted"])
+
+    def test_s2_invalid_and_nonmonotonic_timestamps_are_rejected(self):
+        malformed = GovernanceReference()
+        patch = {"weights": {"relevance": 0}}
+        malformed_auth = authorize(
+            "objective_write", patch, malformed, timestamp="yesterday")
+        rejected = malformed.write_objective(
+            patch, actor="R", authorization=malformed_auth,
+            evidence=["attempt:bad-time"],
+        )
+        self.assertEqual(rejected["guard_reject_reason"], "invalid_timestamp")
+
+        governance = GovernanceReference()
+        accepted = authorized_write(governance, patch, timestamp="logical:00000020")
+        self.assertTrue(accepted["accepted"])
+        current = governance.inspect_objective()["objective"]
+        late_patch = {"weights": {"novelty": 7}}
+        stale_time = authorize(
+            "objective_write", late_patch, governance,
+            identifier="sigma-stale-time", timestamp="logical:00000019")
+        stale = governance.write_objective(
+            late_patch, actor="R", authorization=stale_time,
+            evidence=["attempt:nonmonotonic-time"],
+        )
+        self.assertEqual(stale["guard_reject_reason"], "nonmonotonic_timestamp")
+        self.assertEqual(governance.inspect_objective()["objective"], current)
+
+    def test_s2_authorization_identifier_is_single_use(self):
+        governance = GovernanceReference()
+        # A no-change guard decision consumes the authorization without creating
+        # a new objective version, isolating reuse from stale-version rejection.
+        authorization = authorize("objective_write", {}, governance)
+        first = governance.write_objective(
+            {}, actor="R", authorization=authorization, evidence=["guard:no-change"])
+        self.assertEqual(first["reason"], "no_change")
+        second = governance.write_objective(
+            {}, actor="R", authorization=authorization, evidence=["guard:reuse"])
+        self.assertFalse(second["accepted"])
+        self.assertEqual(second["guard_reject_reason"], "authorization_reuse")
 
     def test_s3_revenue_objective_term_is_rejected_even_with_authorization(self):
         governance = GovernanceReference()
@@ -307,7 +364,9 @@ class TestS4AuditAndRecourse(unittest.TestCase):
         authorized_write(governance, patch)
         governance.rollback(
             0,
-            authorization=authorize("rollback", {"target_version": 0}, governance),
+            authorization=authorize(
+                "rollback", {"target_version": 0}, governance,
+                identifier="sigma-exercise-rollback", timestamp="logical:00000020"),
             evidence=["rollback:1"],
         )
         return governance
@@ -371,6 +430,22 @@ class TestS4AuditAndRecourse(unittest.TestCase):
         self.assertFalse(verification["valid"])
         self.assertIn("anchor length mismatch", verification["errors"])
         self.assertIn("anchor head mismatch", verification["errors"])
+
+    def test_record_hash_matches_domain_separated_canonical_body(self):
+        governance = GovernanceReference()
+        governance.rank(candidates(), user_state(), {}, evidence=["rank:hash-spec"])
+        record = governance.audit_records()[0]
+        self.assertEqual(record["previous_hash"], "0" * 64)
+        self.assertNotIn("record", record["payload"])
+        body = {key: value for key, value in record.items() if key != "record_hash"}
+        material = canonical_json({
+            "domain": "sea-governance-record/2", "value": body,
+        }).encode("utf-8")
+        self.assertEqual(record["record_hash"], hashlib.sha256(material).hexdigest())
+        self.assertEqual(set(body), {
+            "schema", "sequence", "event", "timestamp", "evidence",
+            "payload", "previous_hash",
+        })
 
     def test_missing_evidence_is_rejected_before_append(self):
         governance = GovernanceReference()
