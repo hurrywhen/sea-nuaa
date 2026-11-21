@@ -103,7 +103,7 @@ def audit_target_construction() -> dict[str, Any]:
         "fine_targets": fixture["fine_targets"],
         "coarse_groups": fixture["coarse_groups"],
         "granularity_sensitivity": granularity_sensitivity(fixture),
-        "dynamic_target_rule": "NEW_SAP_INSTANCE__NO_CROSS_VERSION_POOLING",
+        "dynamic_target_rule": "NEW_EVALUATION_COHORT__NO_CROSS_VERSION_POOLING",
         "human_validation_template": str(TEMPLATE_PATH.relative_to(Path(__file__).resolve().parents[2])),
         "human_annotations_created": False,
         "availability_reference_rule": (

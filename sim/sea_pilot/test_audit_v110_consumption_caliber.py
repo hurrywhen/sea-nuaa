@@ -40,7 +40,7 @@ class ConsumptionCaliberTest(unittest.TestCase):
     def test_generated_summary_uses_only_canonical_calibers(self) -> None:
         summary = json.loads((audit.OUTDIR / "summary.json").read_text(encoding="utf-8"))
         self.assertEqual(set(summary["new_calibers"]), set(audit.NEW_CALIBERS))
-        self.assertEqual(summary["schema"], "sea.v110.selected-proxy-consumption-caliber/v3")
+        self.assertEqual(summary["schema"], "sea.v110.selected-proxy-consumption-caliber/v4")
         self.assertNotIn("POST_HOC_SELECTED_PROXY_ITT", summary["status"])
         self.assertIn("Designated retrospective descriptive caliber",
                       summary["new_calibers"]["ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY"]["analysis_role"])
@@ -63,7 +63,7 @@ class ConsumptionCaliberTest(unittest.TestCase):
         self.assertIn("outcome_protocol", schema["required"])
         protocol = schema["properties"]["outcome_protocol"]["properties"]
         self.assertEqual(protocol["primary_rule"]["const"],
-                         "ALL_ASSIGNED_FAILURE_COMPOSITE_CONFIRMED_CONSUMPTION_OMISSION_V1")
+                         "ALL_ASSIGNED_FAILURE_COMPOSITE_OPERATIONAL_ATTENDANCE_OMISSION_V1")
         self.assertEqual(protocol["attendance_decision_rule"]["const"],
                          "VALID_READING_AND_CONTENT_LINKED_CONFIRMATION")
         self.assertEqual(protocol["machine_event_term"]["const"],

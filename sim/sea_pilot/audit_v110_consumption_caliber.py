@@ -80,8 +80,8 @@ FROZEN_DIR = RESULTS / "frozen_reanalysis_v1"
 FROZEN_SUMMARY = FROZEN_DIR / "summary.json"
 FROZEN_RUN_METRICS = FROZEN_DIR / "run_metrics.csv"
 OUTDIR = RESULTS / "v110_consumption_caliber"
-VERSION = "1.2.0"
-SCHEMA = "sea.v110.selected-proxy-consumption-caliber/v3"
+VERSION = "1.3.0"
+SCHEMA = "sea.v110.selected-proxy-consumption-caliber/v4"
 STATUS = "POST_HOC_SELECTED_PROXY_RETROSPECTIVE_DESCRIPTIVE__WITHIN_CORPUS_EXPLORATORY"
 NOMINAL_PER_RUN = 900
 NOMINAL_TOTAL = 72000
@@ -1020,7 +1020,7 @@ def _future_logging_schema() -> dict[str, Any]:
     }
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://example.invalid/sea.future-policy-delivery-consumption-attempt-v3.schema.json",
+        "$id": "https://example.invalid/sea.future-policy-delivery-consumption-attempt-v4.schema.json",
         "title": "Prospective SEA policy-attempt delivery and consumption log",
         "description": (
             "Future-only attempt/item schema. Unknown and not_attempted are explicit; no selected "
@@ -1034,7 +1034,7 @@ def _future_logging_schema() -> dict[str, Any]:
             "outcome_protocol", "items", "efficiency",
         ],
         "properties": {
-            "schema_version": {"const": "sea.future-policy-delivery-consumption-attempt/v3"},
+            "schema_version": {"const": "sea.future-policy-delivery-consumption-attempt/v4"},
             "run_key": {
                 "type": "object", "additionalProperties": False,
                 "required": ["family", "run", "agent", "sim_day"],
@@ -1083,7 +1083,7 @@ def _future_logging_schema() -> dict[str, Any]:
                 "properties": {
                     "assignment_id": {"type": "string", "minLength": 1},
                     "primary_rule": {
-                        "const": "ALL_ASSIGNED_FAILURE_COMPOSITE_CONFIRMED_CONSUMPTION_OMISSION_V1"
+                        "const": "ALL_ASSIGNED_FAILURE_COMPOSITE_OPERATIONAL_ATTENDANCE_OMISSION_V1"
                     },
                     "instrument_registry_sha256": {
                         "type": "string", "pattern": "^[0-9a-f]{64}$"
@@ -1683,7 +1683,7 @@ def build_analysis() -> tuple[
             "prospective_only": True,
             "historical_backfill_performed": False,
             "required_stage_chain": ["selected", "delivered", "opened", "operational_attendance"],
-            "primary_missing_outcome_rule": "ALL_ASSIGNED_FAILURE_COMPOSITE_CONFIRMED_CONSUMPTION_OMISSION_V1",
+            "primary_missing_outcome_rule": "ALL_ASSIGNED_FAILURE_COMPOSITE_OPERATIONAL_ATTENDANCE_OMISSION_V1",
             "attendance_decision_rule": "VALID_READING_AND_CONTENT_LINKED_CONFIRMATION",
             "machine_event_term": "machine_ingestion_and_task_reference_not_human_attention",
             "attendance_measurement_fields": [

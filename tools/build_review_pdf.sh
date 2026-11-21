@@ -23,7 +23,7 @@ if [ "$MODE" = "en" ]; then
   CONTENTS="Contents"
   FIRSTPART='^# Part I'
   STAMP="*Review artifact: **${PDFVER}** · built ${BUILD_DATE} · working revision — verify the source hash and evidence-status matrix before review; earlier PDFs are separate versions.*"
-  PDFTITLE="Sovereign Epistemic Acquisition: Conditional Components, Governance Audits, and Weighted Omission (${PDFVER}; built ${BUILD_DATE})"
+  PDFTITLE="Sovereign Epistemic Acquisition: A Conditional Framework and Synthetic Audit Artifacts (${PDFVER}; built ${BUILD_DATE})"
 else
   SRC="input/主权认知获取_统一理论_${PDFVER}.md"
   OUT="latex/主权认知获取_统一理论_${PDFVER}_内审稿.pdf"

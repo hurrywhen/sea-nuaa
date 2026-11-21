@@ -1,18 +1,27 @@
-"""Tests for the v1.12 minimal longitudinal SAP executor and measurement rules."""
+"""Tests for the v1.13 minimal longitudinal SAP executor and measurement rules."""
 from __future__ import annotations
 
 import copy
+import hashlib
+import json
 import unittest
 
+from sea_governance import canonical_json
 from sea_sap import (
     SAPExecutor,
-    failure_composite_contrast_bounds,
     load_fixture,
     machine_ingestion_and_task_reference,
+    operational_attendance_contrast_bounds,
     run_longitudinal_fixture,
     run_matched_implementation_demo,
 )
 from sea_sap.executor import OperationalAttendanceInstrument, validate_target_registry
+
+
+def _refresh_registry_hash(registry):
+    registry["reference_corpus"]["sha256"] = hashlib.sha256(
+        canonical_json(registry["reference_corpus"]["documents"]).encode("utf-8")
+    ).hexdigest()
 
 
 class LongitudinalExecutorTest(unittest.TestCase):
@@ -20,6 +29,8 @@ class LongitudinalExecutorTest(unittest.TestCase):
         fixture = load_fixture()
         validate_target_registry(fixture["target_registry"])
         self.assertEqual(fixture["evidence_scope"], "SYNTHETIC_FIXTURE__NOT_HUMAN_OR_DEPLOYMENT_DATA")
+        self.assertIn("reference_link_truth", fixture)
+        self.assertIn("staged_link_pass", fixture)
 
     def test_longitudinal_run_exercises_guard_budgets_and_audit(self):
         result = run_longitudinal_fixture()
@@ -29,20 +40,23 @@ class LongitudinalExecutorTest(unittest.TestCase):
         self.assertTrue(all(value > 0 for value in result["budget"]["spent"].values()))
         self.assertEqual(result["new_real_model_calls"], 0)
         self.assertFalse(result["latent_actual_consumption_observed"])
+        self.assertIn("NOT_LATENT", result["ledger_scope"])
 
-    def test_target_ledger_partitions_omission_and_keeps_latent_unobserved(self):
+    def test_operational_ledger_partitions_omission_and_keeps_latent_unobserved(self):
         result = run_longitudinal_fixture()
         first, second = result["periods"]
         self.assertAlmostEqual(first["outcome_summary"]["weighted_fc_omission"], 5 / 6)
         self.assertAlmostEqual(second["outcome_summary"]["weighted_fc_omission"], 1.0)
         self.assertAlmostEqual(second["outcome_summary"]["weighted_unknown_terminal"], 1 / 6)
         for period in (first, second):
-            stages = [row["first_failed_stage"] for row in period["target_ledger"]]
-            omitted = [row for row in period["target_ledger"] if row["failure_composite_omission"]]
+            ledger = period["operational_target_ledger"]
+            stages = [row["first_failed_stage"] for row in ledger]
+            omitted = [row for row in ledger if row["failure_composite_omission"]]
             self.assertEqual(len(omitted), sum(stage is not None for stage in stages))
-            self.assertTrue(all(row["latent_actual_consumption"] is None for row in period["target_ledger"]))
+            self.assertTrue(all(row["latent_actual_consumption"] is None for row in ledger))
+            self.assertIn("OPERATIONAL", period["outcome_summary"]["ledger_scope"])
 
-    def test_operational_attendance_and_machine_reference_are_distinct(self):
+    def test_operational_attendance_and_machine_placeholder_are_distinct(self):
         fixture = load_fixture()
         instrument = OperationalAttendanceInstrument(fixture["attendance_instrument"])
         positive = instrument.measure(fixture["period_plans"]["0"]["attendance_events"]["c1"])
@@ -57,28 +71,129 @@ class LongitudinalExecutorTest(unittest.TestCase):
         self.assertFalse(machine_ingestion_and_task_reference(bad))
         result = run_longitudinal_fixture()
         self.assertTrue(result["periods"][0]["outcome_summary"]["machine_ingestion_and_task_reference"]["c1"])
-        self.assertAlmostEqual(result["periods"][0]["outcome_summary"]["weighted_fc_omission"], 5 / 6)
+        self.assertIn("synthetic placeholder", result["periods"][0]["outcome_summary"]["machine_event_interpretation"])
 
-    def test_contrast_bounds_use_arm_specific_unknown_extremes(self):
-        bounds = failure_composite_contrast_bounds(
+    def test_bounds_are_operational_not_latent_and_misclassification_counterexample(self):
+        bounds = operational_attendance_contrast_bounds(
             {"sea": 0.5, "control": 0.4}, {"sea": 0.2, "control": 0.1})
+        self.assertEqual(bounds["estimand"],
+                         "operational_attendance_omission_contrast_not_latent_actual_consumption")
         self.assertAlmostEqual(bounds["sea_minus_control_fc"], 0.1)
-        self.assertAlmostEqual(bounds["lower_sea_unknown_success_control_unknown_failure"], -0.1)
-        self.assertAlmostEqual(bounds["upper_sea_unknown_failure_control_unknown_success"], 0.2)
+        self.assertAlmostEqual(bounds["lower_sea_unknown_operational_success_control_unknown_failure"], -0.1)
+        self.assertAlmostEqual(bounds["upper_sea_unknown_operational_failure_control_unknown_success"], 0.2)
+        self.assertTrue(bounds["latent_bounds_require_measurement_error_assumptions"])
+        # No unknowns: operational bounds collapse to [0,0].  A false positive in
+        # SEA (Z=1, D=0) and true positive in control (Z=1, D=1) gives latent
+        # omission contrast 1, outside the operational bounds.  A false negative
+        # in control gives the reverse violation.  Hence the bounds are not latent.
+        no_unknown = operational_attendance_contrast_bounds(
+            {"sea": 0.0, "control": 0.0}, {"sea": 0.0, "control": 0.0})
+        self.assertAlmostEqual(no_unknown["lower_sea_unknown_operational_success_control_unknown_failure"], 0.0)
+        self.assertAlmostEqual(no_unknown["upper_sea_unknown_operational_failure_control_unknown_success"], 0.0)
+        latent_false_positive_contrast = 1.0
+        self.assertFalse(no_unknown["lower_sea_unknown_operational_success_control_unknown_failure"]
+                         <= latent_false_positive_contrast
+                         <= no_unknown["upper_sea_unknown_operational_failure_control_unknown_success"])
+        # False-negative counterexample (no unknowns): control has a complete
+        # negative measurement Z=0 while latent D=1, sea has Z=1, D=1.  Then
+        # FC omission is sea=0, control=1, so the operational bounds are [-1,-1],
+        # but both arms actually consumed: latent omission contrast is 0, outside.
+        false_negative = operational_attendance_contrast_bounds(
+            {"sea": 0.0, "control": 1.0}, {"sea": 0.0, "control": 0.0})
+        self.assertAlmostEqual(false_negative["lower_sea_unknown_operational_success_control_unknown_failure"], -1.0)
+        self.assertAlmostEqual(false_negative["upper_sea_unknown_operational_failure_control_unknown_success"], -1.0)
+        latent_false_negative_contrast = 0.0
+        self.assertFalse(false_negative["lower_sea_unknown_operational_success_control_unknown_failure"]
+                         <= latent_false_negative_contrast
+                         <= false_negative["upper_sea_unknown_operational_failure_control_unknown_success"])
         with self.assertRaises(ValueError):
-            failure_composite_contrast_bounds({"sea": 0.1, "control": 0.1}, {"sea": 0.2, "control": 0.0})
+            operational_attendance_contrast_bounds({"sea": 0.1, "control": 0.1}, {"sea": 0.2, "control": 0.0})
 
-    def test_target_version_change_creates_new_sap_instance(self):
+    def test_delayed_first_available_period_changes_longitudinal_availability(self):
+        fixture = load_fixture()
+        registry = fixture["target_registry"]
+        for doc in registry["reference_corpus"]["documents"]:
+            if doc["document_id"] == "doc2":
+                doc["first_available_period"] = 2
+        _refresh_registry_hash(registry)
+        executor = SAPExecutor(fixture, arm="sea")
+        positive = fixture["period_plans"]["0"]["attendance_events"]["c1"]
+        plan = {"delivered": ["c1"], "opened": ["c1"],
+                "attendance_events": {"c1": positive}, "machine_events": {}}
+        period0 = executor.run_period(0, plan)
+        e2 = next(row for row in period0["operational_target_ledger"] if row["target_id"] == "e2")
+        self.assertEqual(e2["first_failed_stage"], "availability")
+        self.assertEqual(e2["available_candidate_ids"], [])
+        period1 = executor.run_period(1, plan)
+        e2_1 = next(row for row in period1["operational_target_ledger"] if row["target_id"] == "e2")
+        self.assertEqual(e2_1["first_failed_stage"], "availability")
+        self.assertAlmostEqual(period1["outcome_summary"]["weighted_unknown_terminal"], 0.0)
+
+    def test_s2d_can_select_staged_link_failure_but_evaluation_uses_reference_truth(self):
+        fixture = load_fixture()
+        fixture["staged_link_pass"]["c3"] = {"e3": False, "e4": False}
+        fixture["reference_link_truth"]["c3"] = {"e3": True, "e4": True}
+        fixture["run_id"] = "s2d-link-truth-test"
+        executor = SAPExecutor(fixture, arm="s2d")
+        positive = fixture["period_plans"]["0"]["attendance_events"]["c1"]
+        plan = {
+            "delivered": ["c1", "c3"], "opened": ["c1", "c3"],
+            "attendance_events": {"c1": positive, "c3": positive},
+            "machine_events": {},
+        }
+        period = executor.run_period(0, plan)
+        self.assertIn("c3", period["selected_candidate_ids"])
+        e3 = next(row for row in period["operational_target_ledger"] if row["target_id"] == "e3")
+        self.assertIn("c3", e3["linked_candidate_ids"])
+        self.assertIsNone(e3["first_failed_stage"])
+        sea_fixture = copy.deepcopy(fixture)
+        sea_fixture["run_id"] = "sea-link-truth-test"
+        sea = SAPExecutor(sea_fixture, arm="sea")
+        sea_period = sea.run_period(0, {"delivered": ["c1"], "opened": ["c1"],
+                                        "attendance_events": {"c1": positive}, "machine_events": {}})
+        self.assertNotIn("c3", sea_period["selected_candidate_ids"])
+
+    def test_whole_period_resource_precheck_fails_before_mutation(self):
+        fixture = load_fixture()
+        fixture["initial_budget"]["time"] = 0
+        executor = SAPExecutor(fixture)
+        before_records = executor.governance.audit_records()
+        with self.assertRaises(RuntimeError):
+            executor.run_period(0, fixture["period_plans"]["0"])
+        self.assertEqual(executor.governance.audit_records(), before_records)
+        self.assertEqual(executor.budget_spent, {name: 0 for name in executor.budget_spent})
+
+    def test_invalid_terminal_plan_fails_before_mutation(self):
         fixture = load_fixture()
         executor = SAPExecutor(fixture)
+        before_records = executor.governance.audit_records()
+        unknown_candidate = {"delivered": ["c1", "no-such-candidate"], "opened": ["c1"],
+                             "attendance_events": {}, "machine_events": {}}
+        with self.assertRaises(ValueError):
+            executor.run_period(0, unknown_candidate)
+        opened_not_delivered = {"delivered": ["c1"], "opened": ["c1", "c2"],
+                                "attendance_events": {}, "machine_events": {}}
+        with self.assertRaises(ValueError):
+            executor.run_period(0, opened_not_delivered)
+        self.assertEqual(executor.governance.audit_records(), before_records)
+        self.assertEqual(executor.budget_spent, {name: 0 for name in executor.budget_spent})
+
+    def test_control_continuity_and_evaluation_cohort_are_separate(self):
+        fixture = load_fixture()
+        executor = SAPExecutor(fixture)
+        executor.run_period(0, fixture["period_plans"]["0"])
         registry = copy.deepcopy(fixture["target_registry"])
         registry["version"] = "targets-v2"
         registry["targets"][0]["canonical_text"] = "Revised synthetic proposition e1."
+        continued = executor.continue_with_target_registry(registry)
+        self.assertEqual(continued.control_instance_id, executor.control_instance_id)
+        self.assertNotEqual(continued.evaluation_cohort_id, executor.evaluation_cohort_id)
+        self.assertIs(continued.governance, executor.governance)
+        self.assertEqual(continued.budget_remaining, executor.budget_remaining)
+        self.assertEqual(continued.registry["version"], "targets-v2")
         forked = executor.fork_for_target_registry(registry)
-        self.assertNotEqual(executor.instance_id, forked.instance_id)
-        self.assertEqual(executor.registry["version"], "targets-v1")
-        self.assertEqual(forked.registry["version"], "targets-v2")
-        self.assertEqual(executor.period_results, [])
+        self.assertNotEqual(forked.control_instance_id, executor.control_instance_id)
+        self.assertEqual(forked.budget_spent, {name: 0 for name in forked.budget_spent})
 
     def test_open_world_absence_cannot_be_asserted_from_closed_snapshot(self):
         fixture = load_fixture()
@@ -95,6 +210,7 @@ class LongitudinalExecutorTest(unittest.TestCase):
         self.assertTrue(result["arms"]["s2d"]["audit_valid"])
         self.assertNotEqual(result["arms"]["sea"]["selected_candidate_ids"],
                             result["arms"]["s2d"]["selected_candidate_ids"])
+        self.assertEqual(result["arms"]["s2d"]["evaluation_link_rule"], "reference_link_truth_arm_independent")
 
     def test_unvalidated_real_instrument_is_rejected(self):
         fixture = load_fixture()
@@ -106,8 +222,8 @@ class LongitudinalExecutorTest(unittest.TestCase):
     def test_executor_audit_contains_resource_and_terminal_events(self):
         result = run_longitudinal_fixture()
         events = {record["event"] for record in result["audit"]["records"]}
-        self.assertLessEqual({"observation", "update", "resource_use", "ranking", "selection",
-                              "period_outcome", "override", "rollback"}, events)
+        self.assertLessEqual({"resource_precheck", "observation", "update", "resource_use", "ranking",
+                              "selection", "period_outcome", "override", "rollback"}, events)
 
 
 if __name__ == "__main__":

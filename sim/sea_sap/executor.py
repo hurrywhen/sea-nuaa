@@ -1,9 +1,10 @@
 """Minimal longitudinal SAP executor for deterministic synthetic fixtures.
 
-This is an executable *small instance* of the v1.12 SAP interface, not a general
-optimizer, an LLM experiment, or deployment-effectiveness evidence.  It deliberately
-keeps latent actual consumption unobserved.  Operational attendance, machine
-ingestion-and-task-reference, and the failure-composite endpoint are distinct.
+This is an executable *small instance* of the v1.13 SAP interface, not a general
+optimizer, an LLM experiment, or deployment-effectiveness evidence.  It keeps
+latent actual consumption unobserved.  Operational attendance, the synthetic
+machine ingestion-and-task-reference placeholder, and the failure-composite
+endpoint are distinct.  The executable ledger is operational/FC, not latent.
 """
 from __future__ import annotations
 
@@ -26,6 +27,10 @@ from sea_governance import (
 RESOURCE_NAMES = ("time", "compute", "calls", "money", "risk")
 STAGE_NAMES = ("availability", "linkage", "quota", "delivery", "opening", "attendance")
 FIXTURE_PATH = Path(__file__).resolve().parent / "fixtures" / "longitudinal.json"
+DYNAMIC_RULES = {
+    "NEW_EVALUATION_COHORT__NO_CROSS_VERSION_POOLING",
+    "NEW_SAP_INSTANCE__NO_CROSS_VERSION_POOLING",
+}
 
 
 def _detached(value: Any) -> Any:
@@ -57,11 +62,12 @@ def load_fixture(path: Optional[Path] = None) -> dict[str, Any]:
     links = document["target_registry"]["candidate_target_links"]
     if any(candidate["candidate_id"] not in links for candidate in candidates):
         raise ValueError("every raw candidate needs an explicit target-link entry")
-    link_valid = document.get("link_valid", {})
-    for candidate_id, targets in links.items():
-        for target in targets:
-            if target not in link_valid.get(candidate_id, {}):
-                raise ValueError("every candidate-target link needs an explicit linkage outcome")
+    for field in ("reference_link_truth", "staged_link_pass"):
+        table = document.get(field, {})
+        for candidate_id, targets in links.items():
+            for target in targets:
+                if target not in table.get(candidate_id, {}):
+                    raise ValueError(f"every candidate-target link needs an explicit {field} entry")
     for candidate in candidates:
         if set(candidate["features"]) != {
             "relevance", "novelty", "credibility", "durability", "harm_avoidance"
@@ -92,6 +98,7 @@ def validate_target_registry(registry: Mapping[str, Any]) -> None:
     for document in documents:
         if not document.get("document_id") or not document.get("content_sha256") or not document.get("evidence_pointer"):
             raise ValueError("reference document needs identity, content hash and evidence")
+        _nonnegative_int(document.get("first_available_period"), "first_available_period")
         document_ids.append(document["document_id"])
     if len(document_ids) != len(set(document_ids)):
         raise ValueError("duplicate reference document IDs")
@@ -141,8 +148,8 @@ def validate_target_registry(registry: Mapping[str, Any]) -> None:
             if (reference["availability_universe"] == "open_world"
                     and evidence["status"] == "unavailable_in_closed_snapshot"):
                 raise ValueError("open-world absence cannot be asserted from a closed snapshot")
-    if registry["dynamic_version_rule"] != "NEW_SAP_INSTANCE__NO_CROSS_VERSION_POOLING":
-        raise ValueError("dynamic targets require a new SAP instance")
+    if registry["dynamic_version_rule"] not in DYNAMIC_RULES:
+        raise ValueError("dynamic targets require a declared no-cross-version-pooling rule")
 
 
 def symmetric_binary_posterior(signal: int, *, prior_milli: int = 500,
@@ -223,7 +230,14 @@ class OperationalAttendanceInstrument:
 
 
 def machine_ingestion_and_task_reference(event: Mapping[str, Any]) -> bool:
-    """Return only ingestion plus task-reference, never information-use or attention."""
+    """Synthetic placeholder predicate for machine ingestion-and-task-reference.
+
+    This checks only that the fixture supplies three 64-character hash strings
+    and that the task-reference string equals the context-receipt string.  It is
+    not a cryptographic proof that a real task operation referenced the content.
+    Real logs require a bound evidence structure linking content, receipt, and
+    task operation; this predicate never measures human attention or information use.
+    """
     required = {"content_sha256", "context_receipt_sha256", "task_reference_sha256"}
     if not required <= set(event):
         return False
@@ -234,13 +248,16 @@ def machine_ingestion_and_task_reference(event: Mapping[str, Any]) -> bool:
             and event["content_sha256"] != event["context_receipt_sha256"])
 
 
-def failure_composite_contrast_bounds(
+def operational_attendance_contrast_bounds(
     weighted_fc_omission: Mapping[str, float], weighted_unknown: Mapping[str, float],
-) -> dict[str, float]:
-    """Sharp arm-specific missing-outcome bounds for SEA minus control omission.
+) -> dict[str, Any]:
+    """Sharp arm-specific bounds for *operational attendance omission*, not latent D.
 
-    Unknowns may conceal latent success or failure.  No independence or MAR
-    assumption is made.  The bounds concern the contrast, not merely each arm.
+    Unknown operational outcomes may be assigned to operational success or
+    failure.  No independence or MAR assumption is made.  These bounds do NOT
+    identify latent actual-consumption omission unless an additional measurement
+    consistency assumption is imposed (e.g., non-unknown Z perfectly classifies D).
+    With false positives or false negatives, latent omission can lie outside them.
     """
     if set(weighted_fc_omission) != {"sea", "control"} or set(weighted_unknown) != {"sea", "control"}:
         raise ValueError("both sea and control are required")
@@ -255,25 +272,35 @@ def failure_composite_contrast_bounds(
         raise ValueError("unknowns are a subset of failure-composite omissions")
     fc_contrast = sea_fc - control_fc
     return {
+        "estimand": "operational_attendance_omission_contrast_not_latent_actual_consumption",
         "sea_minus_control_fc": fc_contrast,
-        "lower_sea_unknown_success_control_unknown_failure": fc_contrast - sea_u,
-        "upper_sea_unknown_failure_control_unknown_success": fc_contrast + control_u,
+        "lower_sea_unknown_operational_success_control_unknown_failure": fc_contrast - sea_u,
+        "upper_sea_unknown_operational_failure_control_unknown_success": fc_contrast + control_u,
         "weighted_unknown_sea": sea_u,
         "weighted_unknown_control": control_u,
+        "latent_bounds_require_measurement_error_assumptions": True,
     }
 
 
+# Backwards-compatible name; the estimand is operational attendance omission.
+failure_composite_contrast_bounds = operational_attendance_contrast_bounds
+
+
 class SAPExecutor:
-    """Execute a small immutable target registry under one governance history."""
+    """Execute a small target registry under one control history and evaluation cohort."""
 
     def __init__(self, fixture: Mapping[str, Any], *, arm: str = "sea"):
         self.fixture = _detached(fixture)
         self.registry = _detached(fixture["target_registry"])
         validate_target_registry(self.registry)
         self.arm = arm
-        self.instance_id = domain_digest("sea-sap-instance/1", {
-            "run_id": fixture["run_id"], "arm": arm, "target_registry": self.registry,
+        self.control_instance_id = domain_digest("sea-sap-control-instance/1", {
+            "run_id": fixture["run_id"], "arm": arm,
         })
+        self.evaluation_cohort_id = domain_digest("sea-sap-evaluation-cohort/1", {
+            "control_instance_id": self.control_instance_id, "target_registry": self.registry,
+        })
+        self.instance_id = self.evaluation_cohort_id
         self.governance = GovernanceReference()
         self.budget_remaining = {
             name: _nonnegative_int(fixture["initial_budget"][name], f"budget.{name}")
@@ -283,15 +310,55 @@ class SAPExecutor:
         self.history: list[dict[str, Any]] = []
         self.period_results: list[dict[str, Any]] = []
         self.updated_candidates: dict[str, list[dict[str, Any]]] = {}
-        self._observations: dict[str, dict[str, Any]] = {}
+        self._document_by_id = {
+            doc["document_id"]: doc for doc in self.registry["reference_corpus"]["documents"]
+        }
 
     def fork_for_target_registry(self, registry: Mapping[str, Any]) -> "SAPExecutor":
-        """A target/mapping change creates a new SAP instance and new history."""
+        """Full reset: a new control instance and evaluation cohort.
+
+        This is an evaluation-protocol choice, not a theorem that SAP control must
+        reset.  Use continue_with_target_registry to preserve control continuity.
+        """
         validate_target_registry(registry)
         fixture = _detached(self.fixture)
         fixture["run_id"] = f"{self.fixture['run_id']}:{registry['version']}"
         fixture["target_registry"] = _detached(registry)
         return SAPExecutor(fixture, arm=self.arm)
+
+    def continue_with_target_registry(self, registry: Mapping[str, Any]) -> "SAPExecutor":
+        """Preserve objective/authorization/audit/budget control; start a new evaluation cohort."""
+        validate_target_registry(registry)
+        fixture = _detached(self.fixture)
+        fixture["target_registry"] = _detached(registry)
+        continued = SAPExecutor(fixture, arm=self.arm)
+        continued.control_instance_id = self.control_instance_id
+        continued.governance = self.governance
+        continued.budget_remaining = dict(self.budget_remaining)
+        continued.budget_spent = dict(self.budget_spent)
+        continued.history = _detached(self.history)
+        continued.updated_candidates = _detached(self.updated_candidates)
+        continued.governance.append_record("evaluation_cohort_change", {
+            "old_target_registry_version": self.registry["version"],
+            "new_target_registry_version": registry["version"],
+            "control_continuity": True,
+            "cross_version_pooling_allowed": False,
+        }, evidence=[f"fixture:{self.fixture['run_id']}:evaluation-cohort:{registry['version']}"])
+        return continued
+
+    def _available_targets(self, candidate_id: str, period: int) -> list[str]:
+        links = self.registry["candidate_target_links"][candidate_id]
+        availability = self.registry["availability"][candidate_id]
+        available = []
+        for target in links:
+            evidence = availability[target]
+            if evidence["status"] != "available":
+                continue
+            source = self._document_by_id[evidence["reference_document_id"]]
+            # first_available_period is persistent: available from that period onward.
+            if period >= source["first_available_period"]:
+                available.append(target)
+        return available
 
     def _spend(self, cost: Mapping[str, int], *, period: int, stage: str) -> None:
         if set(cost) - set(RESOURCE_NAMES):
@@ -309,6 +376,32 @@ class SAPExecutor:
             "before": before, "after": dict(self.budget_remaining),
             "measurement_scope": "simulated resource units; no real model calls or fees",
         }, evidence=[f"fixture:{self.fixture['run_id']}:resources:{period}:{stage}"])
+
+    def _precheck_period_resources(self, period: int, plan: Mapping[str, Any]) -> None:
+        """Conservative whole-period precheck before any state mutation.
+
+        It budgets the maximum declared selection limit and the planned terminal
+        events.  If it fails, no observation, update, spend, or ledger event is
+        appended.  Selection may later use fewer resources, but partial execution
+        after a late budget failure is not the declared semantics.
+        """
+        costs = self.fixture["resource_costs"]
+        required = {name: 0 for name in RESOURCE_NAMES}
+        def add(cost: Mapping[str, int], multiplier: int = 1) -> None:
+            for name in RESOURCE_NAMES:
+                required[name] += _nonnegative_int(cost.get(name, 0), f"cost.{name}") * multiplier
+        add(self.fixture["update_kernel"]["cost_per_candidate"], len(self.fixture["candidates"]))
+        add(costs["linkage_per_period"])
+        add(costs["selection_per_candidate"], self.fixture["selection_limit"])
+        add(costs["delivery_per_candidate"], len(plan.get("delivered", [])))
+        add(costs["attendance_per_candidate"], len(plan.get("opened", [])))
+        if any(required[name] > self.budget_remaining[name] for name in RESOURCE_NAMES):
+            raise RuntimeError(f"whole-period resource precheck failed at period {period}")
+        self.governance.append_record("resource_precheck", {
+            "period": period, "required_upper_bound": required,
+            "remaining_before": dict(self.budget_remaining),
+            "semantics": "conservative whole-period precheck before mutation",
+        }, evidence=[f"fixture:{self.fixture['run_id']}:resource-precheck:{period}"])
 
     def _update(self, period: int) -> list[dict[str, Any]]:
         updated = []
@@ -337,30 +430,34 @@ class SAPExecutor:
         }, evidence=[f"fixture:{self.fixture['run_id']}:update-kernel"])
         return updated
 
-    def _eligible(self, candidates: Sequence[Mapping[str, Any]]) -> tuple[list[dict[str, Any]], dict]:
+    def _eligible(self, candidates: Sequence[Mapping[str, Any]], period: int) -> tuple[list[dict[str, Any]], dict]:
         links = self.registry["candidate_target_links"]
-        availability = self.registry["availability"]
+        staged = self.fixture["staged_link_pass"]
+        truth = self.fixture["reference_link_truth"]
         link_audit = {}
         eligible = []
         for candidate in candidates:
             candidate_id = candidate["candidate_id"]
             target_links = links[candidate_id]
-            available_targets = [
-                target for target in target_links
-                if availability[candidate_id][target]["status"] == "available"
-            ]
-            linked_targets = [
+            available_targets = self._available_targets(candidate_id, period)
+            staged_linked = [
                 target for target in available_targets
-                if self.fixture["link_valid"].get(candidate_id, {}).get(target, False)
+                if staged.get(candidate_id, {}).get(target, False)
+            ]
+            reference_linked = [
+                target for target in available_targets
+                if truth.get(candidate_id, {}).get(target, False)
             ]
             link_audit[candidate_id] = {
-                "available_targets": available_targets, "linked_targets": linked_targets,
+                "available_targets": available_targets,
+                "staged_linked_targets": staged_linked,
+                "reference_linked_targets": reference_linked,
             }
-            # The direct arm consumes raw candidates without staged filtering;
-            # evaluation still applies exactly the same target/availability registry.
-            if self.arm == "s2d" or linked_targets:
+            # SEA selection uses its staged linkage result.  S2d bypasses staged
+            # selection filtering, but evaluation uses arm-independent reference truth.
+            if self.arm == "s2d" or staged_linked:
                 item = _detached(candidate)
-                item["linked_targets"] = linked_targets
+                item["linked_targets"] = staged_linked if self.arm == "sea" else reference_linked
                 eligible.append(item)
         return eligible, link_audit
 
@@ -402,11 +499,12 @@ class SAPExecutor:
             "period": period, "arm": self.arm,
             "selected_candidate_ids": [item["candidate_id"] for item in selected],
             "covered_linked_targets": sorted(covered), "selection_rule": "ranked_feasible_greedy",
+            "selection_link_rule": "staged_link_pass" if self.arm == "sea" else "raw_candidates_no_staged_filter",
         }, evidence=[f"fixture:{self.fixture['run_id']}:selection:{period}"])
         return selected, ranking
 
     def _target_outcomes(self, selected: Sequence[Mapping[str, Any]], plan: Mapping[str, Any],
-                         instrument: OperationalAttendanceInstrument) -> tuple[list[dict], dict]:
+                         instrument: OperationalAttendanceInstrument, period: int) -> tuple[list[dict], dict]:
         selected_ids = {item["candidate_id"] for item in selected}
         delivered = set(plan.get("delivered", []))
         opened = set(plan.get("opened", []))
@@ -421,20 +519,20 @@ class SAPExecutor:
             machine_flags[candidate_id] = machine_ingestion_and_task_reference(
                 plan.get("machine_events", {}).get(candidate_id, {}))
         links = self.registry["candidate_target_links"]
-        availability = self.registry["availability"]
-        link_valid = self.fixture["link_valid"]
+        truth = self.fixture["reference_link_truth"]
         rows = []
         unknown_weight = 0.0
         fc_omission = 0.0
+        operational_negative_weight = 0.0
         missing_by_reason: dict[str, float] = {}
         for target in self.registry["targets"]:
             target_id = target["target_id"]
             candidates = [candidate for candidate in self.fixture["candidates"]
                           if target_id in links[candidate["candidate_id"]]]
             available = [candidate["candidate_id"] for candidate in candidates
-                         if availability[candidate["candidate_id"]][target_id]["status"] == "available"]
+                         if target_id in self._available_targets(candidate["candidate_id"], period)]
             linked = [candidate_id for candidate_id in available
-                      if link_valid.get(candidate_id, {}).get(target_id, False)]
+                      if truth.get(candidate_id, {}).get(target_id, False)]
             selected_linked = [candidate_id for candidate_id in linked if candidate_id in selected_ids]
             delivered_linked = [candidate_id for candidate_id in selected_linked if candidate_id in delivered]
             opened_linked = [candidate_id for candidate_id in delivered_linked if candidate_id in opened]
@@ -466,6 +564,8 @@ class SAPExecutor:
             weight = float(target["weight"])
             if omitted_fc:
                 fc_omission += weight
+            if operational == "negative":
+                operational_negative_weight += weight
             if unknown:
                 unknown_weight += weight
                 reason = next(decisions[candidate_id].reason for candidate_id in opened_linked
@@ -482,44 +582,59 @@ class SAPExecutor:
                 "first_failed_stage": first_failure,
             })
         summary = {
+            "ledger_scope": "OPERATIONAL_ATTENDANCE_AND_FAILURE_COMPOSITE__NOT_LATENT_ACTUAL_CONSUMPTION",
+            "evaluation_link_rule": "reference_link_truth_arm_independent",
             "weighted_fc_omission": fc_omission,
             "weighted_operational_positive": 1.0 - fc_omission,
+            "weighted_operational_negative_known": operational_negative_weight,
             "weighted_unknown_terminal": unknown_weight,
             "latent_weighted_actual_omission_M_nu": None,
             "missing_by_reason": missing_by_reason,
             "machine_ingestion_and_task_reference": machine_flags,
-            "machine_event_interpretation": "ingestion plus task reference only; not attention, comprehension, or downstream information use",
+            "machine_event_interpretation": "synthetic placeholder predicate only; not attention, comprehension, downstream information use, or a cryptographic evidence chain",
         }
         return rows, summary
 
     def run_period(self, period: int, plan: Mapping[str, Any]) -> dict[str, Any]:
-        """Run observation → update → link → select → terminal events → ledger."""
+        """Run precheck → observation → update → link → select → terminal events → ledger.
+
+        Structural plan validation and the conservative whole-period resource
+        precheck both run before any state mutation.  The delivered ⊆ selected
+        consistency check necessarily runs after selection; an inconsistent
+        fixture plan is a declared fixture error, not a resource-exhaustion path.
+        """
+        candidate_ids = {item["candidate_id"] for item in self.fixture["candidates"]}
+        delivered = set(plan.get("delivered", []))
+        opened = set(plan.get("opened", []))
+        if not delivered <= candidate_ids or not opened <= delivered:
+            raise ValueError("invalid terminal plan: delivered/opened must be known candidates with opened ⊆ delivered")
+        self._precheck_period_resources(period, plan)
         instrument = OperationalAttendanceInstrument(self.fixture["attendance_instrument"])
         self.governance.append_record("observation", {
             "period": period, "observation": f"fixture-observation-{period}",
             "target_registry_version": self.registry["version"],
+            "evaluation_cohort_id": self.evaluation_cohort_id,
         }, evidence=[f"fixture:{self.fixture['run_id']}:observation:{period}"])
         updated = self._update(period)
-        eligible, link_audit = self._eligible(updated)
+        eligible, link_audit = self._eligible(updated, period)
         self._spend(self.fixture["resource_costs"]["linkage_per_period"], period=period, stage="linkage")
         selected, ranking = self._select(period, eligible)
-        delivered = set(plan.get("delivered", []))
-        opened = set(plan.get("opened", []))
         selected_ids = {item["candidate_id"] for item in selected}
-        if not delivered <= selected_ids or not opened <= delivered:
-            raise ValueError("invalid terminal plan")
+        if not delivered <= selected_ids:
+            raise ValueError("invalid terminal plan: delivered candidates must be selected")
         for _ in sorted(delivered):
             self._spend(self.fixture["resource_costs"]["delivery_per_candidate"],
                         period=period, stage="delivery")
         for _ in sorted(opened):
             self._spend(self.fixture["resource_costs"]["attendance_per_candidate"],
                         period=period, stage="attendance_measurement")
-        outcomes, summary = self._target_outcomes(selected, plan, instrument)
+        outcomes, summary = self._target_outcomes(selected, plan, instrument, period)
         result = {
             "period": period, "objective_version": self.governance.inspect_objective()["version"],
+            "evaluation_cohort_id": self.evaluation_cohort_id,
             "ranking": ranking, "selected_candidate_ids": [item["candidate_id"] for item in selected],
             "delivered_candidate_ids": sorted(delivered), "opened_candidate_ids": sorted(opened),
-            "link_audit": link_audit, "target_ledger": outcomes, "outcome_summary": summary,
+            "link_audit": link_audit, "operational_target_ledger": outcomes, "outcome_summary": summary,
         }
         self.period_results.append(_detached(result))
         self.governance.append_record("period_outcome", _detached(result),
@@ -555,11 +670,15 @@ class SAPExecutor:
     def result(self) -> dict[str, Any]:
         verification = self.governance.verify_audit(anchor=self.governance.audit_anchor())
         return {
-            "schema": "sea.sap-longitudinal-executor/v1",
+            "schema": "sea.sap-longitudinal-executor/v2",
             "status": "SYNTHETIC_IMPLEMENTATION_RUN__NOT_EFFECTIVENESS_EVIDENCE",
-            "run_id": self.fixture["run_id"], "arm": self.arm, "instance_id": self.instance_id,
+            "run_id": self.fixture["run_id"], "arm": self.arm,
+            "control_instance_id": self.control_instance_id,
+            "evaluation_cohort_id": self.evaluation_cohort_id,
+            "instance_id": self.instance_id,
             "fixture_sha256": _sha(self.fixture),
             "target_registry_version": self.registry["version"],
+            "ledger_scope": "OPERATIONAL_ATTENDANCE_AND_FAILURE_COMPOSITE__NOT_LATENT_ACTUAL_CONSUMPTION",
             "periods": self.period_results,
             "budget": {"initial": self.fixture["initial_budget"],
                        "spent": self.budget_spent, "remaining": self.budget_remaining},
@@ -587,7 +706,7 @@ def run_longitudinal_fixture() -> dict[str, Any]:
     second = executor.run_period(1, plans[1])
     restored = executor.rollback_after_period(
         0, authorization_id="sigma-demo-rollback", timestamp="logical:00000020")
-    eligible, _ = executor._eligible(executor.updated_candidates["0"])
+    eligible, _ = executor._eligible(executor.updated_candidates["0"], period=0)
     after = executor.governance.rank(
         executor._governance_candidates(eligible), executor.fixture["user_state"],
         executor.fixture.get("platform_variables", {}),
@@ -604,7 +723,7 @@ def run_longitudinal_fixture() -> dict[str, Any]:
         "changed_second_period_ranking": [row["candidate_id"] for row in second["ranking"]]
         != [row["candidate_id"] for row in first["ranking"]],
     }
-    result["contrast_bound_example"] = failure_composite_contrast_bounds(
+    result["contrast_bound_example"] = operational_attendance_contrast_bounds(
         {"sea": 0.5, "control": 0.4}, {"sea": 0.2, "control": 0.1})
     if not all(result["guard_trace"].values()):
         raise AssertionError("longitudinal guard/ranking checks failed")
@@ -617,9 +736,6 @@ def run_matched_implementation_demo() -> dict[str, Any]:
     """Same mock scorer/input/access/budget for staged SEA and direct S2d fixtures."""
     base = load_fixture()
     source_plan = base["period_plans"]["0"]
-    # Both arms receive the same terminal measurement opportunity for c1, which
-    # is selected by both.  The direct arm may select different raw candidates,
-    # but the fixture does not invent arm-specific attendance success.
     plan = {
         "delivered": ["c1"], "opened": ["c1"],
         "attendance_events": {"c1": source_plan["attendance_events"]["c1"]},
@@ -636,9 +752,11 @@ def run_matched_implementation_demo() -> dict[str, Any]:
             "outcome_summary": period["outcome_summary"],
             "budget_spent": executor.budget_spent,
             "audit_valid": executor.governance.verify_audit()["valid"],
+            "selection_link_rule": "staged_link_pass" if arm == "sea" else "raw_candidates_no_staged_filter",
+            "evaluation_link_rule": "reference_link_truth_arm_independent",
         }
     return {
-        "schema": "sea.matched-implementation-fixture/v1",
+        "schema": "sea.matched-implementation-fixture/v2",
         "status": "MECHANISTIC_MATCHED_FIXTURE__NOT_A_MODEL_OR_DEPLOYMENT_EXPERIMENT",
         "matching": {
             "mock_scorer": "symmetric_binary/1 + GovernanceReference integer ranking",

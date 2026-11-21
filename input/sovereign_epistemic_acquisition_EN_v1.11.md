@@ -1,4 +1,4 @@
-> **SUPERSEDED / 已被取代：** This is a historical version, not the current authoritative manuscript. Current version: `input/sovereign_epistemic_acquisition_EN_v1.12.md`. See `archive/README.md`. Do not cite this version’s claims without checking v1.12.
+> **SUPERSEDED / 已被取代：** This is a historical version, not the current authoritative manuscript. Current version: `input/sovereign_epistemic_acquisition_EN_v1.13.md`. See `archive/README.md`. Do not cite this version’s claims without checking v1.13.
 
 # Sovereign Epistemic Acquisition:\newline Conditional Components, Governance Audits, and Weighted Omission
 

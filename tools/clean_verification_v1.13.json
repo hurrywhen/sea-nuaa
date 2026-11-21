@@ -1,0 +1,316 @@
+{
+  "schema": "sea.v113.clean-public-verification/v1",
+  "status": "PASS",
+  "scope": "Author-run verification in a sanitized public copy with no .git directory; not third-party reproduction.",
+  "git_directory_present": false,
+  "financial_PATH_contains_git_executable": true,
+  "financial_historical_sha256": "80e953d19efb44787d4fb8b03e37ee6cbfbfc325488769df8a0e89281b495024",
+  "arxiv_hash_manifest_entries_verified": 729,
+  "checks": [
+    {
+      "name": "math-and-SAP-tests",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "tools/test_v19_math.py",
+        "tools/test_v110_sap.py"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "test_subset_choice_reference_and_zero_temperature_limit (tools.test_v19_math.V19MathTests.test_subset_choice_reference_and_zero_temperature_limit) ... ok",
+        "test_survival_function_and_grid_tail_metadata (tools.test_v19_math.V19MathTests.test_survival_function_and_grid_tail_metadata) ... ok",
+        "test_weighted_average_is_not_product_of_average (tools.test_v19_math.V19MathTests.test_weighted_average_is_not_product_of_average) ... ok",
+        "test_every_omission_has_one_first_failed_stage (tools.test_v110_sap.V110SapExampleTests.test_every_omission_has_one_first_failed_stage) ... ok",
+        "test_noncomposition_counterexample (tools.test_v110_sap.V110SapExampleTests.test_noncomposition_counterexample) ... ok",
+        "test_stage_recalls_and_omission_decomposition (tools.test_v110_sap.V110SapExampleTests.test_stage_recalls_and_omission_decomposition) ... ok",
+        "test_symmetric_channel_and_attendance_measurement (tools.test_v110_sap.V110SapExampleTests.test_symmetric_channel_and_attendance_measurement) ... ok",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 13 tests in 0.135s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "name": "reproduce-math",
+      "command": [
+        "python3",
+        "tools/reproduce_v19_math.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote mathematical reproduction artifacts to /tmp/opencode/sea-v113-clean-verify/sim/theory_v1.9"
+      ]
+    },
+    {
+      "name": "reproduce-SAP",
+      "command": [
+        "python3",
+        "tools/reproduce_v110_sap.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote /tmp/opencode/sea-v113-clean-verify/sim/theory_v1.10/sap_example.json"
+      ]
+    },
+    {
+      "name": "governance-replay-financial-caliber-executor-target-tests",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "sea_governance.test_reference",
+        "sea_pilot.test_replay_frozen",
+        "sea_pilot.test_audit_v19_financial_caliber",
+        "sea_pilot.test_audit_v110_consumption_caliber",
+        "sea_sap.test_executor",
+        "sea_sap.test_target_construction"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "test_s2d_can_select_staged_link_failure_but_evaluation_uses_reference_truth (sea_sap.test_executor.LongitudinalExecutorTest.test_s2d_can_select_staged_link_failure_but_evaluation_uses_reference_truth) ... ok",
+        "test_unvalidated_real_instrument_is_rejected (sea_sap.test_executor.LongitudinalExecutorTest.test_unvalidated_real_instrument_is_rejected) ... ok",
+        "test_whole_period_resource_precheck_fails_before_mutation (sea_sap.test_executor.LongitudinalExecutorTest.test_whole_period_resource_precheck_fails_before_mutation) ... ok",
+        "test_audit_reports_rule_agreement_not_human_validation (sea_sap.test_target_construction.TargetConstructionTest.test_audit_reports_rule_agreement_not_human_validation) ... ok",
+        "test_granularity_sensitivity_is_not_invariant (sea_sap.test_target_construction.TargetConstructionTest.test_granularity_sensitivity_is_not_invariant) ... ok",
+        "test_human_validation_template_is_blank (sea_sap.test_target_construction.TargetConstructionTest.test_human_validation_template_is_blank) ... ok",
+        "test_kappa_handles_perfect_and_chance_agreement (sea_sap.test_target_construction.TargetConstructionTest.test_kappa_handles_perfect_and_chance_agreement) ... ok",
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 65 tests in 0.266s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "name": "governance-report",
+      "command": [
+        "python3",
+        "-m",
+        "sea_governance.conformance",
+        "--output",
+        "pilot/results/governance_conformance_v1.13.json"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "    \"sea_governance.test_reference.TestS3Counterfactuals.test_deterministic_integer_ranking_and_candidate_id_tie_break\",",
+        "    \"sea_governance.test_reference.TestS3Counterfactuals.test_s3_changed_candidate_ecology_is_separately_logged_and_classified\",",
+        "    \"sea_governance.test_reference.TestS3Counterfactuals.test_s3_fixed_supply_platform_invariance_and_rejected_platform_write\",",
+        "    \"sea_governance.test_reference.TestS4AuditAndRecourse.test_missing_evidence_is_rejected_before_append\",",
+        "    \"sea_governance.test_reference.TestS4AuditAndRecourse.test_record_hash_matches_domain_separated_canonical_body\",",
+        "    \"sea_governance.test_reference.TestS4AuditAndRecourse.test_reordering_and_anchored_truncation_are_detected\",",
+        "    \"sea_governance.test_reference.TestS4AuditAndRecourse.test_s4_all_decisions_have_evidence_and_valid_hash_chain\",",
+        "    \"sea_governance.test_reference.TestS4AuditAndRecourse.test_s4_contestation_and_recourse_records_are_linked\",",
+        "    \"sea_governance.test_reference.TestS4AuditAndRecourse.test_tampering_with_payload_is_detected_without_mutating_internal_log\"",
+        "  ],",
+        "  \"tests_run\": 18",
+        "}"
+      ]
+    },
+    {
+      "name": "sap-longitudinal-reproduce",
+      "command": [
+        "python3",
+        "sea_sap/reproduce.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote 3 synthetic SAP artifacts to /tmp/opencode/sea-v113-clean-verify/sim/pilot/results/sap_v1.13"
+      ]
+    },
+    {
+      "name": "consumption-audit",
+      "command": [
+        "python3",
+        "sim/sea_pilot/audit_v110_consumption_caliber.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote 7 selected-proxy audit artifacts to sim/pilot/results/v110_consumption_caliber"
+      ]
+    },
+    {
+      "name": "financial-audit",
+      "command": [
+        "python3",
+        "sim/sea_pilot/audit_v19_financial_caliber.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote 4 artifacts to /tmp/opencode/sea-v113-clean-verify/sim/pilot/results/v19_financial_caliber_audit"
+      ]
+    },
+    {
+      "name": "upstream-audit",
+      "command": [
+        "python3",
+        "sim/sea_pilot/audit_v19_upstream_digest.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote 3 artifacts to /tmp/opencode/sea-v113-clean-verify/sim/pilot/results/v19_upstream_digest_audit"
+      ]
+    },
+    {
+      "name": "citation-return-audit",
+      "command": [
+        "python3",
+        "sim/sea_pilot/audit_v19_recall_value_tradeoff.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote 3 artifacts to /tmp/opencode/sea-v113-clean-verify/sim/pilot/results/v19_recall_value_tradeoff"
+      ]
+    },
+    {
+      "name": "release-audit",
+      "command": [
+        "python3",
+        "tools/audit_v113.py"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "v1.13 audit: 112/112 passed; failures=0",
+        "report: /tmp/opencode/sea-v113-clean-verify/tools/audit_v113_report.json"
+      ]
+    },
+    {
+      "name": "review-PDF-build",
+      "command": [
+        "bash",
+        "tools/build_review_pdf.sh",
+        "en",
+        "v1.13"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "[preprocess] 500 -> 500 行, 目录替换=False, 身份戳=True",
+        "[ok] 已生成 latex/SEA_EN_v1.13_draft.pdf",
+        "Pages:           20",
+        "Page size:       595.276 x 841.89 pts (A4)"
+      ]
+    },
+    {
+      "name": "PDF-text-layer",
+      "command": [
+        "python3",
+        "tools/check_pdf_textlayer.py",
+        "latex/SEA_EN_v1.13_draft.pdf",
+        "input/sovereign_epistemic_acquisition_EN_v1.13.md"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "PDF=latex/SEA_EN_v1.13_draft.pdf 页数≈20 文本层字符=47328 源稿字符=51649 比=0.92",
+        "标题 14 个，断裂 0；问题 0"
+      ]
+    },
+    {
+      "name": "PDF-layout",
+      "command": [
+        "python3",
+        "tools/check_pdf_layout.py",
+        "latex/SEA_EN_v1.13_draft.pdf",
+        "--json",
+        "tools/pdf_layout_v1.13.json"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "PDF layout PASS: 20 pages; no word within 20 pt of left/right edge"
+      ]
+    },
+    {
+      "name": "arXiv-build",
+      "command": [
+        "bash",
+        "tools/make_arxiv_source.sh",
+        "v1.13"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "[preprocess] 目录替换=False",
+        "[fonts] 3 处字体声明已改为文件名加载（arXiv 兼容）",
+        "[ok] xelatex 试编译通过：20 页；Missing character 告警 0 处",
+        "[ok] 源包：latex/SEA_v1.13_arxiv_source.tar.gz（28M）；目录：latex/arxiv_v1.13",
+        "[note] arXiv 提交时处理器选择 **XeLaTeX**；anc/ 为附件目录"
+      ]
+    },
+    {
+      "name": "arXiv-hash-manifest",
+      "command": [
+        "sha256sum",
+        "-c",
+        "anc/SHA256SUMS"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "anc/v110_consumption_caliber/summary.json: 成功",
+        "anc/v19_financial_caliber_audit/critical_coverage_matrix.csv: 成功",
+        "anc/v19_financial_caliber_audit/historical_p2_rows_8ffc7f5.csv: 成功",
+        "anc/v19_financial_caliber_audit/REPORT.md: 成功",
+        "anc/v19_financial_caliber_audit/run_recall_by_unit.csv: 成功",
+        "anc/v19_financial_caliber_audit/summary.json: 成功",
+        "anc/v19_recall_value_tradeoff/REPORT.md: 成功",
+        "anc/v19_recall_value_tradeoff/run_metrics.csv: 成功",
+        "anc/v19_recall_value_tradeoff/summary.json: 成功",
+        "anc/v19_upstream_digest_audit/REPORT.md: 成功",
+        "anc/v19_upstream_digest_audit/run_upstream_coverage.csv: 成功",
+        "anc/v19_upstream_digest_audit/summary.json: 成功"
+      ]
+    },
+    {
+      "name": "financial-default-without-git-or-PATH-git",
+      "command": [
+        "/usr/bin/python3",
+        "sim/sea_pilot/audit_v19_financial_caliber.py"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "      \"acceptance_hour_lt_13\": 28,",
+        "      \"acceptance_hour_unknown_news\": 53,",
+        "      \"targets\": 175",
+        "    },",
+        "    \"portfolio_market_proxy\": {",
+        "      \"acceptance_hour_ge_13\": 7,",
+        "      \"acceptance_hour_lt_13\": 4,",
+        "      \"acceptance_hour_unknown_news\": 8,",
+        "      \"targets\": 19",
+        "    }",
+        "  }",
+        "}"
+      ]
+    },
+    {
+      "name": "financial-write-without-git-or-PATH-git",
+      "command": [
+        "/usr/bin/python3",
+        "sim/sea_pilot/audit_v19_financial_caliber.py",
+        "--write",
+        "--force"
+      ],
+      "returncode": 0,
+      "output_tail": [
+        "Wrote 4 artifacts to /tmp/opencode/sea-v113-clean-verify/sim/pilot/results/v19_financial_caliber_audit"
+      ]
+    }
+  ],
+  "rebuilt_clean_pdf_sha256": "b6dccf551d39ba5b369fba0bd8e42ebf6659c5a197842da7c1930a1c37408f9a",
+  "rebuilt_clean_arxiv_source_sha256": "2df590c940360da6cc774c6f20b4f06cc111f8e7af7b41ecfc01494ad4de9d28",
+  "binary_hash_note": "Clean-rebuild PDF hashes differ from working-tree builds by embedded build timestamps; clean-rebuild arXiv tarball hashes additionally differ by infrastructure-identifier sanitization of ancillary sources. Financial frozen-input hashes are byte-stable. The working-tree arXiv package excludes gitignored internal dispatch logs, so both builds verify the same 729-entry manifest."
+}

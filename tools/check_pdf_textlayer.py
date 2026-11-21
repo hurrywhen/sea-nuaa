@@ -40,7 +40,12 @@ def main() -> int:
     pdf, src = sys.argv[1], sys.argv[2]
     captions = list(CAPTIONS)
     keystrings = list(KEYSTRINGS)
-    if "v1.12" in os.path.basename(pdf):
+    if "v1.13" in os.path.basename(pdf):
+        captions = [f"Table {i}." for i in range(1, 8)]
+        keystrings = ["4.389337888", "71,970", "72,000", "18/18", "77.27%",
+                      "v1.13.0", "Frozen Retrospective Sensitivity Audits",
+                      "operational attendance omission"]
+    elif "v1.12" in os.path.basename(pdf):
         captions = [f"Table {i}." for i in range(1, 8)]
         keystrings = ["4.389337888", "71,970", "72,000", "18/18", "77.27%",
                       "v1.12.0", "Frozen Retrospective Sensitivity Audits",

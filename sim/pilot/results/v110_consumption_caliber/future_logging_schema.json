@@ -1,6 +1,6 @@
 {
  "$schema": "https://json-schema.org/draft/2020-12/schema",
- "$id": "https://example.invalid/sea.future-policy-delivery-consumption-attempt-v3.schema.json",
+ "$id": "https://example.invalid/sea.future-policy-delivery-consumption-attempt-v4.schema.json",
  "title": "Prospective SEA policy-attempt delivery and consumption log",
  "description": "Future-only attempt/item schema. Unknown and not_attempted are explicit; no selected event implies delivery, opening, attendance, or consumption. Historical replay rows must not be backfilled without independent evidence.",
  "type": "object",
@@ -17,7 +17,7 @@
  ],
  "properties": {
   "schema_version": {
-   "const": "sea.future-policy-delivery-consumption-attempt/v3"
+   "const": "sea.future-policy-delivery-consumption-attempt/v4"
   },
   "run_key": {
    "type": "object",
@@ -153,7 +153,7 @@
      "minLength": 1
     },
     "primary_rule": {
-     "const": "ALL_ASSIGNED_FAILURE_COMPOSITE_CONFIRMED_CONSUMPTION_OMISSION_V1"
+     "const": "ALL_ASSIGNED_FAILURE_COMPOSITE_OPERATIONAL_ATTENDANCE_OMISSION_V1"
     },
     "instrument_registry_sha256": {
      "type": "string",

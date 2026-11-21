@@ -75,21 +75,6 @@
     "risk": 20,
     "time": 100
   },
-  "link_valid": {
-    "c1": {
-      "e1": true
-    },
-    "c2": {
-      "e2": true
-    },
-    "c3": {
-      "e3": false,
-      "e4": false
-    },
-    "c4": {
-      "e5": false
-    }
-  },
   "period_plans": {
     "0": {
       "attendance_events": {
@@ -155,6 +140,21 @@
   "platform_variables": {
     "boost": 0
   },
+  "reference_link_truth": {
+    "c1": {
+      "e1": true
+    },
+    "c2": {
+      "e2": true
+    },
+    "c3": {
+      "e3": false,
+      "e4": false
+    },
+    "c4": {
+      "e5": false
+    }
+  },
   "resource_costs": {
     "attendance_per_candidate": {
       "calls": 0,
@@ -187,6 +187,21 @@
   },
   "run_id": "longitudinal-v112",
   "selection_limit": 2,
+  "staged_link_pass": {
+    "c1": {
+      "e1": true
+    },
+    "c2": {
+      "e2": true
+    },
+    "c3": {
+      "e3": false,
+      "e4": false
+    },
+    "c4": {
+      "e5": false
+    }
+  },
   "target_registry": {
     "availability": {
       "c1": {
@@ -243,30 +258,30 @@
       ]
     },
     "construction_rule": "Author-defined synthetic canonical propositions; no participant annotations.",
-    "dynamic_version_rule": "NEW_SAP_INSTANCE__NO_CROSS_VERSION_POOLING",
+    "dynamic_version_rule": "NEW_EVALUATION_COHORT__NO_CROSS_VERSION_POOLING",
     "reference_corpus": {
       "availability_universe": "closed_snapshot",
       "documents": [
         {
-          "availability_window": "fixture-period-0",
           "content_sha256": "0ed96ea65f78ecd7220c1d60868f157cdd76f595bb74e0df44685621e8ff00c5",
           "document_id": "doc1",
-          "evidence_pointer": "synthetic-reference:doc1"
+          "evidence_pointer": "synthetic-reference:doc1",
+          "first_available_period": 0
         },
         {
-          "availability_window": "fixture-period-0",
           "content_sha256": "846b00c2fb254438946f6bd269a8ba1639b738f2d5a0f044c4a99d03f57d6736",
           "document_id": "doc2",
-          "evidence_pointer": "synthetic-reference:doc2"
+          "evidence_pointer": "synthetic-reference:doc2",
+          "first_available_period": 0
         },
         {
-          "availability_window": "fixture-period-0",
           "content_sha256": "54721e30a4b3f363d7158456e6750579884704ec5b43bb3a80aa55d0bfd0121e",
           "document_id": "doc3",
-          "evidence_pointer": "synthetic-reference:doc3"
+          "evidence_pointer": "synthetic-reference:doc3",
+          "first_available_period": 0
         }
       ],
-      "sha256": "8c929675ee9f60617ae8bae9a3329566b5f67c08350045879df2a247fc3685b7",
+      "sha256": "eabfd71abcb360f059e7b207c502e2bb56ab299b4940941314342d962406d703",
       "snapshot_id": "synthetic-reference-corpus-v1"
     },
     "targets": [

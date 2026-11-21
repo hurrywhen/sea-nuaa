@@ -1,3 +1,0 @@
-# Locked dependency for the standalone replay-integrity audit only.
-# Tested with Python 3.12.3; Python >=3.10 is supported by the source.
-numpy==2.3.5

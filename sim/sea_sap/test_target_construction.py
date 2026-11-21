@@ -19,7 +19,7 @@ class TargetConstructionTest(unittest.TestCase):
         self.assertIn("HUMAN_VALIDATION_PENDING", audit["status"])
         self.assertFalse(audit["human_annotations_created"])
         self.assertIn("deterministic extraction rules", audit["rule_agreement"]["interpretation"])
-        self.assertEqual(audit["dynamic_target_rule"], "NEW_SAP_INSTANCE__NO_CROSS_VERSION_POOLING")
+        self.assertEqual(audit["dynamic_target_rule"], "NEW_EVALUATION_COHORT__NO_CROSS_VERSION_POOLING")
 
     def test_granularity_sensitivity_is_not_invariant(self):
         fixture = load_target_fixture()

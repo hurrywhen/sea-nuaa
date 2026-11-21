@@ -29,6 +29,9 @@ fi
 if [ "$VERSION" = "v1.12" ]; then
   DATE_STR="19 November 2026"
 fi
+if [ "$VERSION" = "v1.13" ]; then
+  DATE_STR="21 November 2026"
+fi
 if [ ! -f "$SRC" ]; then
   echo "[fail] 源稿不存在：$SRC" >&2
   exit 2
@@ -78,7 +81,7 @@ cat > "$TMP/preamble.tex" <<'TEX'
     \fi
   \fi
 }
-\AtBeginDocument{\hypersetup{pdftitle={Sovereign Epistemic Acquisition: Conditional Components, Governance Audits, and Weighted Omission},pdfauthor={Wen Hu; Xutong Wang; Ya Yu},pdfkeywords={SEA; SAP; epistemic sovereignty; weighted omission}}}
+\AtBeginDocument{\hypersetup{pdftitle={Sovereign Epistemic Acquisition: A Conditional Framework and Synthetic Audit Artifacts},pdfauthor={Wen Hu; Xutong Wang; Ya Yu},pdfkeywords={SEA; SAP; epistemic sovereignty; weighted omission}}}
 TEX
 
 # 3) pandoc -> main.tex（standalone 文档；默认字体，日期固定避免 \today）
@@ -124,7 +127,7 @@ main.tex toplevelfile
 EOF
 
 # 5) anc/ 附件：v1.9/v1.10/v1.11/v1.12 候选包含全部 292 分片和数据快照。
-if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11" ] || [ "$VERSION" = "v1.12" ]; then
+if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11" ] || [ "$VERSION" = "v1.12" ] || [ "$VERSION" = "v1.13" ]; then
   cp "docs/REPRODUCIBILITY_${VERSION}.md" "$OUTDIR/anc/"
   cp "docs/审稿回复与修改说明_${VERSION}.md" "$OUTDIR/anc/review_response_${VERSION}_zh.md"
   cp "docs/MINIMAL_VALID_EXPERIMENT_${VERSION}.md" "docs/LITERATURE_SEARCH_${VERSION}.md" "$OUTDIR/anc/"
@@ -132,7 +135,7 @@ if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11"
   cp docs/UNIQUE_KEY_REANALYSIS_SPEC_ZH.md "$OUTDIR/anc/"
   cp "sim/pilot/results/evidence_status_${VERSION}.json" "$OUTDIR/anc/"
   THEORY_VERSION="$VERSION"
-  if [ "$VERSION" = "v1.11" ] || [ "$VERSION" = "v1.12" ]; then THEORY_VERSION="v1.10"; fi
+  if [ "$VERSION" = "v1.11" ] || [ "$VERSION" = "v1.12" ] || [ "$VERSION" = "v1.13" ]; then THEORY_VERSION="v1.10"; fi
   cp -r "sim/theory_${THEORY_VERSION}" "$OUTDIR/anc/"
   cp -r sim/pilot/results/frozen_reanalysis_v1 "$OUTDIR/anc/"
   cp -r sim/pilot/results/v19_financial_caliber_audit "$OUTDIR/anc/"
@@ -143,13 +146,15 @@ if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11"
   if [ "$VERSION" = "v1.9" ]; then AUDIT_VERSION="v19"; fi
   if [ "$VERSION" = "v1.11" ]; then AUDIT_VERSION="v111"; fi
   if [ "$VERSION" = "v1.12" ]; then AUDIT_VERSION="v112"; fi
+  if [ "$VERSION" = "v1.13" ]; then AUDIT_VERSION="v113"; fi
   cp "tools/audit_${AUDIT_VERSION}.py" "tools/audit_${AUDIT_VERSION}_report.json" "$OUTDIR/anc/"
   mkdir -p "$OUTDIR/anc/replay_shards" "$OUTDIR/anc/data" "$OUTDIR/anc/src" "$OUTDIR/anc/logs"
-  if [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11" ] || [ "$VERSION" = "v1.12" ]; then
+  if [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11" ] || [ "$VERSION" = "v1.12" ] || [ "$VERSION" = "v1.13" ]; then
     cp "docs/SUPPLEMENT_NORMATIVE_AND_TRANSFER_${VERSION}.md" "$OUTDIR/anc/"
     cp -r sim/pilot/results/v110_consumption_caliber "$OUTDIR/anc/"
     GOV_VERSION="v1.10"
     if [ "$VERSION" = "v1.12" ]; then GOV_VERSION="v1.12"; fi
+    if [ "$VERSION" = "v1.13" ]; then GOV_VERSION="v1.13"; fi
     cp "sim/pilot/results/governance_conformance_${GOV_VERSION}.json" "$OUTDIR/anc/"
     cp tools/reproduce_v110_sap.py tools/test_v110_sap.py tools/check_pdf_layout.py "$OUTDIR/anc/"
     cp -r sim/sea_governance "$OUTDIR/anc/src/"
@@ -162,10 +167,18 @@ if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11"
       cp -r sim/sea_sap "$OUTDIR/anc/src/"
       cp -r sim/pilot/results/sap_v1.12 "$OUTDIR/anc/"
     fi
+    if [ "$VERSION" = "v1.13" ]; then
+      cp docs/SUPPLEMENT_FORMAL_AND_SECONDARY_v1.13.md "$OUTDIR/anc/"
+      cp docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.13.md "$OUTDIR/anc/"
+      cp -r sim/sea_sap "$OUTDIR/anc/src/"
+      cp -r sim/pilot/results/sap_v1.13 "$OUTDIR/anc/"
+    fi
   fi
   cp sim/pilot/results/llm_replay_*.jsonl "$OUTDIR/anc/replay_shards/"
   find sim/pilot/results -maxdepth 1 -name 'llm_replay_summary_*.json' -exec cp -t "$OUTDIR/anc/logs/" {} +
-  find sim/pilot/results -maxdepth 1 -name 'dispatch_*.log' -exec cp -t "$OUTDIR/anc/logs/" {} +
+  # dispatch_*.log 是被 .gitignore 排除的内部运维日志（含节点地址与 PID），不属于
+  # 公开快照，也不得进入公开 arXiv 附件；逐 run 元数据已在 llm_replay_summary_*.json。
+  # 这保证工作树构建与脱敏公开副本构建的附件集合一致（729 项）。
   cp sim/pilot/data/corpus_lite.json sim/pilot/data/p2_env_lite.json \
      sim/pilot/data/manifold_resolved.json sim/pilot/data/pageviews.json "$OUTDIR/anc/data/"
   cp sim/sea_pilot/*.py sim/sea_pilot/requirements-replay-integrity.txt \
