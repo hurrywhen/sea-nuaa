@@ -3,6 +3,7 @@
     "assessor_blinding": "not_applicable_synthetic_fixture",
     "decision_rule": "VALID_READING_AND_CONTENT_LINKED_CONFIRMATION",
     "instrument_id": "sea-text-operational-attendance",
+    "registry_scope": "synthetic_instrument_fixture",
     "sensitivity_versions": [
       "reading_only",
       "confirmation_only",

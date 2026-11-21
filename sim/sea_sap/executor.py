@@ -1,10 +1,21 @@
 """Minimal longitudinal SAP executor for deterministic synthetic fixtures.
 
-This is an executable *small instance* of the v1.13 SAP interface, not a general
+This is an executable *small instance* of the v1.14 SAP interface, not a general
 optimizer, an LLM experiment, or deployment-effectiveness evidence.  It keeps
 latent actual consumption unobserved.  Operational attendance, the synthetic
 machine ingestion-and-task-reference placeholder, and the failure-composite
 endpoint are distinct.  The executable ledger is operational/FC, not latent.
+
+v1.14 semantics: the SAP tuple is defined per control instance with the active
+target-registry version in state (main text, Section 3.2, option B).  One
+executor object serves one evaluation cohort; continue_with_target_registry is
+the controlled version-switch transition that preserves control state.  Every
+cohort-scoped audit event carries control_instance_id, evaluation_cohort_id,
+target_registry_version and the registry hash.  All structural terminal-plan
+errors, including delivered-but-not-selected, are detected by a commit-free
+selection dry run before any state mutation.  Invalid attendance telemetry is
+unknown, never negative; the shipped instrument object is a synthetic fixture,
+not a complete preregistered instrument registry.
 """
 from __future__ import annotations
 
@@ -75,6 +86,7 @@ def load_fixture(path: Optional[Path] = None) -> dict[str, Any]:
             raise ValueError("candidate feature schema does not match governance reference")
         for value in candidate["features"].values():
             _nonnegative_int(value, "candidate feature")
+    OperationalAttendanceInstrument(document["attendance_instrument"])
     return _detached(document)
 
 
@@ -181,25 +193,90 @@ class OperationalAttendanceInstrument:
 
     Positive requires a valid reading event AND content-linked confirmation.
     A complete, validated (or explicitly synthetic-fixture) measurement without
-    that conjunction is negative.  Missing/invalid telemetry is unknown.
+    that conjunction is negative.  Missing or invalid telemetry is unknown:
+    non-finite values, negative engaged time, coverage outside [0,1], non-Boolean
+    flags, and empty evidence pointers never produce positive or negative.
+
+    The shipped registry object is a **synthetic instrument fixture**
+    (``registry_scope="synthetic_instrument_fixture"``), not a complete
+    preregistered instrument registry.  A registry claiming
+    ``validation_status="validated"`` must instead declare
+    ``registry_scope="preregistered_instrument"`` and carry the full
+    preregistration fields: raw-event schema, validation-data hash,
+    measurement-code hash, measurement error, and alternative instruments.
     """
+
+    FULL_REGISTRATION_FIELDS = {
+        "raw_event_schema", "validation_data_sha256", "measurement_code_sha256",
+        "measurement_error", "alternative_instruments",
+    }
 
     def __init__(self, registry: Mapping[str, Any]):
         self.registry = _detached(registry)
         required = {
             "instrument_id", "version", "decision_rule", "thresholds",
             "validation_status", "assessor_blinding", "sensitivity_versions",
+            "registry_scope",
         }
-        if set(registry) != required:
+        if not required <= set(registry):
             raise ValueError("invalid attendance instrument registry")
+        if registry["registry_scope"] not in {
+            "synthetic_instrument_fixture", "preregistered_instrument"
+        }:
+            raise ValueError("instrument registry scope must be declared")
         if registry["decision_rule"] != "VALID_READING_AND_CONTENT_LINKED_CONFIRMATION":
             raise ValueError("primary attendance rule must be explicit AND")
         if registry["validation_status"] not in {"validated", "synthetic_fixture_only"}:
             raise ValueError("attendance instrument is not validated")
-        if registry["assessor_blinding"] not in {
-            "arm_and_model_blind", "not_applicable_synthetic_fixture"
+        if registry["validation_status"] == "synthetic_fixture_only":
+            if registry["registry_scope"] != "synthetic_instrument_fixture":
+                raise ValueError("synthetic fixture cannot claim preregistered scope")
+            if registry["assessor_blinding"] != "not_applicable_synthetic_fixture":
+                raise ValueError("synthetic fixture must declare blinding not applicable")
+        else:
+            if registry["registry_scope"] != "preregistered_instrument":
+                raise ValueError("validated instrument requires preregistered scope")
+            if registry["assessor_blinding"] != "arm_and_model_blind":
+                raise ValueError("assessor blinding requirement is not met")
+            missing = self.FULL_REGISTRATION_FIELDS - set(registry)
+            if missing:
+                raise ValueError(
+                    f"validated instrument lacks preregistration fields: {sorted(missing)}")
+            if not isinstance(registry["raw_event_schema"], dict) or not registry["raw_event_schema"]:
+                raise ValueError("raw-event schema must be a nonempty object")
+            for field in ("validation_data_sha256", "measurement_code_sha256"):
+                value = registry[field]
+                if not isinstance(value, str) or len(value) != 64:
+                    raise ValueError(f"{field} must be a 64-character hash")
+            error = registry["measurement_error"]
+            if not isinstance(error, dict) or not {"sensitivity", "specificity"} <= set(error):
+                raise ValueError("measurement error needs sensitivity and specificity")
+            for key in ("sensitivity", "specificity"):
+                value = error[key]
+                if (isinstance(value, bool) or not isinstance(value, (int, float))
+                        or not math.isfinite(value) or not 0 <= value <= 1):
+                    raise ValueError(f"measurement error {key} must lie in [0,1]")
+            if not error.get("validation_set_pointer"):
+                raise ValueError("measurement error needs a validation-set pointer")
+            alternatives = registry["alternative_instruments"]
+            if (not isinstance(alternatives, list) or not alternatives
+                    or any(not isinstance(item, str) or not item for item in alternatives)):
+                raise ValueError("alternative instruments must be a nonempty string list")
+        thresholds = registry["thresholds"]
+        if not isinstance(thresholds, dict) or set(thresholds) != {
+            "min_engaged_ms", "min_coverage_fraction"
         }:
-            raise ValueError("assessor blinding requirement is not met")
+            raise ValueError("attendance thresholds must declare both frozen coordinates")
+        engaged = thresholds["min_engaged_ms"]
+        coverage = thresholds["min_coverage_fraction"]
+        for name, value in (("min_engaged_ms", engaged), ("min_coverage_fraction", coverage)):
+            if (isinstance(value, bool) or not isinstance(value, (int, float))
+                    or not math.isfinite(value)):
+                raise ValueError(f"threshold {name} must be a finite number")
+        if engaged < 0:
+            raise ValueError("min_engaged_ms must be nonnegative")
+        if not 0 <= coverage <= 1:
+            raise ValueError("min_coverage_fraction must lie in [0,1]")
 
     def measure(self, event: Mapping[str, Any]) -> AttendanceDecision:
         if event.get("measurement_status") != "complete":
@@ -212,14 +289,32 @@ class OperationalAttendanceInstrument:
             return AttendanceDecision("unknown", None, None, "missing_telemetry_fields")
         thresholds = self.registry["thresholds"]
         try:
-            reading = (
-                event["focused_visible"] is True
-                and float(event["engaged_ms"]) >= float(thresholds["min_engaged_ms"])
-                and float(event["coverage_fraction"]) >= float(thresholds["min_coverage_fraction"])
-            )
+            focused = event["focused_visible"]
             confirmation = event["content_linked_confirmation"]
-            if not isinstance(confirmation, bool):
-                raise ValueError("confirmation must be Boolean")
+            if not isinstance(focused, bool) or not isinstance(confirmation, bool):
+                raise ValueError("visibility and confirmation must be Boolean")
+            engaged_raw = event["engaged_ms"]
+            coverage_raw = event["coverage_fraction"]
+            if (isinstance(engaged_raw, bool) or isinstance(coverage_raw, bool)
+                    or not isinstance(engaged_raw, (int, float))
+                    or not isinstance(coverage_raw, (int, float))):
+                raise ValueError("telemetry values must be numeric")
+            engaged = float(engaged_raw)
+            coverage = float(coverage_raw)
+            if not math.isfinite(engaged) or not math.isfinite(coverage):
+                raise ValueError("telemetry values must be finite")
+            if engaged < 0:
+                raise ValueError("engaged_ms must be nonnegative")
+            if not 0 <= coverage <= 1:
+                raise ValueError("coverage_fraction must lie in [0,1]")
+            pointer = event["evidence_pointer"]
+            if not isinstance(pointer, str) or not pointer.strip():
+                raise ValueError("evidence_pointer must be a nonempty string")
+            reading = (
+                focused
+                and engaged >= float(thresholds["min_engaged_ms"])
+                and coverage >= float(thresholds["min_coverage_fraction"])
+            )
         except (TypeError, ValueError):
             return AttendanceDecision("unknown", None, None, "invalid_telemetry_values")
         positive = reading and confirmation
@@ -287,7 +382,14 @@ failure_composite_contrast_bounds = operational_attendance_contrast_bounds
 
 
 class SAPExecutor:
-    """Execute a small target registry under one control history and evaluation cohort."""
+    """Execute a small target registry under one control history and evaluation cohort.
+
+    Under the v1.14 option-B tuple, the SAP control instance spans evaluation
+    cohorts: the active registry version is part of state, and a version switch
+    is a controlled transition.  This object serves one cohort (one constant
+    registry version); continue_with_target_registry performs the controlled
+    switch while preserving objective/authorization/audit/budget state.
+    """
 
     def __init__(self, fixture: Mapping[str, Any], *, arm: str = "sea"):
         self.fixture = _detached(fixture)
@@ -301,6 +403,7 @@ class SAPExecutor:
             "control_instance_id": self.control_instance_id, "target_registry": self.registry,
         })
         self.instance_id = self.evaluation_cohort_id
+        self.registry_sha256 = _sha(self.registry)
         self.governance = GovernanceReference()
         self.budget_remaining = {
             name: _nonnegative_int(fixture["initial_budget"][name], f"budget.{name}")
@@ -312,6 +415,15 @@ class SAPExecutor:
         self.updated_candidates: dict[str, list[dict[str, Any]]] = {}
         self._document_by_id = {
             doc["document_id"]: doc for doc in self.registry["reference_corpus"]["documents"]
+        }
+
+    def _cohort_context(self) -> dict[str, str]:
+        """Attribution carried by every cohort-scoped audit event payload."""
+        return {
+            "control_instance_id": self.control_instance_id,
+            "evaluation_cohort_id": self.evaluation_cohort_id,
+            "target_registry_version": self.registry["version"],
+            "target_registry_sha256": self.registry_sha256,
         }
 
     def fork_for_target_registry(self, registry: Mapping[str, Any]) -> "SAPExecutor":
@@ -327,7 +439,11 @@ class SAPExecutor:
         return SAPExecutor(fixture, arm=self.arm)
 
     def continue_with_target_registry(self, registry: Mapping[str, Any]) -> "SAPExecutor":
-        """Preserve objective/authorization/audit/budget control; start a new evaluation cohort."""
+        """Controlled version-switch transition: preserve control state, open a new cohort.
+
+        Objective/authorization/audit/budget continuity is preserved; the active
+        registry version in state changes, so estimates stay cohort-separated.
+        """
         validate_target_registry(registry)
         fixture = _detached(self.fixture)
         fixture["target_registry"] = _detached(registry)
@@ -341,6 +457,11 @@ class SAPExecutor:
         continued.governance.append_record("evaluation_cohort_change", {
             "old_target_registry_version": self.registry["version"],
             "new_target_registry_version": registry["version"],
+            "old_evaluation_cohort_id": self.evaluation_cohort_id,
+            "new_evaluation_cohort_id": continued.evaluation_cohort_id,
+            "old_target_registry_sha256": self.registry_sha256,
+            "new_target_registry_sha256": continued.registry_sha256,
+            "control_instance_id": self.control_instance_id,
             "control_continuity": True,
             "cross_version_pooling_allowed": False,
         }, evidence=[f"fixture:{self.fixture['run_id']}:evaluation-cohort:{registry['version']}"])
@@ -375,15 +496,17 @@ class SAPExecutor:
             "period": period, "stage": stage, "cost": normalized,
             "before": before, "after": dict(self.budget_remaining),
             "measurement_scope": "simulated resource units; no real model calls or fees",
+            **self._cohort_context(),
         }, evidence=[f"fixture:{self.fixture['run_id']}:resources:{period}:{stage}"])
 
-    def _precheck_period_resources(self, period: int, plan: Mapping[str, Any]) -> None:
-        """Conservative whole-period precheck before any state mutation.
+    def _precheck_period_resources(self, period: int, plan: Mapping[str, Any]) -> dict[str, int]:
+        """Pure conservative whole-period precheck; no record, no mutation.
 
         It budgets the maximum declared selection limit and the planned terminal
         events.  If it fails, no observation, update, spend, or ledger event is
         appended.  Selection may later use fewer resources, but partial execution
-        after a late budget failure is not the declared semantics.
+        after a late budget failure is not the declared semantics.  The audit
+        record is appended by run_period only after the dry run also passes.
         """
         costs = self.fixture["resource_costs"]
         required = {name: 0 for name in RESOURCE_NAMES}
@@ -397,13 +520,14 @@ class SAPExecutor:
         add(costs["attendance_per_candidate"], len(plan.get("opened", [])))
         if any(required[name] > self.budget_remaining[name] for name in RESOURCE_NAMES):
             raise RuntimeError(f"whole-period resource precheck failed at period {period}")
-        self.governance.append_record("resource_precheck", {
-            "period": period, "required_upper_bound": required,
-            "remaining_before": dict(self.budget_remaining),
-            "semantics": "conservative whole-period precheck before mutation",
-        }, evidence=[f"fixture:{self.fixture['run_id']}:resource-precheck:{period}"])
+        return required
 
-    def _update(self, period: int) -> list[dict[str, Any]]:
+    def _compute_updated(self, period: int) -> list[dict[str, Any]]:
+        """Pure posterior computation for the dry run and the committing update.
+
+        No resource spend, no audit record, no state mutation.  An invalid
+        signal raises before any candidate is committed.
+        """
         updated = []
         kernel = self.fixture["update_kernel"]
         for raw in self.fixture["candidates"]:
@@ -411,7 +535,6 @@ class SAPExecutor:
                 raw["signal"], prior_milli=kernel["prior_milli"],
                 accuracy_milli=kernel["accuracy_milli"],
             )
-            self._spend(kernel["cost_per_candidate"], period=period, stage="update")
             candidate = _detached(raw)
             candidate["posterior_relevance_milli"] = posterior
             candidate["features"] = dict(raw["features"])
@@ -420,6 +543,13 @@ class SAPExecutor:
             )
             candidate["provenance"] = f"fixture:{self.fixture['run_id']}:{raw['candidate_id']}"
             updated.append(candidate)
+        return updated
+
+    def _update(self, period: int) -> list[dict[str, Any]]:
+        updated = self._compute_updated(period)
+        kernel = self.fixture["update_kernel"]
+        for _ in self.fixture["candidates"]:
+            self._spend(kernel["cost_per_candidate"], period=period, stage="update")
         self.updated_candidates[str(period)] = _detached(updated)
         self.governance.append_record("update", {
             "period": period, "kernel": "symmetric_binary/1",
@@ -427,6 +557,7 @@ class SAPExecutor:
                 item["candidate_id"]: item["posterior_relevance_milli"] for item in updated
             },
             "same_kernel_for_every_signal": True,
+            **self._cohort_context(),
         }, evidence=[f"fixture:{self.fixture['run_id']}:update-kernel"])
         return updated
 
@@ -471,17 +602,20 @@ class SAPExecutor:
             "features": item["features"], "provenance": item["provenance"],
         } for item in eligible]
 
-    def _select(self, period: int, eligible: Sequence[Mapping[str, Any]]) -> tuple[list[dict], list[dict]]:
-        user_state = _detached(self.fixture["user_state"])
-        ranking = self.governance.rank(
-            self._governance_candidates(eligible), user_state,
-            self.fixture.get("platform_variables", {}),
-            evidence=[f"fixture:{self.fixture['run_id']}:rank:{period}"],
-        )
+    def _selection_decision(self, eligible: Sequence[Mapping[str, Any]],
+                            ranking: Sequence[Mapping[str, Any]],
+                            budget_remaining: Mapping[str, int]) -> tuple[list[dict], set]:
+        """Pure ranked-feasible-greedy decision; no spend, no records, no mutation.
+
+        Shared by the commit-free dry run and the committing selection so both
+        compute exactly the same selected set from identical state.
+        """
         by_id = {candidate["candidate_id"]: candidate for candidate in eligible}
         selected = []
-        covered = set()
+        covered: set = set()
+        remaining = dict(budget_remaining)
         limit = self.fixture["selection_limit"]
+        cost = self._selection_cost()
         for row in ranking:
             if len(selected) >= limit:
                 break
@@ -489,17 +623,55 @@ class SAPExecutor:
             targets = set(candidate["linked_targets"])
             if self.arm == "sea" and targets and targets <= covered:
                 continue
-            cost = self._selection_cost()
-            if any(cost.get(name, 0) > self.budget_remaining[name] for name in RESOURCE_NAMES):
+            if any(cost.get(name, 0) > remaining[name] for name in RESOURCE_NAMES):
                 continue
-            self._spend(cost, period=period, stage="selection")
+            for name in RESOURCE_NAMES:
+                remaining[name] -= cost.get(name, 0)
             selected.append(candidate)
             covered.update(targets)
+        return selected, covered
+
+    def _dry_run_selection(self, period: int, plan: Mapping[str, Any]) -> list[str]:
+        """Commit-free selection preview run before any state mutation.
+
+        Detects late structural plan errors — in particular a delivered
+        candidate that the frozen selection rule would not select — without
+        spending resources or appending observation/update/ranking/ledger
+        records.  A failed dry run leaves the executor state untouched.
+        """
+        updated = self._compute_updated(period)
+        eligible, _ = self._eligible(updated, period)
+        ranking = self.governance.rank(
+            self._governance_candidates(eligible), _detached(self.fixture["user_state"]),
+            self.fixture.get("platform_variables", {}),
+            evidence=[f"fixture:{self.fixture['run_id']}:rank-dry-run:{period}"],
+            record=False,
+        )
+        selected, _ = self._selection_decision(eligible, ranking, self.budget_remaining)
+        selected_ids = {item["candidate_id"] for item in selected}
+        delivered = set(plan.get("delivered", []))
+        if not delivered <= selected_ids:
+            raise ValueError(
+                "invalid terminal plan: delivered candidates must be selected "
+                "(commit-free selection dry run, before any mutation)")
+        return sorted(selected_ids)
+
+    def _select(self, period: int, eligible: Sequence[Mapping[str, Any]]) -> tuple[list[dict], list[dict]]:
+        ranking = self.governance.rank(
+            self._governance_candidates(eligible), _detached(self.fixture["user_state"]),
+            self.fixture.get("platform_variables", {}),
+            evidence=[f"fixture:{self.fixture['run_id']}:rank:{period}"],
+            context=self._cohort_context(),
+        )
+        selected, covered = self._selection_decision(eligible, ranking, self.budget_remaining)
+        for _ in selected:
+            self._spend(self._selection_cost(), period=period, stage="selection")
         self.governance.append_record("selection", {
             "period": period, "arm": self.arm,
             "selected_candidate_ids": [item["candidate_id"] for item in selected],
             "covered_linked_targets": sorted(covered), "selection_rule": "ranked_feasible_greedy",
             "selection_link_rule": "staged_link_pass" if self.arm == "sea" else "raw_candidates_no_staged_filter",
+            **self._cohort_context(),
         }, evidence=[f"fixture:{self.fixture['run_id']}:selection:{period}"])
         return selected, ranking
 
@@ -596,32 +768,46 @@ class SAPExecutor:
         return rows, summary
 
     def run_period(self, period: int, plan: Mapping[str, Any]) -> dict[str, Any]:
-        """Run precheck → observation → update → link → select → terminal events → ledger.
+        """Run precheck + dry run → observation → update → link → select → terminal → ledger.
 
-        Structural plan validation and the conservative whole-period resource
-        precheck both run before any state mutation.  The delivered ⊆ selected
-        consistency check necessarily runs after selection; an inconsistent
-        fixture plan is a declared fixture error, not a resource-exhaustion path.
+        All structural plan validation runs before any state mutation: known
+        candidates and opened ⊆ delivered are checked directly, the conservative
+        whole-period resource precheck is computed purely, and delivered ⊆
+        selected is checked by a commit-free selection dry run.  An infeasible
+        plan therefore leaves budgets, ledgers, and audit records untouched.
         """
         candidate_ids = {item["candidate_id"] for item in self.fixture["candidates"]}
         delivered = set(plan.get("delivered", []))
         opened = set(plan.get("opened", []))
         if not delivered <= candidate_ids or not opened <= delivered:
             raise ValueError("invalid terminal plan: delivered/opened must be known candidates with opened ⊆ delivered")
-        self._precheck_period_resources(period, plan)
         instrument = OperationalAttendanceInstrument(self.fixture["attendance_instrument"])
+        required = self._precheck_period_resources(period, plan)
+        preview_selected = self._dry_run_selection(period, plan)
+        self.governance.append_record("resource_precheck", {
+            "period": period, "required_upper_bound": required,
+            "remaining_before": dict(self.budget_remaining),
+            "semantics": "conservative whole-period precheck before mutation",
+            **self._cohort_context(),
+        }, evidence=[f"fixture:{self.fixture['run_id']}:resource-precheck:{period}"])
+        self.governance.append_record("selection_dry_run", {
+            "period": period,
+            "preview_selected_candidate_ids": preview_selected,
+            "terminal_plan_feasible": True,
+            "semantics": "commit-free selection preview before mutation; no resources spent",
+            **self._cohort_context(),
+        }, evidence=[f"fixture:{self.fixture['run_id']}:selection-dry-run:{period}"])
         self.governance.append_record("observation", {
             "period": period, "observation": f"fixture-observation-{period}",
-            "target_registry_version": self.registry["version"],
-            "evaluation_cohort_id": self.evaluation_cohort_id,
+            **self._cohort_context(),
         }, evidence=[f"fixture:{self.fixture['run_id']}:observation:{period}"])
         updated = self._update(period)
         eligible, link_audit = self._eligible(updated, period)
         self._spend(self.fixture["resource_costs"]["linkage_per_period"], period=period, stage="linkage")
         selected, ranking = self._select(period, eligible)
         selected_ids = {item["candidate_id"] for item in selected}
-        if not delivered <= selected_ids:
-            raise ValueError("invalid terminal plan: delivered candidates must be selected")
+        if sorted(selected_ids) != preview_selected:
+            raise RuntimeError("committing selection diverged from the commit-free dry run")
         for _ in sorted(delivered):
             self._spend(self.fixture["resource_costs"]["delivery_per_candidate"],
                         period=period, stage="delivery")
@@ -631,7 +817,7 @@ class SAPExecutor:
         outcomes, summary = self._target_outcomes(selected, plan, instrument, period)
         result = {
             "period": period, "objective_version": self.governance.inspect_objective()["version"],
-            "evaluation_cohort_id": self.evaluation_cohort_id,
+            **self._cohort_context(),
             "ranking": ranking, "selected_candidate_ids": [item["candidate_id"] for item in selected],
             "delivered_candidate_ids": sorted(delivered), "opened_candidate_ids": sorted(opened),
             "link_audit": link_audit, "operational_target_ledger": outcomes, "outcome_summary": summary,
@@ -652,6 +838,7 @@ class SAPExecutor:
         return self.governance.write_objective(
             patch, actor=actor, authorization=authorization,
             evidence=[f"fixture:{self.fixture['run_id']}:write:{authorization_id}"],
+            context=self._cohort_context(),
         )
 
     def rollback_after_period(self, target_version: int, *, authorization_id: str,
@@ -665,12 +852,13 @@ class SAPExecutor:
         return self.governance.rollback(
             target_version, actor=actor, authorization=authorization,
             evidence=[f"fixture:{self.fixture['run_id']}:rollback:{authorization_id}"],
+            context=self._cohort_context(),
         )
 
     def result(self) -> dict[str, Any]:
         verification = self.governance.verify_audit(anchor=self.governance.audit_anchor())
         return {
-            "schema": "sea.sap-longitudinal-executor/v2",
+            "schema": "sea.sap-longitudinal-executor/v3",
             "status": "SYNTHETIC_IMPLEMENTATION_RUN__NOT_EFFECTIVENESS_EVIDENCE",
             "run_id": self.fixture["run_id"], "arm": self.arm,
             "control_instance_id": self.control_instance_id,
@@ -678,6 +866,9 @@ class SAPExecutor:
             "instance_id": self.instance_id,
             "fixture_sha256": _sha(self.fixture),
             "target_registry_version": self.registry["version"],
+            "target_registry_sha256": self.registry_sha256,
+            "sap_tuple_scope": "control_instance_with_registry_version_in_state__evaluation_cohort_separated",
+            "instrument_registry_scope": self.fixture["attendance_instrument"]["registry_scope"],
             "ledger_scope": "OPERATIONAL_ATTENDANCE_AND_FAILURE_COMPOSITE__NOT_LATENT_ACTUAL_CONSUMPTION",
             "periods": self.period_results,
             "budget": {"initial": self.fixture["initial_budget"],
@@ -711,6 +902,7 @@ def run_longitudinal_fixture() -> dict[str, Any]:
         executor._governance_candidates(eligible), executor.fixture["user_state"],
         executor.fixture.get("platform_variables", {}),
         evidence=["fixture:longitudinal:post-rollback-rank"],
+        context=executor._cohort_context(),
     )
     identity = [row["candidate_id"] for row in after] == [row["candidate_id"] for row in first["ranking"]]
     result = executor.result()
@@ -756,7 +948,7 @@ def run_matched_implementation_demo() -> dict[str, Any]:
             "evaluation_link_rule": "reference_link_truth_arm_independent",
         }
     return {
-        "schema": "sea.matched-implementation-fixture/v2",
+        "schema": "sea.matched-implementation-fixture/v3",
         "status": "MECHANISTIC_MATCHED_FIXTURE__NOT_A_MODEL_OR_DEPLOYMENT_EXPERIMENT",
         "matching": {
             "mock_scorer": "symmetric_binary/1 + GovernanceReference integer ranking",

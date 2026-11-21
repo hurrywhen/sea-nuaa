@@ -1,4 +1,4 @@
-> **SUPERSEDED / 已被取代：** This is a historical version, not the current authoritative manuscript. Current version: `input/sovereign_epistemic_acquisition_EN_v1.13.md`. See `archive/README.md`. Do not cite this version’s claims without checking v1.13.
+> **SUPERSEDED / 已被取代：** This is a historical version, not the current authoritative manuscript. Current version: `input/sovereign_epistemic_acquisition_EN_v1.14.md`. See `archive/README.md`. Do not cite this version’s claims without checking v1.14.
 
 ---
 title: "Mechanisms and Boundary Conditions of LLM Judgment in Sovereign Information Filtering: A Four-Family, 80-Run Mechanistic Replay"

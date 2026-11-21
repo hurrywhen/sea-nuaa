@@ -3,7 +3,7 @@
   "status": "PASS",
   "scope": "Author-run verification in a sanitized public copy with no .git directory; not third-party reproduction.",
   "git_directory_present": false,
-  "financial_PATH_contains_git_executable": true,
+  "financial_PATH_contains_git_executable": false,
   "financial_historical_sha256": "80e953d19efb44787d4fb8b03e37ee6cbfbfc325488769df8a0e89281b495024",
   "arxiv_hash_manifest_entries_verified": 729,
   "checks": [
@@ -28,7 +28,7 @@
         "test_symmetric_channel_and_attendance_measurement (tools.test_v110_sap.V110SapExampleTests.test_symmetric_channel_and_attendance_measurement) ... ok",
         "",
         "----------------------------------------------------------------------",
-        "Ran 13 tests in 0.135s",
+        "Ran 13 tests in 0.136s",
         "",
         "OK"
       ]
@@ -84,7 +84,7 @@
         "test_kappa_handles_perfect_and_chance_agreement (sea_sap.test_target_construction.TargetConstructionTest.test_kappa_handles_perfect_and_chance_agreement) ... ok",
         "",
         "----------------------------------------------------------------------",
-        "Ran 65 tests in 0.266s",
+        "Ran 65 tests in 0.271s",
         "",
         "OK"
       ]
@@ -310,7 +310,7 @@
       ]
     }
   ],
-  "rebuilt_clean_pdf_sha256": "b6dccf551d39ba5b369fba0bd8e42ebf6659c5a197842da7c1930a1c37408f9a",
-  "rebuilt_clean_arxiv_source_sha256": "2df590c940360da6cc774c6f20b4f06cc111f8e7af7b41ecfc01494ad4de9d28",
+  "rebuilt_clean_pdf_sha256": "d0bb165b75a25927e64304a94b2852b3e98a4bf65af34145e30e8e5b96a076d1",
+  "rebuilt_clean_arxiv_source_sha256": "29aed42b1ad65bc8ff0b0519e3b31c612dc2261a9f9434c65003ee135c559f61",
   "binary_hash_note": "Clean-rebuild PDF hashes differ from working-tree builds by embedded build timestamps; clean-rebuild arXiv tarball hashes additionally differ by infrastructure-identifier sanitization of ancillary sources. Financial frozen-input hashes are byte-stable. The working-tree arXiv package excludes gitignored internal dispatch logs, so both builds verify the same 729-entry manifest."
 }

@@ -2,12 +2,12 @@ cff-version: 1.2.0
 message: "If you use this code or data, please cite the paper and the software release as follows."
 type: software
 title: "Sovereign Epistemic Acquisition (SEA): simulation code, frozen experiment records, and consistency-audit tooling"
-version: 1.13.0
-date-released: 2026-11-21
+version: 1.14.0
+date-released: 2026-11-22
 license: MIT
 repository-code: "https://github.com/hurrywhen/sea-nuaa"
-url: "https://github.com/hurrywhen/sea-nuaa/releases/tag/v1.13.0"
-# Historical v1.7 Zenodo DOI is documented in RELEASE_v1.13.md; no v1.13 DOI is asserted.
+url: "https://github.com/hurrywhen/sea-nuaa/releases/tag/v1.14.0"
+# Historical v1.7 Zenodo DOI is documented in RELEASE_v1.14.md; no v1.14 DOI is asserted.
 authors:
   - family-names: Hu
     given-names: Wen
@@ -20,7 +20,7 @@ authors:
 preferred-citation:
   type: article
   title: "Sovereign Epistemic Acquisition: A Conditional Framework and Synthetic Audit Artifacts"
-  url: "https://github.com/hurrywhen/sea-nuaa/releases/tag/v1.13.0"
+  url: "https://github.com/hurrywhen/sea-nuaa/releases/tag/v1.14.0"
   authors:
     - family-names: Hu
       given-names: Wen

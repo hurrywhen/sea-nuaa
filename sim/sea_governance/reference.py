@@ -1,4 +1,4 @@
-"""Minimal deterministic governance reference for SEA v1.13 S1--S4.
+"""Minimal deterministic governance reference for SEA v1.14 S1--S4.
 
 This is an offline, standard-library-only reference interface, not a deployed
 service.  Authorization records are structural fixtures, not authenticated
@@ -22,8 +22,8 @@ import re
 from typing import Any, Iterable, Mapping, Optional, Sequence
 
 
-SPECIFICATION = "SEA v1.13 minimal governance reference"
-INTERFACE_VERSION = "sea-governance-reference/2"
+SPECIFICATION = "SEA v1.14 minimal governance reference"
+INTERFACE_VERSION = "sea-governance-reference/3"
 AUDIT_SCHEMA = "sea-governance-audit/2"
 GENESIS_HASH = "0" * 64
 REFLECTIVE_PRINCIPAL = "R"
@@ -314,7 +314,7 @@ class GovernanceReference:
                 "objective": _clone(self._objective),
                 "timestamp": "genesis",
                 "authorization_id": None,
-                "evidence": ["defaults:sea-v1.13"],
+                "evidence": ["defaults:sea-v1.14"],
                 "restored_from": None,
                 "audit_sequence": None,
             }
@@ -485,14 +485,20 @@ class GovernanceReference:
     def rank(self, candidates: Iterable[Mapping[str, Any]],
              user_state: Mapping[str, Any],
              platform_variables: Optional[Mapping[str, Any]], *,
-             evidence: Sequence[str], timestamp: Optional[str] = None) -> list[dict[str, Any]]:
-        """Rank by candidate features and user state, never by platform variables."""
+             evidence: Sequence[str], timestamp: Optional[str] = None,
+             record: bool = True,
+             context: Optional[Mapping[str, Any]] = None) -> list[dict[str, Any]]:
+        """Rank by candidate features and user state, never by platform variables.
+
+        ``record=False`` is a commit-free preview: it returns the same ranking
+        without appending an audit record (used by executor selection dry runs).
+        ``context`` optionally merges cohort-attribution fields into the payload.
+        """
         normalized_candidates, normalized_user, normalized_platform, ranking = self._rank_inputs(
             candidates, user_state, platform_variables
         )
-        self._append(
-            "ranking",
-            {
+        if record:
+            payload = {
                 "objective_version": self._current_version,
                 "objective_hash": _digest("sea-governance-objective/1", self._objective),
                 "candidates": normalized_candidates,
@@ -501,10 +507,10 @@ class GovernanceReference:
                 "platform_variables": normalized_platform,
                 "ranking": ranking,
                 "ranking_hash": _digest("sea-governance-ranking/1", ranking),
-            },
-            evidence,
-            timestamp,
-        )
+            }
+            if context is not None:
+                payload.update(_canonicalize(context))
+            self._append("ranking", payload, evidence, timestamp)
         return _clone(ranking)
 
     def admit(self, candidate: Mapping[str, Any], user_state: Mapping[str, Any], *,
@@ -599,11 +605,13 @@ class GovernanceReference:
 
     def write_objective(self, patch: Mapping[str, Any], *,
                         actor: str, authorization: Optional[Authorization],
-                        evidence: Sequence[str]) -> dict[str, Any]:
+                        evidence: Sequence[str],
+                        context: Optional[Mapping[str, Any]] = None) -> dict[str, Any]:
         """Apply an explicit patch only with a matching sigma_R record.
 
         ``weights`` and ``thresholds`` are partial nested patches; ``g2`` and
         ``monitoring_list`` are replacements.  Rejections are also audited.
+        ``context`` optionally merges cohort-attribution fields into the payload.
         """
         _nonempty_string(actor, "actor")
         _evidence(evidence)  # validate before any state transition
@@ -616,6 +624,8 @@ class GovernanceReference:
             "old_value": _clone(self._objective),
             "old_version_token": self.version_token(),
         }
+        if context is not None:
+            base.update(_canonicalize(context))
         authorization_error = self._authorization_error(
             authorization, "objective_write", normalized_patch, actor)
         if authorization_error is not None:
@@ -673,7 +683,8 @@ class GovernanceReference:
                 "version": new_version, "audit_sequence": sequence}
 
     def rollback(self, target_version: int, *, authorization: Optional[Authorization],
-                 evidence: Sequence[str], actor: str = REFLECTIVE_PRINCIPAL) -> dict[str, Any]:
+                 evidence: Sequence[str], actor: str = REFLECTIVE_PRINCIPAL,
+                 context: Optional[Mapping[str, Any]] = None) -> dict[str, Any]:
         """Append a new version whose objective exactly restores a prior snapshot."""
         _integer(target_version, "target_version", nonnegative=True)
         _nonempty_string(actor, "actor")
@@ -686,6 +697,8 @@ class GovernanceReference:
             "old_value": _clone(self._objective),
             "old_version_token": self.version_token(),
         }
+        if context is not None:
+            base.update(_canonicalize(context))
         authorization_error = self._authorization_error(authorization, "rollback", proposal, actor)
         if authorization_error is not None:
             payload = dict(base, accepted=False, reason="unauthorized",

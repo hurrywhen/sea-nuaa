@@ -4,7 +4,7 @@
 
 **Sovereign Epistemic Acquisition: A Conditional Framework and Synthetic Audit Artifacts**
 
-**当前公开候选快照 `v1.13.0`**：[GitHub](https://github.com/hurrywhen/sea-nuaa) · [Gitee](https://gitee.com/jiangsu-yunhefeng-intelligent_0/sea-nuaa) · [发布说明](RELEASE_v1.13.md)。这是 v1.12 综合评审后的实质性修改候选：修正操作性边界、分离理论/可执行账本、同步补充材料，并修复执行器时间/链接/资源语义。不是独立数学复审、联合最优算法或端到端有效性认证；v1.13 专属 DOI 待登记。页首 Zenodo 徽章仅指向历史 v1.7 概念归档。历史版本见 [`archive/README.md`](archive/README.md)，均已标为已被取代。
+**当前公开候选快照 `v1.14.0`**：[GitHub](https://github.com/hurrywhen/sea-nuaa) · [Gitee](https://gitee.com/jiangsu-yunhefeng-intelligent_0/sea-nuaa) · [发布说明](RELEASE_v1.14.md)。这是 v1.13.0 综合评审后的小修候选：动态目标版本写入 SAP 形式模型（方案 B）、无效 attendance 遥测一律 unknown、delivered-未-selected 由无提交预演在修改前拒绝、回顾性表格单一权威来源、全事件队列归因。不是独立数学复审、联合最优算法或端到端有效性认证；v1.14 专属 DOI 待登记。页首 Zenodo 徽章仅指向历史 v1.7 概念归档。历史版本见 [`archive/README.md`](archive/README.md)，均已标为已被取代。
 
 ## 项目简介
 
@@ -12,15 +12,15 @@
 
 当前权威文档：
 
-- [`input/sovereign_epistemic_acquisition_EN_v1.13.md`](input/sovereign_epistemic_acquisition_EN_v1.13.md) —— **当前英文主稿**：条件化 SAP 框架、治理/纵向执行器工件、操作性 attendance 与失败复合遗漏、目标版本规则、回顾性审计边界。PDF 为 `latex/SEA_EN_v1.13_draft.pdf`，候选 arXiv 包为 `latex/SEA_v1.13_arxiv_source.tar.gz`。
-- [`docs/审稿回复与修改说明_v1.13.md`](docs/审稿回复与修改说明_v1.13.md) —— 对 v1.12 综合评审意见的逐条回复。
-- [`docs/REPRODUCIBILITY_v1.13.md`](docs/REPRODUCIBILITY_v1.13.md) —— 公开复现命令、冻结输入、无 Git 验证和 target-aware provenance 流程。
-- [`docs/MINIMAL_VALID_EXPERIMENT_v1.13.md`](docs/MINIMAL_VALID_EXPERIMENT_v1.13.md) —— 尚未执行的匹配实验：唯一主要比较与结局、AND attendance 判定、臂别缺失极端边界、目标版本新评价队列。
-- [`docs/SUPPLEMENT_FORMAL_AND_SECONDARY_v1.13.md`](docs/SUPPLEMENT_FORMAL_AND_SECONDARY_v1.13.md) 与 [`docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.13.md`](docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.13.md) —— 移出的标准证明/数值表，以及全部回顾性家族估计、区间、符号计数和 17 情景。
-- [`sim/pilot/results/evidence_status_v1.13.json`](sim/pilot/results/evidence_status_v1.13.json) 与 `docs/工件清单_v1.13.md` —— 机器可读证据状态和目标标签／提交明确的逐文件哈希。
-- [`archive/README.md`](archive/README.md) —— 历史版本索引；v1.11 及更早英文稿、中文稿、会议/期刊衍生版均已被取代，中文稿未同步当前英文主稿。
+- [`input/sovereign_epistemic_acquisition_EN_v1.14.md`](input/sovereign_epistemic_acquisition_EN_v1.14.md) —— **当前英文主稿**：条件化 SAP 框架（登记版本入状态）、治理/纵向执行器工件、操作性 attendance 与失败复合遗漏、目标版本规则、回顾性审计边界。PDF 为 `latex/SEA_EN_v1.14_draft.pdf`，候选 arXiv 包为 `latex/SEA_v1.14_arxiv_source.tar.gz`。
+- [`docs/审稿回复与修改说明_v1.14.md`](docs/审稿回复与修改说明_v1.14.md) —— 对 v1.13.0 综合评审意见的逐条回复。
+- [`docs/REPRODUCIBILITY_v1.14.md`](docs/REPRODUCIBILITY_v1.14.md) —— 公开复现命令、冻结输入、无 Git 验证和 target-aware provenance 流程。
+- [`docs/MINIMAL_VALID_EXPERIMENT_v1.14.md`](docs/MINIMAL_VALID_EXPERIMENT_v1.14.md) —— 尚未执行的匹配实验：唯一主要比较与结局、AND attendance 判定、臂别缺失极端边界、目标版本新评价队列、解锁前误分类验证与臂间误差比较（§1.4.1）。
+- [`docs/SUPPLEMENT_FORMAL_AND_SECONDARY_v1.14.md`](docs/SUPPLEMENT_FORMAL_AND_SECONDARY_v1.14.md) 与 [`docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.14.md`](docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.14.md) —— 移出的标准证明/数值恒等，以及全部回顾性家族估计、区间、符号计数和 17 情景（Rule A/strict-singleton/17 情景表仅在后者 §R5，由冻结数据再生成核对）。
+- [`sim/pilot/results/evidence_status_v1.14.json`](sim/pilot/results/evidence_status_v1.14.json) 与 `docs/工件清单_v1.14.md` —— 机器可读证据状态和目标标签／提交明确的逐文件哈希。
+- [`archive/README.md`](archive/README.md) —— 历史版本索引；v1.13 及更早英文稿、中文稿、会议/期刊衍生版均已被取代，中文稿未同步当前英文主稿。
 
-主要工具：`sim/sea_governance/`（18 项治理符合性）、`sim/sea_sap/`（最小纵向执行器、匹配实现 fixture、目标构造审计）、`tools/reproduce_v110_sap.py`（SAP 算例与 17/22 反例）、`sim/sea_pilot/audit_v110_consumption_caliber.py`（三个回顾性口径、72,000 键、17 情景和未来日志 schema）、`tools/check_pdf_layout.py`、`tools/audit_v113.py`、`tools/make_v113_manifest.py`。脚本名中的 v110/v19 是为复现保留的稳定文件名，不代表当前稿件版本。
+主要工具：`sim/sea_governance/`（18 项治理符合性）、`sim/sea_sap/`（最小纵向执行器、匹配实现 fixture、目标构造审计）、`tools/reproduce_v110_sap.py`（SAP 算例与 17/22 反例）、`sim/sea_pilot/audit_v110_consumption_caliber.py`（三个回顾性口径、72,000 键、17 情景和未来日志 schema）、`tools/check_pdf_layout.py`、`tools/audit_v114.py`、`tools/make_v114_manifest.py`、`tools/make_retrospective_tables.py`。脚本名中的 v110/v19 是为复现保留的稳定文件名，不代表当前稿件版本。
 
 主要条件性结果（均不得省略适用域）：
 
@@ -44,7 +44,7 @@ latex/      论文排版（后续投稿版本）
 
 | 阶段 | 内容 | 状态 |
 |---|---|---|
-| 一 | 理论奠基：SAP、条件组件、可检验主张 | 🚧 v1.13 框架收束、执行器对齐与测量闭合（2026-11；无联合最优声称，独立数学复核待完成） |
+| 一 | 理论奠基：SAP、条件组件、可检验主张 | 🚧 v1.14 动态目标闭合、测量鲁棒性与单源材料（2026-11；无联合最优声称，独立数学复核待完成） |
 | 二 | 算法设计：命题图构建、多样性选择（子模优化）、冷却队列调度；v1.0 新增：双通道选择器、EIG 查询规划器、Pandora/Whittle 调度器、边际 VOI 预算分配器 | ✅ **已交付**（2026-09-30）：[`docs/算法设计_v1.0.md`](docs/算法设计_v1.0.md)（A1–A10 规范）+ `sim/sea_algo/` 参考实现 + **历史九项验证 9/9（2026-09-30 口径，非当前版本端到端验证）**（含 O7 抗俘获认证首实现：market-only lift 0.615→1.230、market∪legal 0.626→1.359（弱富集，非独立确认）；报告 [`ALGO_VALIDATION_REPORT.md`](sim/pilot/results/ALGO_VALIDATION_REPORT.md)） |
 | 三 | 仿真 + **AI 智能体队列机制检查**：合成生态 + 真实语料时序重放、处理臂 S0–S3 与消融、P1–P12、H1'–H9（`docs/AI智能体实验设计.md`） | 🚧 **既有试点已审计，结构识别未完成**：四家族 17 场景唯一键重算完成但属同语料探索；上游仅 70 个不同 digest，O 的 run-cluster p=0.1601，O/G 引用收益为负；金融旧新 m=5 均全部预算报警且为 semi-oracle。S2d/S4/S5、完整 P1–P12、独立时间窗与记忆审计仍未执行 |
 | 四 | 在线人类数据锚点 + 团队自用遥测（转移桥） | 🚧 H8/H9 为家族依赖诊断，**现有所有家族均未获人类迁移认证**；不同 Brier 参考带不可通约。团队自用遥测仅有工程烟测，无真值、对照或召回/福利证据 |

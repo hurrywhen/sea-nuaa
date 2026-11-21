@@ -1,0 +1,341 @@
+{
+  "schema": "sea.evidence-status/v1.14",
+  "updated": "2026-11-22",
+  "release_route": "CONDITIONAL_COMPONENTS_GOVERNANCE_AND_EVIDENCE_AUDIT",
+  "reference_manuscript": "input/sovereign_epistemic_acquisition_EN_v1.14.md",
+  "global_scope": {
+    "human_subjects_data": "none",
+    "overall_SEA_structural_effect_identified": false,
+    "prospective_cross_corpus_confirmation": false,
+    "joint_SAP_optimum_or_approximation_claimed": false,
+    "independent_human_mathematical_review": "pending",
+    "third_party_clean_environment_reproduction": "pending",
+    "public_release_status": "PUBLIC_CANDIDATE_TAG_v1.14.0__PRERELEASE__DOI_PENDING",
+    "public_repositories": {
+      "github": "https://github.com/hurrywhen/sea-nuaa",
+      "gitee": "https://gitee.com/jiangsu-yunhefeng-intelligent_0/sea-nuaa"
+    },
+    "public_tag": "v1.14.0",
+    "historical_v1.7_version_doi_not_covering_this_release": "10.5281/zenodo.23620920",
+    "historical_recall_term_required": "retrospective selected-proxy opportunity recall under the stated target, configuration, upstream digest, population, and aggregation rule; never actual-consumption recall",
+    "formal_terminal_consumption_event": "latent actual consumption D; operational attendance Z is a validated measurement, not latent comprehension",
+    "machine_event_term": "machine_ingestion_and_task_reference; not human attention or downstream information use",
+    "independent_human_target_validation": "pending",
+    "synthetic_executor_is_effectiveness_evidence": false,
+    "contrast_bounds_estimand": "operational attendance omission, not latent actual consumption without measurement-error assumptions",
+    "dynamic_target_rule": "NEW_EVALUATION_COHORT__NO_CROSS_VERSION_POOLING; control continuity optional; SAP tuple option B: registry version in state, version switch is a controlled transition, evaluation measure nu^(v) chosen per cohort",
+    "v1.14_specific_doi": null,
+    "instrument_registry_scope": "shipped object is synthetic_instrument_fixture; validation_status=validated requires full preregistration fields (raw-event schema, validation-data and code hashes, measurement error, alternative instruments, arm-and-model blinding)",
+    "attendance_invalid_telemetry_rule": "non-finite, out-of-range, non-Boolean, or empty-pointer telemetry is unknown, never positive or negative",
+    "retrospective_tables_single_source": "SB1-SB3 exist only in SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.14.md R5, regenerated from frozen data by tools/make_retrospective_tables.py"
+  },
+  "claims": [
+    {
+      "id": "SAP-CONDITIONAL-CLOSURE",
+      "claim": "Finite-horizon SAP tuple, guarded writes, multi-resource budgets, observable histories, component map, worked pipeline, and non-composition example",
+      "status": "FORMAL_CONDITIONAL_MODEL_AND_DETERMINISTIC_ILLUSTRATION__NOT_A_GLOBAL_ALGORITHM",
+      "artifact": "sim/theory_v1.10/sap_example.json",
+      "worked_example": {
+        "selected_proxy_recall": "3/6",
+        "delivered_proxy_recall": "2/6",
+        "opened_proxy_recall": "2/6",
+        "actual_consumption_recall": "1/6",
+        "availability_omission": "1/6",
+        "post_availability_omission": "4/6",
+        "total_weighted_omission": "5/6",
+        "greedy_component_value": 17,
+        "joint_pair_value": 22,
+        "two_step_greedy_lower_bound": 0.75,
+        "realized_ratio": 0.7727272727,
+        "realized_ratio_exceeds_worst_case_guarantee": true,
+        "joint_optimum_attained_by_greedy_monitoring": false
+      },
+      "not_supported": "Joint optimality, tractable general solution, identified personal utilities, or deployment performance"
+    },
+    {
+      "id": "SAP-LONGITUDINAL-EXECUTOR",
+      "claim": "Minimal synthetic longitudinal executor connecting target registry, update, linkage, selection, delivery, operational attendance, five resource budgets, guard write/rollback, and hash ledger",
+      "status": "SYNTHETIC_IMPLEMENTATION_RUN__NOT_EFFECTIVENESS_EVIDENCE",
+      "artifact": "sim/pilot/results/sap_v1.14/longitudinal.json",
+      "tests": "sim/sea_sap/test_executor.py (20 tests)",
+      "new_real_model_calls": 0,
+      "human_data": false,
+      "not_supported": "General SAP optimizer, deployment effectiveness, real consumption, or human outcomes",
+      "executor_schema": "sea.sap-longitudinal-executor/v3",
+      "fixes": [
+        "first_available_period longitudinal filtering",
+        "staged selection linkage vs arm-independent reference evaluation truth",
+        "whole-period resource precheck before mutation",
+        "control continuity vs evaluation cohort",
+        "operational/FC ledger separated from latent ledger",
+        "commit-free selection dry run: delivered-but-not-selected rejected before any mutation",
+        "invalid attendance telemetry (NaN/infinity/range/pointer) is unknown; thresholds validated at registration",
+        "instrument registry scope declared; validated status enforces full preregistration fields",
+        "control/cohort/registry-version/registry-hash attribution on every cohort-scoped audit event",
+        "first_available_period expiry restores availability (positive test)"
+      ]
+    },
+    {
+      "id": "TARGET-CONSTRUCTION-AUDIT",
+      "claim": "Small synthetic target-construction audit with deterministic rule agreement, arbitration, and merge/split sensitivity",
+      "status": "SYNTHETIC_RULE_AGREEMENT__INDEPENDENT_HUMAN_VALIDATION_PENDING",
+      "artifact": "sim/pilot/results/sap_v1.14/target_construction_audit.json",
+      "human_annotations_created": false,
+      "dynamic_target_rule": "NEW_EVALUATION_COHORT__NO_CROSS_VERSION_POOLING",
+      "not_supported": "Human reviewer agreement or complete real target set"
+    },
+    {
+      "id": "GOVERNANCE-S1-S4",
+      "claim": "Executable governance reference for inspectability, actor-principal-bound authorized writes and rollback, fixed-supply invariance, supply-ecology logging, domain-separated hash-chain tamper detection, and recourse",
+      "status": "SYNTHETIC_SOFTWARE_CONFORMANCE_PASS__NOT_DEPLOYMENT_SECURITY_OR_HUMAN_CONTROL",
+      "artifact": "sim/pilot/results/governance_conformance_v1.14.json",
+      "tests_run": 18,
+      "tests_passed": 18,
+      "new_model_calls": 0,
+      "not_supported": "Authenticated identity, malicious-host security, distributed consensus, meaningful human control, or end-to-end effectiveness"
+    },
+    {
+      "id": "MATH-CAPACITY",
+      "claim": "Capacity oracle relaxation and population/finite-pool Gaussian calculations",
+      "estimand": "Clairvoyant lower bound, model-conditional population recall, separate finite top-m expectation, and normalized expected leaked value as a ratio of expectations",
+      "status": "FORMAL_AND_NUMERICALLY_REPRODUCED",
+      "artifact": "sim/theory_v1.9/math_results.json",
+      "not_supported": "Non-oracle attainability, per-realization leaked-share expectation, universal architectural necessity, or empirical ex-ante critical recall"
+    },
+    {
+      "id": "RECALL-WEIGHTED",
+      "claim": "Weighted expected recall and omission decomposition",
+      "estimand": "End-to-end actual consumption under a declared proposition sampling measure",
+      "status": "FORMAL_PROPOSITION__DEPLOYMENT_PARAMETERS_NOT_VALIDATED",
+      "artifact": "input/sovereign_epistemic_acquisition_EN_v1.14.md",
+      "not_supported": "A uniform per-class per-proposition p_min, k_eff>=2, or 99.76% deployment recall"
+    },
+    {
+      "id": "PILOT-ACADEMIC",
+      "claim": "Academic retrospective pilot",
+      "estimand": "Top-2%-citation selected proxy under frozen historical configurations",
+      "status": "COMPLETED_RETROSPECTIVE_PROXY_PILOT__NEGATIVE_FOR_95_PERCENT_TARGET",
+      "best_semi_oracle_selected_proxy_recall": 0.28,
+      "best_supervised_feature_scorer_list_optimization_selected_proxy_recall": 0.135,
+      "feature_scorer_scope": "separate supervised pilot, not paired or leakage-free",
+      "coverage_descriptive": {
+        "author_list": "1/52",
+        "institution_lists": "9/52 to 19/52",
+        "list_size_400": "24/52"
+      },
+      "not_supported": "Ex-ante decision criticality, actual consumption, or per-proposition coverage probabilities"
+    },
+    {
+      "id": "PILOT-FINANCIAL",
+      "claim": "Financial retrospective proxy configurations and public-input reproduction",
+      "estimand": "Within-portfolio market-moving proxy opportunities under two non-paired configurations",
+      "status": "EXPANDED_SELECTION_RECONSTRUCTED__HISTORICAL_FROZEN_ROW_AGGREGATE__PUBLIC_GIT_DEPENDENCY_REMOVED",
+      "historical_configuration": {
+        "targets_per_run": 18,
+        "m5_runs": 7,
+        "proposition_recall_agent_target_pooled": "120/126 = 20/21 = 0.9523809524",
+        "supervised_feature_scorer_mean_recall": 0.7222222222,
+        "budget_conflict_alarms": "7/7",
+        "slots": "150 monthly, not a strict daily cap",
+        "paired_comparison_to_expanded": false,
+        "selection_reconstruction": "not independently reconstructed; frozen-row aggregate only",
+        "frozen_input": "sim/pilot/results/v19_financial_caliber_audit/historical_p2_rows_8ffc7f5.csv",
+        "frozen_input_sha256": "80e953d19efb44787d4fb8b03e37ee6cbfbfc325488769df8a0e89281b495024",
+        "frozen_input_rows": 1260,
+        "runtime_git_required": false
+      },
+      "expanded_configuration": {
+        "targets": "19 propositions on 18 company-days across 10 tickers",
+        "m5_runs": 7,
+        "proposition_recall_agent_target_pooled": "121/133 = 0.9097744361",
+        "company_day_recall_post_hoc_agent_target_pooled": "114/126 = 0.9047619048",
+        "supervised_feature_scorer_mean_recall": 0.7894736842,
+        "budget_conflict_alarms": "7/7",
+        "slots": "150 monthly, not a strict daily cap",
+        "parametric_S2p_selection_reconstruction": "reconstructed and checked to 1e-12",
+        "feature_scorer_values": "frozen-row aggregate only; feature-scorer selection not independently rebuilt",
+        "timestamp_availability": "4/19 acceptance_hour<13; 7/19 >=13; 8/19 news time unknown",
+        "artifact": "sim/pilot/results/v19_financial_caliber_audit/summary.json"
+      },
+      "selection_proxy": "semi-oracle: realized legal/market labels enter parametric scores",
+      "supervised_feature_scorer_scope": "trained on day<15 realized labels and evaluated descriptively over the full month; identical deterministic selection repeated across seven agent rows, not seven independent feature experiments and not held-out evidence",
+      "r4_compliant_95_percent_guarantee_established": false,
+      "not_supported": "18->19 is valid only at proposition level, not a company-day change or paired causal contrast; historical company-day denominator not independently reconstructed; independence from conditional recovery; ex-ante availability"
+    },
+    {
+      "id": "REPLAY-FOUR-FAMILY",
+      "claim": "Four-family fixed-digest judgment-layer selected-proxy replay",
+      "estimand": "Post-hoc citation-proxy selected recall and log1p(citation) return after upstream digest construction; no actual-consumption estimand is observed",
+      "status": "POST_HOC_SELECTED_PROXY_RETROSPECTIVE_DESCRIPTIVE__WITHIN_CORPUS_EXPLORATORY",
+      "expected_keys": 72000,
+      "existing_keys": 71970,
+      "nonempty_keys": 71914,
+      "empty_only_keys": 56,
+      "missing_no_row_keys": 30,
+      "structurally_parseable_records": 73704,
+      "empty_records": 157,
+      "stored_policy_parse_error_records": 154,
+      "delivery_open_attendance_actual_consumption_fields": 0,
+      "efficiency_fields": 0,
+      "designated_retrospective_descriptive_caliber": {
+        "id": "ALL_EXISTING_RECORD_MEAN_ZERO_EMPTY",
+        "analysis_role": "Designated retrospective descriptive caliber; not a prospective primary outcome or intention-to-treat analysis",
+        "definition": "Every existing key once; equal-weight all records within key including picked=[] as selected-proxy zero; 30 no-row keys missing; conflicts retained as attempt means",
+        "artifact": "sim/pilot/results/v110_consumption_caliber/summary.json",
+        "O": {
+          "keys": 26996,
+          "delta_recall": 0.0297197743,
+          "delta_recall_interval": [
+            -0.0044090186,
+            0.0643602585
+          ],
+          "delta_return": -0.18129195
+        },
+        "C": {
+          "keys": 26987,
+          "delta_recall": 0.1290603672,
+          "delta_recall_interval": [
+            0.0984753068,
+            0.1582546863
+          ],
+          "delta_return": 0.6622359645
+        },
+        "Q": {
+          "keys": 8998,
+          "delta_recall": 0.110709,
+          "delta_recall_interval": [
+            0.080555,
+            0.144612
+          ],
+          "delta_return": 0.396418
+        },
+        "G": {
+          "keys": 8989,
+          "delta_recall": 0.086071,
+          "delta_recall_interval": [
+            0.019272,
+            0.144873
+          ],
+          "delta_return": -0.251347
+        }
+      },
+      "resolved_zero_empty_G": {
+        "recall": 71629,
+        "return": 70732,
+        "sign": 71674,
+        "frozen_scenario_G_runs_matched": "80/80"
+      },
+      "resolved_A": {
+        "recall": 71573,
+        "return": 70676,
+        "sign": 71618
+      },
+      "strict_singleton_C_keys": 70306,
+      "upstream_digest_audit": {
+        "artifact": "sim/pilot/results/v19_upstream_digest_audit/summary.json",
+        "semi_oracle": "all Channel-II digests use 2026 citation counts",
+        "targets_reaching_digest_by_family_mean": {
+          "O": 28.3667,
+          "C": 28.4,
+          "Q": 27.7,
+          "G": 28.7
+        },
+        "targets_total": 52,
+        "model_seed_configurations": 80,
+        "distinct_digest_configurations": 70,
+        "identical_O_G_digest_pairs": 10
+      },
+      "all_17_scenario_ranges": {
+        "O": {
+          "delta_recall": [
+            0.027697,
+            0.033656
+          ],
+          "delta_return": [
+            -0.277317,
+            -0.103091
+          ],
+          "point_estimate_sign_changes": 0
+        },
+        "C": {
+          "delta_recall": [
+            0.124652,
+            0.133596
+          ],
+          "delta_return": [
+            0.522966,
+            0.749538
+          ],
+          "point_estimate_sign_changes": 0
+        },
+        "Q": {
+          "delta_recall": [
+            0.104956,
+            0.120525
+          ],
+          "delta_return": [
+            0.159403,
+            0.587765
+          ],
+          "point_estimate_sign_changes": 0
+        },
+        "G": {
+          "delta_recall": [
+            0.079407,
+            0.097947
+          ],
+          "delta_return": [
+            -0.507806,
+            -0.027918
+          ],
+          "point_estimate_sign_changes": 0
+        }
+      },
+      "interval_status": "Demoted to supplementary retrospective audits; exploratory run-level intervals and nominal tests are not main-text inference or deployment guarantees",
+      "not_supported": "Actual delivery/opening/attendance, valid abstention identification, cross-corpus robustness, end-to-end recall, human welfare, modern RAG superiority, or efficiency",
+      "conservative_no_row_caliber": {
+        "id": "ALL_EXPECTED_RECORD_MEAN_ZERO_EMPTY_NO_ROW",
+        "keys": 72000,
+        "definition": "All expected keys; existing recorded-attempt means; 30 no-row keys assigned selected-proxy zero; conflicts retained as attempt means",
+        "role": "Post-hoc conservative descriptive sensitivity, not actual consumption or prospective primary analysis"
+      },
+      "artifact": "sim/pilot/results/v110_consumption_caliber/summary.json"
+    },
+    {
+      "id": "TRANSFER-H8-H9",
+      "claim": "Human-transfer validation gate",
+      "status": "NO_FAMILY_CERTIFIED_FOR_HUMAN_TRANSFER__DETAILS_DEMOTED_TO_SUPPLEMENT",
+      "artifact": "docs/SUPPLEMENT_NORMATIVE_AND_TRANSFER_v1.14.md",
+      "consequence": "All replay results are AI-task selected-proxy descriptions only; no human-side parameter or welfare extrapolation"
+    },
+    {
+      "id": "DIRECT-BASELINES",
+      "claim": "Primary S2 versus S2d matched comparison; secondary S4 RAG-safety, S5 welfare recommender, and ablations",
+      "primary_outcome": "all-assigned failure-composite weighted omission M_nu^FC of confirmed operational consumption; distinct from latent M_nu",
+      "primary_missing_outcome_rule": "ALL_ASSIGNED_FAILURE_COMPOSITE_OPERATIONAL_ATTENDANCE_OMISSION_V1: valid positive operational attendance is success; explicit abstention, observed non-attendance, and unknown terminal outcomes are omission; raw unknown measurements are not rewritten",
+      "attendance_measurement": "Domain-specific instrument registry, validated frozen thresholds, raw-event schema, blind assessors, and alternative-instrument/threshold sensitivity analyses required before outcome unblinding",
+      "missing_data_sensitivity_only": [
+        "unknown coded as consumed",
+        "prespecified arm-aware inverse-probability weighting",
+        "separately justified preregistered multiple imputation"
+      ],
+      "status": "DESIGN_ONLY__NOT_EXECUTED",
+      "protocol": "docs/MINIMAL_VALID_EXPERIMENT_v1.14.md",
+      "human_RCT_required_for_current_conditional_audit_paper": false,
+      "not_supported": "Any claim that SEA outperforms existing end-to-end methods or improves human outcomes",
+      "attendance_decision_rule": "VALID_READING_AND_CONTENT_LINKED_CONFIRMATION (explicit AND)",
+      "contrast_bounds": "operational attendance omission bounds: lower=Delta_FC-u_sea; upper=Delta_FC+u_control; not latent bounds without measurement consistency",
+      "misclassification_counterexample": "no unknowns collapse operational bounds to [Delta_FC, Delta_FC] (to [0,0] only when Delta_FC=0); false positive/false negative can place latent contrast outside them",
+      "misclassification_validation_plan": "protocol section 1.4.1: independent blinded reference set, arm-specific sensitivity/specificity with intervals, AND-rule operational false-negative rate, preregistered arm-differential error margins, explicit-error-model transport (S12) as sensitivity only; not executed"
+    },
+    {
+      "id": "RETROSPECTIVE-TABLES-SINGLE-SOURCE",
+      "claim": "Rule A, strict-singleton, and 17-scenario tables have exactly one authoritative location, regenerated from frozen data files",
+      "status": "SINGLE_SOURCE_VERIFIED__RETROSPECTIVE_DESCRIPTION_NOT_EFFECT_EVIDENCE",
+      "artifact": "sim/pilot/results/retrospective_tables_v1.14/values.json",
+      "generator": "tools/make_retrospective_tables.py",
+      "authoritative_location": "docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.14.md section R5",
+      "not_supported": "Any structural effect, actual consumption, or prospective inference"
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+> **SUPERSEDED / 已被取代：** This is a historical version, not the current authoritative manuscript. Current version: `input/sovereign_epistemic_acquisition_EN_v1.14.md`. See `archive/README.md`. Do not cite this version’s claims without checking v1.14.
+
 # Sovereign Epistemic Acquisition:\newline A Conditional Framework and Synthetic Audit Artifacts
 
 **Wen Hu**<sup>1,2</sup>&nbsp;&nbsp;**Xutong Wang**<sup>1</sup>&nbsp;&nbsp;**Ya Yu**<sup>1</sup>

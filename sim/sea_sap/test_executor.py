@@ -1,4 +1,4 @@
-"""Tests for the v1.13 minimal longitudinal SAP executor and measurement rules."""
+"""Tests for the v1.14 minimal longitudinal SAP executor and measurement rules."""
 from __future__ import annotations
 
 import copy
@@ -82,7 +82,8 @@ class LongitudinalExecutorTest(unittest.TestCase):
         self.assertAlmostEqual(bounds["lower_sea_unknown_operational_success_control_unknown_failure"], -0.1)
         self.assertAlmostEqual(bounds["upper_sea_unknown_operational_failure_control_unknown_success"], 0.2)
         self.assertTrue(bounds["latent_bounds_require_measurement_error_assumptions"])
-        # No unknowns: operational bounds collapse to [0,0].  A false positive in
+        # No unknowns AND zero FC contrast: operational bounds collapse to [0,0]
+        # (in general they collapse to [Delta^FC, Delta^FC]).  A false positive in
         # SEA (Z=1, D=0) and true positive in control (Z=1, D=1) gives latent
         # omission contrast 1, outside the operational bounds.  A false negative
         # in control gives the reverse violation.  Hence the bounds are not latent.
@@ -128,6 +129,178 @@ class LongitudinalExecutorTest(unittest.TestCase):
         e2_1 = next(row for row in period1["operational_target_ledger"] if row["target_id"] == "e2")
         self.assertEqual(e2_1["first_failed_stage"], "availability")
         self.assertAlmostEqual(period1["outcome_summary"]["weighted_unknown_terminal"], 0.0)
+
+    def test_first_available_period_expiry_restores_availability(self):
+        fixture = load_fixture()
+        registry = fixture["target_registry"]
+        for doc in registry["reference_corpus"]["documents"]:
+            if doc["document_id"] == "doc2":
+                doc["first_available_period"] = 1
+        _refresh_registry_hash(registry)
+        executor = SAPExecutor(fixture, arm="sea")
+        positive_c1 = fixture["period_plans"]["0"]["attendance_events"]["c1"]
+        positive_c2 = dict(positive_c1, evidence_pointer="synthetic-attendance:c2-positive-period1")
+        plan0 = {"delivered": ["c1"], "opened": ["c1"],
+                 "attendance_events": {"c1": positive_c1}, "machine_events": {}}
+        period0 = executor.run_period(0, plan0)
+        e2 = next(row for row in period0["operational_target_ledger"] if row["target_id"] == "e2")
+        self.assertEqual(e2["first_failed_stage"], "availability")
+        self.assertEqual(e2["available_candidate_ids"], [])
+        plan1 = {"delivered": ["c1", "c2"], "opened": ["c1", "c2"],
+                 "attendance_events": {"c1": positive_c1, "c2": positive_c2},
+                 "machine_events": {}}
+        period1 = executor.run_period(1, plan1)
+        e2_1 = next(row for row in period1["operational_target_ledger"] if row["target_id"] == "e2")
+        self.assertIn("c2", e2_1["available_candidate_ids"])
+        self.assertIsNone(e2_1["first_failed_stage"])
+        self.assertEqual(e2_1["operational_attendance"], "positive")
+        self.assertAlmostEqual(period1["outcome_summary"]["weighted_unknown_terminal"], 0.0)
+
+    def test_invalid_telemetry_is_unknown_not_negative_or_positive(self):
+        fixture = load_fixture()
+        instrument = OperationalAttendanceInstrument(fixture["attendance_instrument"])
+        base = fixture["period_plans"]["0"]["attendance_events"]["c1"]
+        cases = [
+            dict(base, coverage_fraction=float("nan")),
+            dict(base, coverage_fraction=float("inf")),
+            dict(base, coverage_fraction=float("-inf")),
+            dict(base, coverage_fraction=1.5),
+            dict(base, coverage_fraction=-0.1),
+            dict(base, engaged_ms=float("nan")),
+            dict(base, engaged_ms=float("inf")),
+            dict(base, engaged_ms=-1),
+            dict(base, engaged_ms="45000"),
+            dict(base, coverage_fraction=True),
+            dict(base, evidence_pointer=""),
+            dict(base, evidence_pointer="   "),
+            dict(base, evidence_pointer=None),
+            dict(base, focused_visible="yes"),
+            dict(base, content_linked_confirmation="true"),
+        ]
+        for event in cases:
+            decision = instrument.measure(event)
+            self.assertEqual(decision.status, "unknown", str(event))
+            self.assertEqual(decision.reason, "invalid_telemetry_values")
+        # A complete valid measurement below threshold remains negative, not unknown.
+        negative = fixture["period_plans"]["0"]["attendance_events"]["c2"]
+        self.assertEqual(instrument.measure(negative).status, "negative")
+
+    def test_invalid_thresholds_rejected_at_registration(self):
+        fixture = load_fixture()
+        for thresholds in (
+            {"min_engaged_ms": float("nan"), "min_coverage_fraction": 0.6},
+            {"min_engaged_ms": 30000, "min_coverage_fraction": float("inf")},
+            {"min_engaged_ms": -1, "min_coverage_fraction": 0.6},
+            {"min_engaged_ms": 30000, "min_coverage_fraction": 1.5},
+            {"min_engaged_ms": 30000, "min_coverage_fraction": -0.2},
+            {"min_engaged_ms": 30000},
+        ):
+            registry = copy.deepcopy(fixture["attendance_instrument"])
+            registry["thresholds"] = thresholds
+            with self.assertRaises(ValueError):
+                OperationalAttendanceInstrument(registry)
+
+    def test_instrument_registry_scope_and_full_preregistration_enforcement(self):
+        fixture = load_fixture()
+        base = fixture["attendance_instrument"]
+        self.assertEqual(base["registry_scope"], "synthetic_instrument_fixture")
+        registry = copy.deepcopy(base)
+        registry["registry_scope"] = "preregistered_instrument"
+        with self.assertRaises(ValueError):
+            OperationalAttendanceInstrument(registry)
+        registry = copy.deepcopy(base)
+        registry["validation_status"] = "validated"
+        registry["registry_scope"] = "preregistered_instrument"
+        registry["assessor_blinding"] = "arm_and_model_blind"
+        with self.assertRaises(ValueError):
+            OperationalAttendanceInstrument(registry)
+        registry.update({
+            "raw_event_schema": {"required_fields": [
+                "focused_visible", "engaged_ms", "coverage_fraction",
+                "content_linked_confirmation", "evidence_pointer"]},
+            "validation_data_sha256": "a" * 64,
+            "measurement_code_sha256": "b" * 64,
+            "measurement_error": {"sensitivity": 0.9, "specificity": 0.95,
+                                   "validation_set_pointer": "synthetic-validation:set-1"},
+            "alternative_instruments": ["reading_only", "confirmation_only"],
+        })
+        instrument = OperationalAttendanceInstrument(registry)
+        positive = fixture["period_plans"]["0"]["attendance_events"]["c1"]
+        self.assertEqual(instrument.measure(positive).status, "positive")
+        bad = copy.deepcopy(registry)
+        bad["measurement_error"] = {"sensitivity": 0.9}
+        with self.assertRaises(ValueError):
+            OperationalAttendanceInstrument(bad)
+        bad = copy.deepcopy(registry)
+        bad["measurement_error"] = {"sensitivity": float("nan"), "specificity": 0.95,
+                                    "validation_set_pointer": "synthetic-validation:set-1"}
+        with self.assertRaises(ValueError):
+            OperationalAttendanceInstrument(bad)
+
+    def test_delivered_but_not_selected_fails_before_mutation(self):
+        fixture = load_fixture()
+        executor = SAPExecutor(fixture)  # SEA: c3 fails staged linkage, is never selected
+        before_records = executor.governance.audit_records()
+        positive = fixture["period_plans"]["0"]["attendance_events"]["c1"]
+        plan = {"delivered": ["c1", "c3"], "opened": ["c1", "c3"],
+                "attendance_events": {"c1": positive, "c3": positive}, "machine_events": {}}
+        with self.assertRaises(ValueError):
+            executor.run_period(0, plan)
+        self.assertEqual(executor.governance.audit_records(), before_records)
+        self.assertEqual(executor.budget_spent, {name: 0 for name in executor.budget_spent})
+        self.assertEqual(executor.updated_candidates, {})
+        self.assertEqual(executor.period_results, [])
+        # An eligible candidate beyond the selection limit is also rejected pre-mutation.
+        fixture2 = load_fixture()
+        fixture2["selection_limit"] = 1
+        executor2 = SAPExecutor(fixture2)
+        plan2 = {"delivered": ["c1", "c2"], "opened": ["c1"],
+                 "attendance_events": {"c1": positive}, "machine_events": {}}
+        with self.assertRaises(ValueError):
+            executor2.run_period(0, plan2)
+        self.assertEqual(executor2.governance.audit_records(), [])
+        self.assertEqual(executor2.budget_spent, {name: 0 for name in executor2.budget_spent})
+        self.assertEqual(executor2.updated_candidates, {})
+        # The same plan with only selected candidates executes normally.
+        period = executor2.run_period(0, {"delivered": ["c1"], "opened": ["c1"],
+                                          "attendance_events": {"c1": positive},
+                                          "machine_events": {}})
+        self.assertEqual(period["selected_candidate_ids"], ["c1"])
+
+    def test_all_audit_events_carry_cohort_attribution(self):
+        fixture = load_fixture()
+        executor = SAPExecutor(fixture)
+        executor.run_period(0, fixture["period_plans"]["0"])
+        executor.write_after_period({"weights": {"novelty": 10}},
+                                    authorization_id="cohort-write", timestamp="logical:00000010")
+        registry = copy.deepcopy(fixture["target_registry"])
+        registry["version"] = "targets-v2"
+        registry["targets"][0]["canonical_text"] = "Revised synthetic proposition e1."
+        continued = executor.continue_with_target_registry(registry)
+        continued.run_period(1, fixture["period_plans"]["0"])
+        records = continued.governance.audit_records()
+        keys = {"control_instance_id", "evaluation_cohort_id",
+                "target_registry_version", "target_registry_sha256"}
+        switch_index = next(i for i, record in enumerate(records)
+                            if record["event"] == "evaluation_cohort_change")
+        for index, record in enumerate(records):
+            payload = record["payload"]
+            if record["event"] == "evaluation_cohort_change":
+                self.assertEqual(payload["control_instance_id"], executor.control_instance_id)
+                self.assertEqual(payload["old_evaluation_cohort_id"], executor.evaluation_cohort_id)
+                self.assertEqual(payload["new_evaluation_cohort_id"], continued.evaluation_cohort_id)
+                self.assertEqual(payload["old_target_registry_version"], "targets-v1")
+                self.assertEqual(payload["new_target_registry_version"], "targets-v2")
+                continue
+            self.assertTrue(keys <= set(payload), record["event"])
+            self.assertEqual(payload["control_instance_id"], executor.control_instance_id)
+            expected_cohort = (executor.evaluation_cohort_id if index < switch_index
+                               else continued.evaluation_cohort_id)
+            self.assertEqual(payload["evaluation_cohort_id"], expected_cohort, record["event"])
+            expected_version = "targets-v1" if index < switch_index else "targets-v2"
+            self.assertEqual(payload["target_registry_version"], expected_version)
+        self.assertTrue(continued.governance.verify_audit(
+            anchor=continued.governance.audit_anchor())["valid"])
 
     def test_s2d_can_select_staged_link_failure_but_evaluation_uses_reference_truth(self):
         fixture = load_fixture()
@@ -222,8 +395,9 @@ class LongitudinalExecutorTest(unittest.TestCase):
     def test_executor_audit_contains_resource_and_terminal_events(self):
         result = run_longitudinal_fixture()
         events = {record["event"] for record in result["audit"]["records"]}
-        self.assertLessEqual({"resource_precheck", "observation", "update", "resource_use", "ranking",
-                              "selection", "period_outcome", "override", "rollback"}, events)
+        self.assertLessEqual({"resource_precheck", "selection_dry_run", "observation", "update",
+                              "resource_use", "ranking", "selection", "period_outcome",
+                              "override", "rollback"}, events)
 
 
 if __name__ == "__main__":

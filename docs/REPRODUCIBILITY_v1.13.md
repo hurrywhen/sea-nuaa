@@ -111,17 +111,19 @@ bash tools/make_arxiv_source.sh v1.13
 
 ## 5. 无 `.git` 公开副本检查
 
-金融脚本必须在无 `.git` 且 `PATH` 没有 Git 的环境中完成默认和 `--write --force`。其他核心 Python 审计也只使用快照内冻结输入。可这样检查金融项：
+金融脚本必须在无 `.git` 且 `PATH` 没有 Git 的环境中完成默认和 `--write --force`。其他核心 Python 审计也只使用快照内冻结输入。注意某些机器的 `/usr/bin` 本身含 `git`，因此 `PATH=/usr/bin:/bin` 不足以证明无 Git；应构造仅含解释器的专用 PATH。金融脚本无任何 subprocess/系统调用，可这样检查：
 
 ```bash
-env -i HOME="$HOME" PATH=/usr/bin:/bin \
+mkdir -p /tmp/sea-nogit-bin
+ln -sf "$(command -v python3)" /tmp/sea-nogit-bin/python3
+env -i HOME="$HOME" PATH=/tmp/sea-nogit-bin \
   PYTHONDONTWRITEBYTECODE=1 \
   /usr/bin/python3 sim/sea_pilot/audit_v19_financial_caliber.py
 ```
 
 如果 Python/NumPy 安装在其他前缀，应使用对应解释器，而不是恢复 Git 依赖。发布者另在干净公开副本中执行第 4.1–4.3 节命令并比较工件。第三方独立重跑仍不得因此宣称已完成。
 
-本版已在无 `.git` 的脱敏公开副本实际完成 **18/18 组验证命令**：13 项数学/SAP、65 项治理/重放/金融/消费口径/执行器/目标构造测试、四类数据审计、合成 SAP 工件重建、发布审计、20 页 PDF/arXiv 构建，以及 PATH 无 Git 可执行命令的金融默认和 `--write --force`。公开 arXiv 的 **729/729** 个附件哈希全部通过。机器报告为 `tools/clean_verification_v1.13.json`。这是**作者执行的公开副本验证**，不是第三方独立复现；不同时刻的 PDF/压缩包可因构建时间产生不同二进制哈希，报告将“干净重建哈希”与金融固定输入哈希分开。
+本版已在无 `.git` 的脱敏公开副本实际完成 **18/18 组验证命令**：13 项数学/SAP、65 项治理/重放/金融/消费口径/执行器/目标构造测试、四类数据审计、合成 SAP 工件重建、发布审计、20 页 PDF/arXiv 构建，以及专用无 Git PATH（`shutil.which('git')` 为 None）下的金融默认和 `--write --force`。公开 arXiv 的 **729/729** 个附件哈希全部通过。机器报告为 `tools/clean_verification_v1.13.json`。这是**作者执行的公开副本验证**，不是第三方独立复现；不同时刻的 PDF/压缩包可因构建时间产生不同二进制哈希，arXiv 包另因附件基础设施标识脱敏而不同，报告将“干净重建哈希”与金融固定输入哈希分开。
 
 ## 6. 工件清单与 arXiv 附件
 
