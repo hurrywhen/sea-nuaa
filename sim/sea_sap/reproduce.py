@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Reproduce v1.14 synthetic SAP executor, matched fixture and target audit.
+"""Reproduce v1.15 synthetic SAP executor, matched fixture and target audit.
 
 Default: print a compact summary. ``--write`` emits dedicated JSON artifacts under
-``sim/pilot/results/sap_v1.14/``; replacement requires ``--force``. No LLM calls,
+``sim/pilot/results/sap_v1.15/``; replacement requires ``--force``. No LLM calls,
 network access, or human data are created.
 """
 from __future__ import annotations
@@ -14,14 +14,19 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from sea_sap import run_longitudinal_fixture, run_matched_implementation_demo
+from sea_sap import (
+    run_longitudinal_fixture,
+    run_matched_implementation_demo,
+    run_protocol_registry_switch_demo,
+)
 from sea_sap.target_construction import audit_target_construction
 
 ROOT = Path(__file__).resolve().parents[2]
-OUTDIR = ROOT / "sim" / "pilot" / "results" / "sap_v1.14"
+OUTDIR = ROOT / "sim" / "pilot" / "results" / "sap_v1.15"
 ARTIFACTS = {
     "longitudinal.json": run_longitudinal_fixture,
     "matched_implementation_demo.json": run_matched_implementation_demo,
+    "protocol_registry_switch_demo.json": run_protocol_registry_switch_demo,
     "target_construction_audit.json": audit_target_construction,
 }
 
@@ -36,6 +41,7 @@ def main() -> int:
         print(json.dumps({
             "longitudinal_guard_trace": results["longitudinal.json"]["guard_trace"],
             "matched_status": results["matched_implementation_demo.json"]["status"],
+            "protocol_switch_demo_status": results["protocol_registry_switch_demo.json"]["status"],
             "target_status": results["target_construction_audit.json"]["status"],
         }, ensure_ascii=False, indent=2))
         return 0

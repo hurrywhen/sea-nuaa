@@ -1,0 +1,10 @@
+{
+  "schema": "sea.pdf-layout-check/v1",
+  "pdf": "latex/SEA_EN_v1.15_draft.pdf",
+  "pages": 21,
+  "safety_band_points": 20.0,
+  "status": "PASS",
+  "findings": [],
+  "max_word_xmax_to_page_width": 0.8939382488123158,
+  "note": "Coordinate checks do not replace full-page visual inspection."
+}

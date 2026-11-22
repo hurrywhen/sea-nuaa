@@ -1,4 +1,4 @@
-"""Tests for the v1.14 minimal longitudinal SAP executor and measurement rules."""
+"""Tests for the v1.15 minimal longitudinal SAP executor and measurement rules."""
 from __future__ import annotations
 
 import copy
@@ -9,11 +9,14 @@ import unittest
 from sea_governance import canonical_json
 from sea_sap import (
     SAPExecutor,
+    completed_measurement_transport,
+    completed_measurement_transport_delta_method,
     load_fixture,
     machine_ingestion_and_task_reference,
     operational_attendance_contrast_bounds,
     run_longitudinal_fixture,
     run_matched_implementation_demo,
+    run_protocol_registry_switch_demo,
 )
 from sea_sap.executor import OperationalAttendanceInstrument, validate_target_registry
 
@@ -22,6 +25,50 @@ def _refresh_registry_hash(registry):
     registry["reference_corpus"]["sha256"] = hashlib.sha256(
         canonical_json(registry["reference_corpus"]["documents"]).encode("utf-8")
     ).hexdigest()
+
+
+def _refresh_protocol_declaration(fixture):
+    """Re-declare the frozen family after a test-local registry modification.
+
+    Modifying a frozen registry invalidates its ex-ante content-hash
+    declaration; a test that changes registry content must re-declare the
+    family exactly as a protocol amendment would, not silently bypass it.
+    """
+    family = fixture["registry_family"]
+    family[fixture["target_registry"]["version"]] = hashlib.sha256(
+        canonical_json(fixture["target_registry"]).encode("utf-8")).hexdigest()
+    for version, registry in fixture.get("protocol_registries", {}).items():
+        family[version] = hashlib.sha256(canonical_json(registry).encode("utf-8")).hexdigest()
+
+
+def _validated_instrument_registry(base):
+    """A structurally complete preregistered instrument registration (synthetic values)."""
+    registry = copy.deepcopy(base)
+    registry["validation_status"] = "validated"
+    registry["registry_scope"] = "preregistered_instrument"
+    registry["assessor_blinding"] = "arm_and_model_blind"
+    registry.update({
+        "raw_event_schema": {"required_fields": [
+            "focused_visible", "engaged_ms", "coverage_fraction",
+            "content_linked_confirmation", "evidence_pointer"]},
+        "validation_data_sha256": "a" * 64,
+        "measurement_code_sha256": "b" * 64,
+        "measurement_error": {
+            "sensitivity": 0.9, "sensitivity_interval": [0.8, 0.95],
+            "specificity": 0.95, "specificity_interval": [0.9, 0.98],
+            "validation_set_pointer": "synthetic-validation:set-1",
+            "transportability_assumption": "error rates conditionally stable across validation and deployment populations",
+        },
+        "blinded_reference_set": {
+            "construction_rule": "independent time-outside units, arm-and-model-blind human reference annotation",
+            "reference_data_sha256": "c" * 64,
+            "unlock_timestamp": "logical:00000001",
+            "overlap_with_tuning_or_main_corpus": False,
+        },
+        "completion_subset_representativeness": "completed-measurement subset compared with all assigned units by arm and stage",
+        "alternative_instruments": ["reading_only", "confirmation_only"],
+    })
+    return registry
 
 
 class LongitudinalExecutorTest(unittest.TestCase):
@@ -117,6 +164,7 @@ class LongitudinalExecutorTest(unittest.TestCase):
             if doc["document_id"] == "doc2":
                 doc["first_available_period"] = 2
         _refresh_registry_hash(registry)
+        _refresh_protocol_declaration(fixture)
         executor = SAPExecutor(fixture, arm="sea")
         positive = fixture["period_plans"]["0"]["attendance_events"]["c1"]
         plan = {"delivered": ["c1"], "opened": ["c1"],
@@ -137,6 +185,7 @@ class LongitudinalExecutorTest(unittest.TestCase):
             if doc["document_id"] == "doc2":
                 doc["first_available_period"] = 1
         _refresh_registry_hash(registry)
+        _refresh_protocol_declaration(fixture)
         executor = SAPExecutor(fixture, arm="sea")
         positive_c1 = fixture["period_plans"]["0"]["attendance_events"]["c1"]
         positive_c2 = dict(positive_c1, evidence_pointer="synthetic-attendance:c2-positive-period1")
@@ -214,16 +263,7 @@ class LongitudinalExecutorTest(unittest.TestCase):
         registry["assessor_blinding"] = "arm_and_model_blind"
         with self.assertRaises(ValueError):
             OperationalAttendanceInstrument(registry)
-        registry.update({
-            "raw_event_schema": {"required_fields": [
-                "focused_visible", "engaged_ms", "coverage_fraction",
-                "content_linked_confirmation", "evidence_pointer"]},
-            "validation_data_sha256": "a" * 64,
-            "measurement_code_sha256": "b" * 64,
-            "measurement_error": {"sensitivity": 0.9, "specificity": 0.95,
-                                   "validation_set_pointer": "synthetic-validation:set-1"},
-            "alternative_instruments": ["reading_only", "confirmation_only"],
-        })
+        registry = _validated_instrument_registry(base)
         instrument = OperationalAttendanceInstrument(registry)
         positive = fixture["period_plans"]["0"]["attendance_events"]["c1"]
         self.assertEqual(instrument.measure(positive).status, "positive")
@@ -232,8 +272,69 @@ class LongitudinalExecutorTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             OperationalAttendanceInstrument(bad)
         bad = copy.deepcopy(registry)
-        bad["measurement_error"] = {"sensitivity": float("nan"), "specificity": 0.95,
-                                    "validation_set_pointer": "synthetic-validation:set-1"}
+        bad["measurement_error"]["sensitivity"] = float("nan")
+        with self.assertRaises(ValueError):
+            OperationalAttendanceInstrument(bad)
+
+    def test_validated_instrument_hashes_must_be_true_hex(self):
+        fixture = load_fixture()
+        registry = _validated_instrument_registry(fixture["attendance_instrument"])
+        for field in ("validation_data_sha256", "measurement_code_sha256"):
+            for bad_value in ("g" * 64, "A" * 64, "a" * 63, "a" * 65, "a" * 62 + "zz", 123):
+                bad = copy.deepcopy(registry)
+                bad[field] = bad_value
+                with self.assertRaises(ValueError):
+                    OperationalAttendanceInstrument(bad)
+        bad = copy.deepcopy(registry)
+        bad["blinded_reference_set"]["reference_data_sha256"] = "z" * 64
+        with self.assertRaises(ValueError):
+            OperationalAttendanceInstrument(bad)
+
+    def test_validated_instrument_requires_uncertainty_and_transportability(self):
+        fixture = load_fixture()
+        registry = _validated_instrument_registry(fixture["attendance_instrument"])
+        for key in ("sensitivity_interval", "specificity_interval"):
+            bad = copy.deepcopy(registry)
+            del bad["measurement_error"][key]
+            with self.assertRaises(ValueError):
+                OperationalAttendanceInstrument(bad)
+        for bad_interval in ([0.95, 0.8], [0.85, 0.88], [-0.1, 0.95], [0.8, 1.2],
+                             [0.8, float("nan")], [0.8], [True, 0.95]):
+            bad = copy.deepcopy(registry)
+            bad["measurement_error"]["sensitivity_interval"] = bad_interval
+            with self.assertRaises(ValueError):
+                OperationalAttendanceInstrument(bad)
+        bad = copy.deepcopy(registry)
+        del bad["measurement_error"]["transportability_assumption"]
+        with self.assertRaises(ValueError):
+            OperationalAttendanceInstrument(bad)
+        bad = copy.deepcopy(registry)
+        bad["measurement_error"]["transportability_assumption"] = "   "
+        with self.assertRaises(ValueError):
+            OperationalAttendanceInstrument(bad)
+
+    def test_validated_instrument_requires_blinded_reference_set_and_representativeness(self):
+        fixture = load_fixture()
+        registry = _validated_instrument_registry(fixture["attendance_instrument"])
+        bad = copy.deepcopy(registry)
+        del bad["blinded_reference_set"]
+        with self.assertRaises(ValueError):
+            OperationalAttendanceInstrument(bad)
+        for field in ("construction_rule", "reference_data_sha256", "unlock_timestamp"):
+            bad = copy.deepcopy(registry)
+            del bad["blinded_reference_set"][field]
+            with self.assertRaises(ValueError):
+                OperationalAttendanceInstrument(bad)
+        bad = copy.deepcopy(registry)
+        bad["blinded_reference_set"]["overlap_with_tuning_or_main_corpus"] = True
+        with self.assertRaises(ValueError):
+            OperationalAttendanceInstrument(bad)
+        bad = copy.deepcopy(registry)
+        del bad["completion_subset_representativeness"]
+        with self.assertRaises(ValueError):
+            OperationalAttendanceInstrument(bad)
+        bad = copy.deepcopy(registry)
+        bad["completion_subset_representativeness"] = ""
         with self.assertRaises(ValueError):
             OperationalAttendanceInstrument(bad)
 
@@ -355,18 +456,213 @@ class LongitudinalExecutorTest(unittest.TestCase):
         fixture = load_fixture()
         executor = SAPExecutor(fixture)
         executor.run_period(0, fixture["period_plans"]["0"])
-        registry = copy.deepcopy(fixture["target_registry"])
-        registry["version"] = "targets-v2"
-        registry["targets"][0]["canonical_text"] = "Revised synthetic proposition e1."
+        registry = fixture["protocol_registries"]["targets-v2"]
         continued = executor.continue_with_target_registry(registry)
         self.assertEqual(continued.control_instance_id, executor.control_instance_id)
         self.assertNotEqual(continued.evaluation_cohort_id, executor.evaluation_cohort_id)
         self.assertIs(continued.governance, executor.governance)
+        # Single-line control: unique shared budget/history state, not copies.
+        self.assertIs(continued.budget_remaining, executor.budget_remaining)
+        self.assertIs(continued.budget_spent, executor.budget_spent)
+        self.assertIs(continued.history, executor.history)
         self.assertEqual(continued.budget_remaining, executor.budget_remaining)
         self.assertEqual(continued.registry["version"], "targets-v2")
-        forked = executor.fork_for_target_registry(registry)
-        self.assertNotEqual(forked.control_instance_id, executor.control_instance_id)
+        # The predecessor is sealed; the successor is the only active path.
+        with self.assertRaises(RuntimeError):
+            executor.run_period(1, fixture["period_plans"]["1"])
+        forked = continued.fork_for_target_registry(registry)
+        self.assertNotEqual(forked.control_instance_id, continued.control_instance_id)
         self.assertEqual(forked.budget_spent, {name: 0 for name in forked.budget_spent})
+        with self.assertRaises(RuntimeError):
+            continued.run_period(1, fixture["period_plans"]["1"])
+        forked.run_period(0, fixture["period_plans"]["0"])
+
+    def test_non_family_registry_switch_is_rejected_with_record(self):
+        fixture = load_fixture()
+        executor = SAPExecutor(fixture)
+        arbitrary = copy.deepcopy(fixture["target_registry"])
+        arbitrary["version"] = "unregistered-arbitrary-v999"
+        before_records = executor.governance.audit_records()
+        before_budget = dict(executor.budget_remaining)
+        with self.assertRaises(ValueError) as caught:
+            executor.continue_with_target_registry(arbitrary)
+        self.assertIn("version_not_in_registry_family", str(caught.exception))
+        records = executor.governance.audit_records()
+        self.assertEqual(len(records), len(before_records) + 1)
+        self.assertEqual(records[-1]["event"], "registry_switch_rejected")
+        payload = records[-1]["payload"]
+        self.assertEqual(payload["attempted_target_registry_version"], "unregistered-arbitrary-v999")
+        self.assertFalse(payload["policy_action"])
+        self.assertFalse(payload["state_mutated"])
+        self.assertEqual(payload["resources_spent"], 0)
+        self.assertEqual(payload["control_instance_id"], executor.control_instance_id)
+        self.assertEqual(executor.budget_remaining, before_budget)
+        self.assertEqual(executor.budget_spent, {name: 0 for name in executor.budget_spent})
+        self.assertFalse(executor._sealed)
+        self.assertEqual(executor.registry["version"], "targets-v1")
+        # The same attempt via fork is rejected identically.
+        with self.assertRaises(ValueError):
+            executor.fork_for_target_registry(arbitrary)
+
+    def test_tampered_family_registry_hash_mismatch_is_rejected(self):
+        fixture = load_fixture()
+        executor = SAPExecutor(fixture)
+        tampered = copy.deepcopy(fixture["protocol_registries"]["targets-v2"])
+        tampered["targets"][0]["canonical_text"] = "Tampered proposition text."
+        with self.assertRaises(ValueError) as caught:
+            executor.continue_with_target_registry(tampered)
+        self.assertIn("registry_content_hash_mismatch", str(caught.exception))
+        records = executor.governance.audit_records()
+        self.assertEqual(records[-1]["event"], "registry_switch_rejected")
+        self.assertEqual(records[-1]["payload"]["reason"], "registry_content_hash_mismatch")
+        self.assertFalse(executor._sealed)
+        self.assertEqual(executor.budget_spent, {name: 0 for name in executor.budget_spent})
+
+    def test_out_of_schedule_switch_is_rejected(self):
+        fixture = load_fixture()
+        executor = SAPExecutor(fixture)
+        registry_v2 = fixture["protocol_registries"]["targets-v2"]
+        continued = executor.continue_with_target_registry(registry_v2)
+        # Backward switch to the previous scheduled version is not append-only forward.
+        with self.assertRaises(ValueError) as caught:
+            continued.continue_with_target_registry(fixture["target_registry"])
+        self.assertIn("version_not_next_in_protocol_schedule", str(caught.exception))
+        # No further scheduled version exists after the last one.
+        with self.assertRaises(ValueError) as caught:
+            continued.continue_with_target_registry(registry_v2)
+        self.assertIn("version_not_next_in_protocol_schedule", str(caught.exception))
+        self.assertEqual(continued.registry["version"], "targets-v2")
+        self.assertFalse(continued._sealed)
+
+    def test_sealed_predecessor_cannot_run_write_rollback_or_switch(self):
+        fixture = load_fixture()
+        executor = SAPExecutor(fixture)
+        executor.run_period(0, fixture["period_plans"]["0"])
+        continued = executor.continue_with_target_registry(fixture["protocol_registries"]["targets-v2"])
+        for call in (
+            lambda: executor.run_period(1, fixture["period_plans"]["1"]),
+            lambda: executor.write_after_period({"weights": {"novelty": 9}},
+                                                authorization_id="sealed-write",
+                                                timestamp="logical:00000030"),
+            lambda: executor.rollback_after_period(0, authorization_id="sealed-rollback",
+                                                   timestamp="logical:00000031"),
+        ):
+            with self.assertRaises(RuntimeError):
+                call()
+        with self.assertRaises(ValueError) as caught:
+            executor.continue_with_target_registry(fixture["protocol_registries"]["targets-v2"])
+        self.assertIn("sealed_control_path", str(caught.exception))
+        seal_records = [record for record in continued.governance.audit_records()
+                        if record["event"] == "control_path_sealed"]
+        self.assertEqual(len(seal_records), 1)
+        self.assertEqual(seal_records[0]["payload"]["reason"], "protocol_registry_switch")
+        self.assertEqual(seal_records[0]["payload"]["evaluation_cohort_id"], executor.evaluation_cohort_id)
+        self.assertEqual(seal_records[0]["payload"]["successor_evaluation_cohort_id"],
+                         continued.evaluation_cohort_id)
+        # The successor keeps running on the unique shared budget.
+        continued.run_period(1, fixture["period_plans"]["1"])
+        self.assertTrue(all(value > 0 for value in executor.budget_spent.values()))
+
+    def test_objective_rollback_does_not_restore_registry_version(self):
+        fixture = load_fixture()
+        executor = SAPExecutor(fixture)
+        executor.run_period(0, fixture["period_plans"]["0"])
+        executor.write_after_period({"weights": {"novelty": 10}},
+                                    authorization_id="rollback-independence-write",
+                                    timestamp="logical:00000010")
+        continued = executor.continue_with_target_registry(fixture["protocol_registries"]["targets-v2"])
+        restored = continued.rollback_after_period(
+            0, authorization_id="rollback-independence-rollback", timestamp="logical:00000020")
+        self.assertTrue(restored["accepted"])
+        self.assertEqual(continued.registry["version"], "targets-v2")
+        self.assertEqual(continued.registry_sha256,
+                         fixture["registry_family"]["targets-v2"])
+        self.assertEqual(continued.governance.inspect_objective()["version"], restored["version"])
+        self.assertEqual(continued.governance.inspect_objective()["objective"]["weights"]["novelty"], 2)
+
+    def test_switch_without_family_declaration_is_rejected(self):
+        fixture = load_fixture()
+        del fixture["registry_family"]
+        del fixture["protocol_registry_schedule"]
+        del fixture["protocol_registries"]
+        executor = SAPExecutor(fixture)
+        self.assertEqual(executor.protocol_registry_schedule, ["targets-v1"])
+        registry_v2 = copy.deepcopy(fixture["target_registry"])
+        registry_v2["version"] = "targets-v2"
+        registry_v2["targets"][0]["canonical_text"] = "Revised synthetic proposition e1."
+        with self.assertRaises(ValueError) as caught:
+            executor.continue_with_target_registry(registry_v2)
+        self.assertIn("version_not_in_registry_family", str(caught.exception))
+
+    def test_frozen_family_declaration_is_verified_at_load(self):
+        fixture = load_fixture()
+        self.assertEqual(fixture["protocol_registry_schedule"], ["targets-v1", "targets-v2"])
+        bad = copy.deepcopy(fixture)
+        bad["registry_family"]["targets-v1"] = "0" * 64
+        with self.assertRaises(ValueError):
+            SAPExecutor(bad)
+        bad = copy.deepcopy(fixture)
+        bad["protocol_registry_schedule"] = ["targets-v2"]
+        with self.assertRaises(ValueError):
+            SAPExecutor(bad)  # active version must appear in the schedule
+        bad = copy.deepcopy(fixture)
+        bad["protocol_registry_schedule"] = ["targets-v1", "targets-v9"]
+        with self.assertRaises(ValueError):
+            SAPExecutor(bad)  # scheduled version outside the family
+        bad = copy.deepcopy(fixture)
+        bad["protocol_registries"]["targets-v2"]["targets"][0]["canonical_text"] = "Drifted content."
+        with self.assertRaises(ValueError):
+            SAPExecutor(bad)  # frozen content no longer matches the family hash
+
+    def test_protocol_registry_switch_demo_passes_all_checks(self):
+        result = run_protocol_registry_switch_demo()
+        self.assertEqual(result["status"], "SYNTHETIC_PROTOCOL_TRANSITION_DEMO__NOT_EFFECTIVENESS_EVIDENCE")
+        self.assertTrue(all(result["checks"].values()))
+        self.assertTrue(result["audit"]["verification"]["valid"])
+        self.assertEqual(len(result["rejection_events"]), 5)
+        self.assertEqual(len(result["seal_events"]), 2)
+        self.assertEqual(len(result["cohort_change_events"]), 1)
+        change = result["cohort_change_events"][0]
+        self.assertEqual(change["event_kind"], "exogenous_evaluation_protocol_event")
+        self.assertFalse(change["policy_action"])
+        self.assertFalse(change["authorization_required"])
+        self.assertTrue(change["old_control_path_sealed"])
+        self.assertEqual(result["new_real_model_calls"], 0)
+        self.assertFalse(result["human_data"])
+
+    def test_s12_transport_identity_precision_warning_and_delta_method(self):
+        # Perfect measurement transports identically.
+        perfect = completed_measurement_transport(0.2, 1.0, 1.0)
+        self.assertAlmostEqual(perfect["m_D"], 0.2)
+        self.assertFalse(perfect["precision_warning"])
+        # False negatives alone: operational omission 0.2, latent omission 0.
+        fn_only = completed_measurement_transport(0.2, 0.8, 1.0)
+        self.assertAlmostEqual(fn_only["m_D"], 0.0)
+        # Worked example: se=0.9, sp=0.95, m^Z=0.13 -> (0.13-0.1)/0.85.
+        worked = completed_measurement_transport(0.13, 0.9, 0.95)
+        self.assertAlmostEqual(worked["m_D"], 0.03 / 0.85)
+        self.assertAlmostEqual(worked["youden_denominator"], 0.85)
+        self.assertAlmostEqual(worked["variance_amplification_factor"], 1 / 0.85 ** 2)
+        self.assertFalse(worked["precision_warning"])
+        # Near-zero Youden denominator fires the precision warning.
+        unstable = completed_measurement_transport(0.4, 0.55, 0.5)
+        self.assertTrue(unstable["precision_warning"])
+        self.assertAlmostEqual(unstable["variance_amplification_factor"], 1 / 0.05 ** 2)
+        with self.assertRaises(ValueError):
+            completed_measurement_transport(0.2, 0.5, 0.5)  # se+sp=1 not >1
+        with self.assertRaises(ValueError):
+            completed_measurement_transport(float("nan"), 0.9, 0.95)
+        # Delta-method propagation, hand-checked at the worked example.
+        propagated = completed_measurement_transport_delta_method(
+            0.13, 0.9, 0.95, var_m_z=0.001, var_se=0.002, var_sp=0.001)
+        j, n = 0.85, 0.13 - 1 + 0.9
+        d_se, d_sp, d_mz = (j - n) / j ** 2, -n / j ** 2, 1 / j
+        expected_var = d_se ** 2 * 0.002 + d_sp ** 2 * 0.001 + d_mz ** 2 * 0.001
+        self.assertAlmostEqual(propagated["delta_method_variance"], expected_var)
+        low, high = propagated["approx_95_interval"]
+        self.assertLess(low, propagated["m_D"])
+        self.assertGreater(high, propagated["m_D"])
+        self.assertTrue(propagated["input_independence_assumed"])
 
     def test_open_world_absence_cannot_be_asserted_from_closed_snapshot(self):
         fixture = load_fixture()

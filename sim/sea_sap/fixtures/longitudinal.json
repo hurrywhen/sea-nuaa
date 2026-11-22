@@ -141,6 +141,134 @@
   "platform_variables": {
     "boost": 0
   },
+  "protocol_registries": {
+    "targets-v2": {
+      "availability": {
+        "c1": {
+          "e1": {
+            "content_sha256": "0ed96ea65f78ecd7220c1d60868f157cdd76f595bb74e0df44685621e8ff00c5",
+            "evidence_pointer": "synthetic-reference:doc1",
+            "reference_document_id": "doc1",
+            "status": "available"
+          }
+        },
+        "c2": {
+          "e2": {
+            "content_sha256": "846b00c2fb254438946f6bd269a8ba1639b738f2d5a0f044c4a99d03f57d6736",
+            "evidence_pointer": "synthetic-reference:doc2",
+            "reference_document_id": "doc2",
+            "status": "available"
+          }
+        },
+        "c3": {
+          "e3": {
+            "content_sha256": "54721e30a4b3f363d7158456e6750579884704ec5b43bb3a80aa55d0bfd0121e",
+            "evidence_pointer": "synthetic-reference:doc3",
+            "reference_document_id": "doc3",
+            "status": "available"
+          },
+          "e4": {
+            "content_sha256": "54721e30a4b3f363d7158456e6750579884704ec5b43bb3a80aa55d0bfd0121e",
+            "evidence_pointer": "synthetic-reference:doc3",
+            "reference_document_id": "doc3",
+            "status": "available"
+          }
+        },
+        "c4": {
+          "e5": {
+            "absence_audit_id": "absence-audit-c4-e5",
+            "evidence_pointer": "synthetic-reference:absence-audit-c4-e5",
+            "status": "unavailable_in_closed_snapshot"
+          }
+        }
+      },
+      "candidate_target_links": {
+        "c1": [
+          "e1"
+        ],
+        "c2": [
+          "e2"
+        ],
+        "c3": [
+          "e3",
+          "e4"
+        ],
+        "c4": [
+          "e5"
+        ]
+      },
+      "construction_rule": "Author-defined synthetic canonical propositions; no participant annotations.",
+      "dynamic_version_rule": "NEW_EVALUATION_COHORT__NO_CROSS_VERSION_POOLING",
+      "reference_corpus": {
+        "availability_universe": "closed_snapshot",
+        "documents": [
+          {
+            "content_sha256": "0ed96ea65f78ecd7220c1d60868f157cdd76f595bb74e0df44685621e8ff00c5",
+            "document_id": "doc1",
+            "evidence_pointer": "synthetic-reference:doc1",
+            "first_available_period": 0
+          },
+          {
+            "content_sha256": "846b00c2fb254438946f6bd269a8ba1639b738f2d5a0f044c4a99d03f57d6736",
+            "document_id": "doc2",
+            "evidence_pointer": "synthetic-reference:doc2",
+            "first_available_period": 0
+          },
+          {
+            "content_sha256": "54721e30a4b3f363d7158456e6750579884704ec5b43bb3a80aa55d0bfd0121e",
+            "document_id": "doc3",
+            "evidence_pointer": "synthetic-reference:doc3",
+            "first_available_period": 0
+          }
+        ],
+        "sha256": "eabfd71abcb360f059e7b207c502e2bb56ab299b4940941314342d962406d703",
+        "snapshot_id": "synthetic-reference-corpus-v1"
+      },
+      "targets": [
+        {
+          "canonical_text": "Revised synthetic proposition e1.",
+          "construction_evidence": "synthetic-target-construction:e1",
+          "target_id": "e1",
+          "weight": 0.16666666666666666
+        },
+        {
+          "canonical_text": "Synthetic proposition e2.",
+          "construction_evidence": "synthetic-target-construction:e2",
+          "target_id": "e2",
+          "weight": 0.16666666666666666
+        },
+        {
+          "canonical_text": "Synthetic proposition e3.",
+          "construction_evidence": "synthetic-target-construction:e3",
+          "target_id": "e3",
+          "weight": 0.16666666666666666
+        },
+        {
+          "canonical_text": "Synthetic proposition e4.",
+          "construction_evidence": "synthetic-target-construction:e4",
+          "target_id": "e4",
+          "weight": 0.16666666666666666
+        },
+        {
+          "canonical_text": "Synthetic proposition e5.",
+          "construction_evidence": "synthetic-target-construction:e5",
+          "target_id": "e5",
+          "weight": 0.16666666666666666
+        },
+        {
+          "canonical_text": "Synthetic proposition e6.",
+          "construction_evidence": "synthetic-target-construction:e6",
+          "target_id": "e6",
+          "weight": 0.16666666666666666
+        }
+      ],
+      "version": "targets-v2"
+    }
+  },
+  "protocol_registry_schedule": [
+    "targets-v1",
+    "targets-v2"
+  ],
   "reference_link_truth": {
     "c1": {
       "e1": true
@@ -155,6 +283,10 @@
     "c4": {
       "e5": false
     }
+  },
+  "registry_family": {
+    "targets-v1": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+    "targets-v2": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920"
   },
   "resource_costs": {
     "attendance_per_candidate": {

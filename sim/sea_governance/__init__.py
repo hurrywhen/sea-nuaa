@@ -1,4 +1,4 @@
-"""SEA v1.14 deterministic offline S1--S4 governance reference interface."""
+"""SEA v1.15 deterministic offline S1--S4 governance reference interface."""
 
 from .reference import (
     AUDIT_SCHEMA,
