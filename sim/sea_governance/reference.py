@@ -1,4 +1,4 @@
-"""Minimal deterministic governance reference for SEA v1.15 S1--S4.
+"""Minimal deterministic governance reference for SEA v1.16 S1--S4.
 
 This is an offline, standard-library-only reference interface, not a deployed
 service.  Authorization records are structural fixtures, not authenticated
@@ -22,7 +22,7 @@ import re
 from typing import Any, Iterable, Mapping, Optional, Sequence
 
 
-SPECIFICATION = "SEA v1.15 minimal governance reference"
+SPECIFICATION = "SEA v1.16 minimal governance reference"
 INTERFACE_VERSION = "sea-governance-reference/3"
 AUDIT_SCHEMA = "sea-governance-audit/2"
 GENESIS_HASH = "0" * 64
@@ -314,7 +314,7 @@ class GovernanceReference:
                 "objective": _clone(self._objective),
                 "timestamp": "genesis",
                 "authorization_id": None,
-                "evidence": ["defaults:sea-v1.15"],
+                "evidence": ["defaults:sea-v1.16"],
                 "restored_from": None,
                 "audit_sequence": None,
             }

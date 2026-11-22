@@ -1,0 +1,2291 @@
+{
+  "audit": {
+    "anchor": {
+      "length": 46,
+      "record_hash": "82b676480921a927abdd005a1481e0952e09b88a0fe6df086923b5e3de568657"
+    },
+    "records": [
+      {
+        "event": "resource_precheck",
+        "evidence": [
+          "fixture:longitudinal-v112:resource-precheck:0"
+        ],
+        "payload": {
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "period": 0,
+          "remaining_before": {
+            "calls": 100,
+            "compute": 100,
+            "money": 100,
+            "risk": 20,
+            "time": 100
+          },
+          "required_upper_bound": {
+            "calls": 4,
+            "compute": 8,
+            "money": 6,
+            "risk": 2,
+            "time": 14
+          },
+          "semantics": "conservative whole-period precheck before mutation",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "record_hash": "619fb4441834515791abb7587839e664047b4091fef35f77eb9fb4dfdb7f4f2d",
+        "schema": "sea-governance-audit/2",
+        "sequence": 1,
+        "timestamp": "logical:00000001"
+      },
+      {
+        "event": "selection_dry_run",
+        "evidence": [
+          "fixture:longitudinal-v112:selection-dry-run:0"
+        ],
+        "payload": {
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "period": 0,
+          "preview_selected_candidate_ids": [
+            "c1",
+            "c2"
+          ],
+          "semantics": "commit-free selection preview before mutation; no resources spent",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1",
+          "terminal_plan_feasible": true
+        },
+        "previous_hash": "619fb4441834515791abb7587839e664047b4091fef35f77eb9fb4dfdb7f4f2d",
+        "record_hash": "ca4337e3c5910826f0eb8f9dd6ea192b1f7f366dd6ebaf9c033357fa3baa36a1",
+        "schema": "sea-governance-audit/2",
+        "sequence": 2,
+        "timestamp": "logical:00000002"
+      },
+      {
+        "event": "observation",
+        "evidence": [
+          "fixture:longitudinal-v112:observation:0"
+        ],
+        "payload": {
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "observation": "fixture-observation-0",
+          "period": 0,
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "ca4337e3c5910826f0eb8f9dd6ea192b1f7f366dd6ebaf9c033357fa3baa36a1",
+        "record_hash": "714683b6cb9d63fbe11721818e90db3c8ab3ac8bb917a4a6fe2bb20f801c28be",
+        "schema": "sea-governance-audit/2",
+        "sequence": 3,
+        "timestamp": "logical:00000003"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:0:update"
+        ],
+        "payload": {
+          "after": {
+            "calls": 99,
+            "compute": 99,
+            "money": 99,
+            "risk": 20,
+            "time": 99
+          },
+          "before": {
+            "calls": 100,
+            "compute": 100,
+            "money": 100,
+            "risk": 20,
+            "time": 100
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 1,
+            "compute": 1,
+            "money": 1,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 0,
+          "stage": "update",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "714683b6cb9d63fbe11721818e90db3c8ab3ac8bb917a4a6fe2bb20f801c28be",
+        "record_hash": "b0d32af0319b12c0702dd40f8a8e14936186bf1ba4f74a2d25d26867275ff786",
+        "schema": "sea-governance-audit/2",
+        "sequence": 4,
+        "timestamp": "logical:00000004"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:0:update"
+        ],
+        "payload": {
+          "after": {
+            "calls": 98,
+            "compute": 98,
+            "money": 98,
+            "risk": 20,
+            "time": 98
+          },
+          "before": {
+            "calls": 99,
+            "compute": 99,
+            "money": 99,
+            "risk": 20,
+            "time": 99
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 1,
+            "compute": 1,
+            "money": 1,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 0,
+          "stage": "update",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "b0d32af0319b12c0702dd40f8a8e14936186bf1ba4f74a2d25d26867275ff786",
+        "record_hash": "7b780da18608fe3d19f1db43d8298ce8d158cafacc7f9dd813b13d88354bd2dc",
+        "schema": "sea-governance-audit/2",
+        "sequence": 5,
+        "timestamp": "logical:00000005"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:0:update"
+        ],
+        "payload": {
+          "after": {
+            "calls": 97,
+            "compute": 97,
+            "money": 97,
+            "risk": 20,
+            "time": 97
+          },
+          "before": {
+            "calls": 98,
+            "compute": 98,
+            "money": 98,
+            "risk": 20,
+            "time": 98
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 1,
+            "compute": 1,
+            "money": 1,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 0,
+          "stage": "update",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "7b780da18608fe3d19f1db43d8298ce8d158cafacc7f9dd813b13d88354bd2dc",
+        "record_hash": "52f68b3969afcab3400730db0e506e97c4b9f33d76f0c9c32d0756353160e70d",
+        "schema": "sea-governance-audit/2",
+        "sequence": 6,
+        "timestamp": "logical:00000006"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:0:update"
+        ],
+        "payload": {
+          "after": {
+            "calls": 96,
+            "compute": 96,
+            "money": 96,
+            "risk": 20,
+            "time": 96
+          },
+          "before": {
+            "calls": 97,
+            "compute": 97,
+            "money": 97,
+            "risk": 20,
+            "time": 97
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 1,
+            "compute": 1,
+            "money": 1,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 0,
+          "stage": "update",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "52f68b3969afcab3400730db0e506e97c4b9f33d76f0c9c32d0756353160e70d",
+        "record_hash": "7aeb9647719d3d3e956892745283d737475b2ced477da449eeb3aaeb9f604a87",
+        "schema": "sea-governance-audit/2",
+        "sequence": 7,
+        "timestamp": "logical:00000007"
+      },
+      {
+        "event": "update",
+        "evidence": [
+          "fixture:longitudinal-v112:update-kernel"
+        ],
+        "payload": {
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "kernel": "symmetric_binary/1",
+          "period": 0,
+          "posteriors_milli": {
+            "c1": 800,
+            "c2": 800,
+            "c3": 800,
+            "c4": 800
+          },
+          "same_kernel_for_every_signal": true,
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "7aeb9647719d3d3e956892745283d737475b2ced477da449eeb3aaeb9f604a87",
+        "record_hash": "c826eaab2f6931bb7ec00d326d612f5ab6b8834e9915a86ba506561c6b6a3e20",
+        "schema": "sea-governance-audit/2",
+        "sequence": 8,
+        "timestamp": "logical:00000008"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:0:linkage"
+        ],
+        "payload": {
+          "after": {
+            "calls": 96,
+            "compute": 94,
+            "money": 96,
+            "risk": 20,
+            "time": 94
+          },
+          "before": {
+            "calls": 96,
+            "compute": 96,
+            "money": 96,
+            "risk": 20,
+            "time": 96
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 2,
+            "money": 0,
+            "risk": 0,
+            "time": 2
+          },
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 0,
+          "stage": "linkage",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "c826eaab2f6931bb7ec00d326d612f5ab6b8834e9915a86ba506561c6b6a3e20",
+        "record_hash": "89679346a8aa8ad8ed40b343cea877a2d698b016651bcbf2a24586c616750a7c",
+        "schema": "sea-governance-audit/2",
+        "sequence": 9,
+        "timestamp": "logical:00000009"
+      },
+      {
+        "event": "ranking",
+        "evidence": [
+          "fixture:longitudinal-v112:rank:0"
+        ],
+        "payload": {
+          "candidate_set_hash": "9f1298fea80fcf7a35cf7ec31dd61315441cf7be2b63a72e2e4879dff91b4c1e",
+          "candidates": [
+            {
+              "candidate_id": "c1",
+              "features": {
+                "credibility": 8,
+                "durability": 7,
+                "harm_avoidance": 8,
+                "novelty": 0,
+                "relevance": 9
+              },
+              "provenance": "fixture:longitudinal-v112:c1",
+              "topic": "science"
+            },
+            {
+              "candidate_id": "c2",
+              "features": {
+                "credibility": 7,
+                "durability": 6,
+                "harm_avoidance": 8,
+                "novelty": 2,
+                "relevance": 8
+              },
+              "provenance": "fixture:longitudinal-v112:c2",
+              "topic": "science"
+            }
+          ],
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "objective_hash": "f75b5cc9b6687584d0b682fde1505680e815de4af9fc5c014452dccaa4907528",
+          "objective_version": 0,
+          "platform_variables": {
+            "boost": 0
+          },
+          "ranking": [
+            {
+              "candidate_id": "c1",
+              "score": 130
+            },
+            {
+              "candidate_id": "c2",
+              "score": 122
+            }
+          ],
+          "ranking_hash": "e6cf0202433387572d14d9e0b21921fee51205ee1dad3fba956aa067a12784b3",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1",
+          "user_state": {
+            "topic_priority": {
+              "health": 0,
+              "science": 0
+            }
+          }
+        },
+        "previous_hash": "89679346a8aa8ad8ed40b343cea877a2d698b016651bcbf2a24586c616750a7c",
+        "record_hash": "c7e212128c7c2bcc1f31d3964b7abd524abcba14cf0a074ee7f05ab034ea6828",
+        "schema": "sea-governance-audit/2",
+        "sequence": 10,
+        "timestamp": "logical:00000010"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:0:selection"
+        ],
+        "payload": {
+          "after": {
+            "calls": 96,
+            "compute": 94,
+            "money": 95,
+            "risk": 20,
+            "time": 93
+          },
+          "before": {
+            "calls": 96,
+            "compute": 94,
+            "money": 96,
+            "risk": 20,
+            "time": 94
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 0,
+            "money": 1,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 0,
+          "stage": "selection",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "c7e212128c7c2bcc1f31d3964b7abd524abcba14cf0a074ee7f05ab034ea6828",
+        "record_hash": "42560f536523e885cf2df706eea2e845032b0dcd2204f3ad81ea0b4d1c9df280",
+        "schema": "sea-governance-audit/2",
+        "sequence": 11,
+        "timestamp": "logical:00000011"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:0:selection"
+        ],
+        "payload": {
+          "after": {
+            "calls": 96,
+            "compute": 94,
+            "money": 94,
+            "risk": 20,
+            "time": 92
+          },
+          "before": {
+            "calls": 96,
+            "compute": 94,
+            "money": 95,
+            "risk": 20,
+            "time": 93
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 0,
+            "money": 1,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 0,
+          "stage": "selection",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "42560f536523e885cf2df706eea2e845032b0dcd2204f3ad81ea0b4d1c9df280",
+        "record_hash": "43e95a61d29218db395be40ab4129fc4838085f353c99e708f9ac1c837793ce9",
+        "schema": "sea-governance-audit/2",
+        "sequence": 12,
+        "timestamp": "logical:00000012"
+      },
+      {
+        "event": "selection",
+        "evidence": [
+          "fixture:longitudinal-v112:selection:0"
+        ],
+        "payload": {
+          "arm": "sea",
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "covered_linked_targets": [
+            "e1",
+            "e2"
+          ],
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "period": 0,
+          "selected_candidate_ids": [
+            "c1",
+            "c2"
+          ],
+          "selection_link_rule": "staged_link_pass",
+          "selection_rule": "ranked_feasible_greedy",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "43e95a61d29218db395be40ab4129fc4838085f353c99e708f9ac1c837793ce9",
+        "record_hash": "564a1b41d001ffc2257f3607979033c85e54ffb01d5e2e00ce2e4cb646008980",
+        "schema": "sea-governance-audit/2",
+        "sequence": 13,
+        "timestamp": "logical:00000013"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:0:delivery"
+        ],
+        "payload": {
+          "after": {
+            "calls": 96,
+            "compute": 94,
+            "money": 94,
+            "risk": 19,
+            "time": 90
+          },
+          "before": {
+            "calls": 96,
+            "compute": 94,
+            "money": 94,
+            "risk": 20,
+            "time": 92
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 0,
+            "money": 0,
+            "risk": 1,
+            "time": 2
+          },
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 0,
+          "stage": "delivery",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "564a1b41d001ffc2257f3607979033c85e54ffb01d5e2e00ce2e4cb646008980",
+        "record_hash": "700c4ddbf767fca6fb1be8ddc650a2e01937c235d3707e898d56d8e53aaa5078",
+        "schema": "sea-governance-audit/2",
+        "sequence": 14,
+        "timestamp": "logical:00000014"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:0:delivery"
+        ],
+        "payload": {
+          "after": {
+            "calls": 96,
+            "compute": 94,
+            "money": 94,
+            "risk": 18,
+            "time": 88
+          },
+          "before": {
+            "calls": 96,
+            "compute": 94,
+            "money": 94,
+            "risk": 19,
+            "time": 90
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 0,
+            "money": 0,
+            "risk": 1,
+            "time": 2
+          },
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 0,
+          "stage": "delivery",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "700c4ddbf767fca6fb1be8ddc650a2e01937c235d3707e898d56d8e53aaa5078",
+        "record_hash": "e145a8b9b05b97589170d3e2f3f6ef0c90ee84f47c0f6eb7aa0e4da592da09df",
+        "schema": "sea-governance-audit/2",
+        "sequence": 15,
+        "timestamp": "logical:00000015"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:0:attendance_measurement"
+        ],
+        "payload": {
+          "after": {
+            "calls": 96,
+            "compute": 93,
+            "money": 94,
+            "risk": 18,
+            "time": 87
+          },
+          "before": {
+            "calls": 96,
+            "compute": 94,
+            "money": 94,
+            "risk": 18,
+            "time": 88
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 1,
+            "money": 0,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 0,
+          "stage": "attendance_measurement",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "e145a8b9b05b97589170d3e2f3f6ef0c90ee84f47c0f6eb7aa0e4da592da09df",
+        "record_hash": "1cafc5bc21ad6dec786cdaf8bcb7ed9a308e881ae24bb118872063d31dd86fec",
+        "schema": "sea-governance-audit/2",
+        "sequence": 16,
+        "timestamp": "logical:00000016"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:0:attendance_measurement"
+        ],
+        "payload": {
+          "after": {
+            "calls": 96,
+            "compute": 92,
+            "money": 94,
+            "risk": 18,
+            "time": 86
+          },
+          "before": {
+            "calls": 96,
+            "compute": 93,
+            "money": 94,
+            "risk": 18,
+            "time": 87
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 1,
+            "money": 0,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 0,
+          "stage": "attendance_measurement",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "1cafc5bc21ad6dec786cdaf8bcb7ed9a308e881ae24bb118872063d31dd86fec",
+        "record_hash": "a1e180ec926005cdcc968b7fa25af9d603fec7d7d7f9459042d529145c58e0b7",
+        "schema": "sea-governance-audit/2",
+        "sequence": 17,
+        "timestamp": "logical:00000017"
+      },
+      {
+        "event": "period_outcome",
+        "evidence": [
+          "fixture:longitudinal-v112:outcome:0"
+        ],
+        "payload": {
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "delivered_candidate_ids": [
+            "c1",
+            "c2"
+          ],
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "link_audit": {
+            "c1": {
+              "available_targets": [
+                "e1"
+              ],
+              "reference_linked_targets": [
+                "e1"
+              ],
+              "staged_linked_targets": [
+                "e1"
+              ]
+            },
+            "c2": {
+              "available_targets": [
+                "e2"
+              ],
+              "reference_linked_targets": [
+                "e2"
+              ],
+              "staged_linked_targets": [
+                "e2"
+              ]
+            },
+            "c3": {
+              "available_targets": [
+                "e3",
+                "e4"
+              ],
+              "reference_linked_targets": [],
+              "staged_linked_targets": []
+            },
+            "c4": {
+              "available_targets": [],
+              "reference_linked_targets": [],
+              "staged_linked_targets": []
+            }
+          },
+          "objective_version": 0,
+          "opened_candidate_ids": [
+            "c1",
+            "c2"
+          ],
+          "operational_target_ledger": [
+            {
+              "available_candidate_ids": [
+                "c1"
+              ],
+              "delivered_candidate_ids": [
+                "c1"
+              ],
+              "failure_composite_omission": 0,
+              "first_failed_stage": null,
+              "latent_actual_consumption": null,
+              "linked_candidate_ids": [
+                "c1"
+              ],
+              "opened_candidate_ids": [
+                "c1"
+              ],
+              "operational_attendance": "positive",
+              "selected_candidate_ids": [
+                "c1"
+              ],
+              "target_id": "e1",
+              "weight": 0.16666666666666666
+            },
+            {
+              "available_candidate_ids": [
+                "c2"
+              ],
+              "delivered_candidate_ids": [
+                "c2"
+              ],
+              "failure_composite_omission": 1,
+              "first_failed_stage": "attendance",
+              "latent_actual_consumption": null,
+              "linked_candidate_ids": [
+                "c2"
+              ],
+              "opened_candidate_ids": [
+                "c2"
+              ],
+              "operational_attendance": "negative",
+              "selected_candidate_ids": [
+                "c2"
+              ],
+              "target_id": "e2",
+              "weight": 0.16666666666666666
+            },
+            {
+              "available_candidate_ids": [
+                "c3"
+              ],
+              "delivered_candidate_ids": [],
+              "failure_composite_omission": 1,
+              "first_failed_stage": "linkage",
+              "latent_actual_consumption": null,
+              "linked_candidate_ids": [],
+              "opened_candidate_ids": [],
+              "operational_attendance": "not_applicable",
+              "selected_candidate_ids": [],
+              "target_id": "e3",
+              "weight": 0.16666666666666666
+            },
+            {
+              "available_candidate_ids": [
+                "c3"
+              ],
+              "delivered_candidate_ids": [],
+              "failure_composite_omission": 1,
+              "first_failed_stage": "linkage",
+              "latent_actual_consumption": null,
+              "linked_candidate_ids": [],
+              "opened_candidate_ids": [],
+              "operational_attendance": "not_applicable",
+              "selected_candidate_ids": [],
+              "target_id": "e4",
+              "weight": 0.16666666666666666
+            },
+            {
+              "available_candidate_ids": [],
+              "delivered_candidate_ids": [],
+              "failure_composite_omission": 1,
+              "first_failed_stage": "availability",
+              "latent_actual_consumption": null,
+              "linked_candidate_ids": [],
+              "opened_candidate_ids": [],
+              "operational_attendance": "not_applicable",
+              "selected_candidate_ids": [],
+              "target_id": "e5",
+              "weight": 0.16666666666666666
+            },
+            {
+              "available_candidate_ids": [],
+              "delivered_candidate_ids": [],
+              "failure_composite_omission": 1,
+              "first_failed_stage": "availability",
+              "latent_actual_consumption": null,
+              "linked_candidate_ids": [],
+              "opened_candidate_ids": [],
+              "operational_attendance": "not_applicable",
+              "selected_candidate_ids": [],
+              "target_id": "e6",
+              "weight": 0.16666666666666666
+            }
+          ],
+          "outcome_summary": {
+            "evaluation_link_rule": "reference_link_truth_arm_independent",
+            "latent_weighted_actual_omission_M_nu": null,
+            "ledger_scope": "OPERATIONAL_ATTENDANCE_AND_FAILURE_COMPOSITE__NOT_LATENT_ACTUAL_CONSUMPTION",
+            "machine_event_interpretation": "synthetic placeholder predicate only; not attention, comprehension, downstream information use, or a cryptographic evidence chain",
+            "machine_ingestion_and_task_reference": {
+              "c1": true,
+              "c2": false
+            },
+            "missing_by_reason": {},
+            "weighted_fc_omission": 0.8333333333333333,
+            "weighted_operational_negative_known": 0.16666666666666666,
+            "weighted_operational_positive": 0.16666666666666674,
+            "weighted_unknown_terminal": 0.0
+          },
+          "period": 0,
+          "ranking": [
+            {
+              "candidate_id": "c1",
+              "score": 130
+            },
+            {
+              "candidate_id": "c2",
+              "score": 122
+            }
+          ],
+          "selected_candidate_ids": [
+            "c1",
+            "c2"
+          ],
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "a1e180ec926005cdcc968b7fa25af9d603fec7d7d7f9459042d529145c58e0b7",
+        "record_hash": "6cc92b46128572f344ccf0042a76a250f1d86d33488e2c44dbfb11bf3bcb6f73",
+        "schema": "sea-governance-audit/2",
+        "sequence": 18,
+        "timestamp": "logical:00000018"
+      },
+      {
+        "event": "override",
+        "evidence": [
+          "fixture:longitudinal-v112:write:protocol-demo-write"
+        ],
+        "payload": {
+          "accepted": true,
+          "actor": "R",
+          "authorization": {
+            "authorization_id": "protocol-demo-write",
+            "operation": "objective_write",
+            "principal": "R",
+            "proposal_hash": "1bdd17644499a34d7d389f04b2928e0bdf3b39f2da954755011849c32d63159a",
+            "timestamp": "logical:00000010",
+            "version_token": "8661917718ab24e91d9e6ae0e65829a41e663d1dd1a2fc8a2ad296af4f2dac29"
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "decision": "objective_write",
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "new_value": {
+            "g2": "Prefer useful, credible, durable information while avoiding harm.",
+            "monitoring_list": [
+              "finance",
+              "health",
+              "science"
+            ],
+            "thresholds": {
+              "min_utility": 0
+            },
+            "weights": {
+              "credibility": 4,
+              "durability": 3,
+              "harm_avoidance": 4,
+              "novelty": 10,
+              "relevance": 5
+            }
+          },
+          "new_version": 1,
+          "new_version_token": "89d4cc409ae2b38747f92ac0ace480f5e745e6005b1a028dfbd71325a4273654",
+          "old_value": {
+            "g2": "Prefer useful, credible, durable information while avoiding harm.",
+            "monitoring_list": [
+              "finance",
+              "health",
+              "science"
+            ],
+            "thresholds": {
+              "min_utility": 0
+            },
+            "weights": {
+              "credibility": 4,
+              "durability": 3,
+              "harm_avoidance": 4,
+              "novelty": 2,
+              "relevance": 5
+            }
+          },
+          "old_version": 0,
+          "old_version_token": "8661917718ab24e91d9e6ae0e65829a41e663d1dd1a2fc8a2ad296af4f2dac29",
+          "patch": {
+            "weights": {
+              "novelty": 10
+            }
+          },
+          "reason": "authorized",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "6cc92b46128572f344ccf0042a76a250f1d86d33488e2c44dbfb11bf3bcb6f73",
+        "record_hash": "d7c898c81c83492c0eb09cb2557d0182cc68357f3c3fe76568386f2880b20427",
+        "schema": "sea-governance-audit/2",
+        "sequence": 19,
+        "timestamp": "logical:00000010"
+      },
+      {
+        "event": "control_path_sealed",
+        "evidence": [
+          "fixture:longitudinal-v112:control-path-sealed:targets-v1"
+        ],
+        "payload": {
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+          "reason": "protocol_registry_switch",
+          "successor_evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "d7c898c81c83492c0eb09cb2557d0182cc68357f3c3fe76568386f2880b20427",
+        "record_hash": "7799c9f5848ac8ebae4d9f806b0a35be8cd156702318ec94a54698e0cdaf0766",
+        "schema": "sea-governance-audit/2",
+        "sequence": 20,
+        "timestamp": "logical:00000020"
+      },
+      {
+        "event": "evaluation_cohort_change",
+        "evidence": [
+          "fixture:longitudinal-v112:evaluation-cohort:targets-v2"
+        ],
+        "payload": {
+          "authorization_required": false,
+          "authorization_scope_note": "registry transitions are outside the policy action space; the objective-write guard does not apply",
+          "completed_periods_before_switch": 1,
+          "control_continuity": true,
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cross_version_pooling_allowed": false,
+          "declared_switch_after_period": 0,
+          "event_kind": "exogenous_evaluation_protocol_event",
+          "new_evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "new_schedule_index": 1,
+          "new_target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "new_target_registry_version": "targets-v2",
+          "old_control_path_sealed": true,
+          "old_evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "old_schedule_index": 0,
+          "old_target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "old_target_registry_version": "targets-v1",
+          "policy_action": false,
+          "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+          "switch_timing_frozen_before_results": true
+        },
+        "previous_hash": "7799c9f5848ac8ebae4d9f806b0a35be8cd156702318ec94a54698e0cdaf0766",
+        "record_hash": "f5b12dc037c76dbaad9697a60be000d659fd1cf2526eb656b79166b425723e64",
+        "schema": "sea-governance-audit/2",
+        "sequence": 21,
+        "timestamp": "logical:00000021"
+      },
+      {
+        "event": "resource_precheck",
+        "evidence": [
+          "fixture:longitudinal-v112:resource-precheck:1"
+        ],
+        "payload": {
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "period": 1,
+          "remaining_before": {
+            "calls": 96,
+            "compute": 92,
+            "money": 94,
+            "risk": 18,
+            "time": 86
+          },
+          "required_upper_bound": {
+            "calls": 4,
+            "compute": 8,
+            "money": 6,
+            "risk": 2,
+            "time": 14
+          },
+          "semantics": "conservative whole-period precheck before mutation",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "f5b12dc037c76dbaad9697a60be000d659fd1cf2526eb656b79166b425723e64",
+        "record_hash": "a6f649bbff94b35a9b391ae3540dc0e46eef0affc5c2713881b523ae6d80d94e",
+        "schema": "sea-governance-audit/2",
+        "sequence": 22,
+        "timestamp": "logical:00000022"
+      },
+      {
+        "event": "selection_dry_run",
+        "evidence": [
+          "fixture:longitudinal-v112:selection-dry-run:1"
+        ],
+        "payload": {
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "period": 1,
+          "preview_selected_candidate_ids": [
+            "c1",
+            "c2"
+          ],
+          "semantics": "commit-free selection preview before mutation; no resources spent",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2",
+          "terminal_plan_feasible": true
+        },
+        "previous_hash": "a6f649bbff94b35a9b391ae3540dc0e46eef0affc5c2713881b523ae6d80d94e",
+        "record_hash": "af678269a469f51716a3c276ef2a647a0b24aa5e00cffd44d4cb1813f746170d",
+        "schema": "sea-governance-audit/2",
+        "sequence": 23,
+        "timestamp": "logical:00000023"
+      },
+      {
+        "event": "observation",
+        "evidence": [
+          "fixture:longitudinal-v112:observation:1"
+        ],
+        "payload": {
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "observation": "fixture-observation-1",
+          "period": 1,
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "af678269a469f51716a3c276ef2a647a0b24aa5e00cffd44d4cb1813f746170d",
+        "record_hash": "3d3d38d33c500d91bcdf90ff7ba5c810e2eef116e72295441404c3d354eb50e0",
+        "schema": "sea-governance-audit/2",
+        "sequence": 24,
+        "timestamp": "logical:00000024"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:1:update"
+        ],
+        "payload": {
+          "after": {
+            "calls": 95,
+            "compute": 91,
+            "money": 93,
+            "risk": 18,
+            "time": 85
+          },
+          "before": {
+            "calls": 96,
+            "compute": 92,
+            "money": 94,
+            "risk": 18,
+            "time": 86
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 1,
+            "compute": 1,
+            "money": 1,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 1,
+          "stage": "update",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "3d3d38d33c500d91bcdf90ff7ba5c810e2eef116e72295441404c3d354eb50e0",
+        "record_hash": "3acb8b096da577783df66b87d596241c23cb927ed2c7fa723996fed42aa35f44",
+        "schema": "sea-governance-audit/2",
+        "sequence": 25,
+        "timestamp": "logical:00000025"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:1:update"
+        ],
+        "payload": {
+          "after": {
+            "calls": 94,
+            "compute": 90,
+            "money": 92,
+            "risk": 18,
+            "time": 84
+          },
+          "before": {
+            "calls": 95,
+            "compute": 91,
+            "money": 93,
+            "risk": 18,
+            "time": 85
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 1,
+            "compute": 1,
+            "money": 1,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 1,
+          "stage": "update",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "3acb8b096da577783df66b87d596241c23cb927ed2c7fa723996fed42aa35f44",
+        "record_hash": "c3c7d47fe92e5eaaab49f0ad4231b615fa8d646e2bdb3b48c3e2af1f2fae0a36",
+        "schema": "sea-governance-audit/2",
+        "sequence": 26,
+        "timestamp": "logical:00000026"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:1:update"
+        ],
+        "payload": {
+          "after": {
+            "calls": 93,
+            "compute": 89,
+            "money": 91,
+            "risk": 18,
+            "time": 83
+          },
+          "before": {
+            "calls": 94,
+            "compute": 90,
+            "money": 92,
+            "risk": 18,
+            "time": 84
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 1,
+            "compute": 1,
+            "money": 1,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 1,
+          "stage": "update",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "c3c7d47fe92e5eaaab49f0ad4231b615fa8d646e2bdb3b48c3e2af1f2fae0a36",
+        "record_hash": "26036a04879e4479251afeea0a7273257f4d5784abeb8dd8ec5b2b90413582c8",
+        "schema": "sea-governance-audit/2",
+        "sequence": 27,
+        "timestamp": "logical:00000027"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:1:update"
+        ],
+        "payload": {
+          "after": {
+            "calls": 92,
+            "compute": 88,
+            "money": 90,
+            "risk": 18,
+            "time": 82
+          },
+          "before": {
+            "calls": 93,
+            "compute": 89,
+            "money": 91,
+            "risk": 18,
+            "time": 83
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 1,
+            "compute": 1,
+            "money": 1,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 1,
+          "stage": "update",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "26036a04879e4479251afeea0a7273257f4d5784abeb8dd8ec5b2b90413582c8",
+        "record_hash": "375b7f762245f609f56a34cb7ad192067d14d9550169a0da4b8a4a95633783d1",
+        "schema": "sea-governance-audit/2",
+        "sequence": 28,
+        "timestamp": "logical:00000028"
+      },
+      {
+        "event": "update",
+        "evidence": [
+          "fixture:longitudinal-v112:update-kernel"
+        ],
+        "payload": {
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "kernel": "symmetric_binary/1",
+          "period": 1,
+          "posteriors_milli": {
+            "c1": 800,
+            "c2": 800,
+            "c3": 800,
+            "c4": 800
+          },
+          "same_kernel_for_every_signal": true,
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "375b7f762245f609f56a34cb7ad192067d14d9550169a0da4b8a4a95633783d1",
+        "record_hash": "8f4c958856ced02b4d545277c8c1878e8cc65ffce0910147be35c68b366fc08c",
+        "schema": "sea-governance-audit/2",
+        "sequence": 29,
+        "timestamp": "logical:00000029"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:1:linkage"
+        ],
+        "payload": {
+          "after": {
+            "calls": 92,
+            "compute": 86,
+            "money": 90,
+            "risk": 18,
+            "time": 80
+          },
+          "before": {
+            "calls": 92,
+            "compute": 88,
+            "money": 90,
+            "risk": 18,
+            "time": 82
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 2,
+            "money": 0,
+            "risk": 0,
+            "time": 2
+          },
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 1,
+          "stage": "linkage",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "8f4c958856ced02b4d545277c8c1878e8cc65ffce0910147be35c68b366fc08c",
+        "record_hash": "64850bd9805cd0c5ed2603f5685469389f2deb3c928c3a4d364a6bfa51bd3fcf",
+        "schema": "sea-governance-audit/2",
+        "sequence": 30,
+        "timestamp": "logical:00000030"
+      },
+      {
+        "event": "ranking",
+        "evidence": [
+          "fixture:longitudinal-v112:rank:1"
+        ],
+        "payload": {
+          "candidate_set_hash": "9f1298fea80fcf7a35cf7ec31dd61315441cf7be2b63a72e2e4879dff91b4c1e",
+          "candidates": [
+            {
+              "candidate_id": "c1",
+              "features": {
+                "credibility": 8,
+                "durability": 7,
+                "harm_avoidance": 8,
+                "novelty": 0,
+                "relevance": 9
+              },
+              "provenance": "fixture:longitudinal-v112:c1",
+              "topic": "science"
+            },
+            {
+              "candidate_id": "c2",
+              "features": {
+                "credibility": 7,
+                "durability": 6,
+                "harm_avoidance": 8,
+                "novelty": 2,
+                "relevance": 8
+              },
+              "provenance": "fixture:longitudinal-v112:c2",
+              "topic": "science"
+            }
+          ],
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "objective_hash": "8ec51090cf501500ea1d27d719ac940d43102e0746e7b10b8eba459716fc25f7",
+          "objective_version": 1,
+          "platform_variables": {
+            "boost": 0
+          },
+          "ranking": [
+            {
+              "candidate_id": "c2",
+              "score": 138
+            },
+            {
+              "candidate_id": "c1",
+              "score": 130
+            }
+          ],
+          "ranking_hash": "b7f7ba95b5a60a2660102c6ab87c50aac3a308ace3b154df564fc5a58314445f",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2",
+          "user_state": {
+            "topic_priority": {
+              "health": 0,
+              "science": 0
+            }
+          }
+        },
+        "previous_hash": "64850bd9805cd0c5ed2603f5685469389f2deb3c928c3a4d364a6bfa51bd3fcf",
+        "record_hash": "52a58a274cd341788aab896d5f572b26c0137b1e40662a3683f86c94732a24f1",
+        "schema": "sea-governance-audit/2",
+        "sequence": 31,
+        "timestamp": "logical:00000031"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:1:selection"
+        ],
+        "payload": {
+          "after": {
+            "calls": 92,
+            "compute": 86,
+            "money": 89,
+            "risk": 18,
+            "time": 79
+          },
+          "before": {
+            "calls": 92,
+            "compute": 86,
+            "money": 90,
+            "risk": 18,
+            "time": 80
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 0,
+            "money": 1,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 1,
+          "stage": "selection",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "52a58a274cd341788aab896d5f572b26c0137b1e40662a3683f86c94732a24f1",
+        "record_hash": "cc50435745a499f8a7c22c091e9bd3cdfe9a4cccc285499f83667ff69f3aeb5a",
+        "schema": "sea-governance-audit/2",
+        "sequence": 32,
+        "timestamp": "logical:00000032"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:1:selection"
+        ],
+        "payload": {
+          "after": {
+            "calls": 92,
+            "compute": 86,
+            "money": 88,
+            "risk": 18,
+            "time": 78
+          },
+          "before": {
+            "calls": 92,
+            "compute": 86,
+            "money": 89,
+            "risk": 18,
+            "time": 79
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 0,
+            "money": 1,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 1,
+          "stage": "selection",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "cc50435745a499f8a7c22c091e9bd3cdfe9a4cccc285499f83667ff69f3aeb5a",
+        "record_hash": "e8158b204d0640f77b957219ac10b70aa58adee441b2971ba078b3e82ccb9226",
+        "schema": "sea-governance-audit/2",
+        "sequence": 33,
+        "timestamp": "logical:00000033"
+      },
+      {
+        "event": "selection",
+        "evidence": [
+          "fixture:longitudinal-v112:selection:1"
+        ],
+        "payload": {
+          "arm": "sea",
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "covered_linked_targets": [
+            "e1",
+            "e2"
+          ],
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "period": 1,
+          "selected_candidate_ids": [
+            "c2",
+            "c1"
+          ],
+          "selection_link_rule": "staged_link_pass",
+          "selection_rule": "ranked_feasible_greedy",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "e8158b204d0640f77b957219ac10b70aa58adee441b2971ba078b3e82ccb9226",
+        "record_hash": "70fbac917ce23190ccdc13d56e5f83199b666eae992e05b549e61c0956e8c694",
+        "schema": "sea-governance-audit/2",
+        "sequence": 34,
+        "timestamp": "logical:00000034"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:1:delivery"
+        ],
+        "payload": {
+          "after": {
+            "calls": 92,
+            "compute": 86,
+            "money": 88,
+            "risk": 17,
+            "time": 76
+          },
+          "before": {
+            "calls": 92,
+            "compute": 86,
+            "money": 88,
+            "risk": 18,
+            "time": 78
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 0,
+            "money": 0,
+            "risk": 1,
+            "time": 2
+          },
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 1,
+          "stage": "delivery",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "70fbac917ce23190ccdc13d56e5f83199b666eae992e05b549e61c0956e8c694",
+        "record_hash": "75cec21c6e4698536037b9f5bd1bfdfa19262dc8bea7333fa4a62aca7c818539",
+        "schema": "sea-governance-audit/2",
+        "sequence": 35,
+        "timestamp": "logical:00000035"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:1:delivery"
+        ],
+        "payload": {
+          "after": {
+            "calls": 92,
+            "compute": 86,
+            "money": 88,
+            "risk": 16,
+            "time": 74
+          },
+          "before": {
+            "calls": 92,
+            "compute": 86,
+            "money": 88,
+            "risk": 17,
+            "time": 76
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 0,
+            "money": 0,
+            "risk": 1,
+            "time": 2
+          },
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 1,
+          "stage": "delivery",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "75cec21c6e4698536037b9f5bd1bfdfa19262dc8bea7333fa4a62aca7c818539",
+        "record_hash": "02161c60b367a04e833ab26b68df976e5c79d8037933f7c0af47df22494004fd",
+        "schema": "sea-governance-audit/2",
+        "sequence": 36,
+        "timestamp": "logical:00000036"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:1:attendance_measurement"
+        ],
+        "payload": {
+          "after": {
+            "calls": 92,
+            "compute": 85,
+            "money": 88,
+            "risk": 16,
+            "time": 73
+          },
+          "before": {
+            "calls": 92,
+            "compute": 86,
+            "money": 88,
+            "risk": 16,
+            "time": 74
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 1,
+            "money": 0,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 1,
+          "stage": "attendance_measurement",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "02161c60b367a04e833ab26b68df976e5c79d8037933f7c0af47df22494004fd",
+        "record_hash": "a386c3223db9af4da367a2ccf7ce8e9fa36007ffd9d655120b0c0bccf317c406",
+        "schema": "sea-governance-audit/2",
+        "sequence": 37,
+        "timestamp": "logical:00000037"
+      },
+      {
+        "event": "resource_use",
+        "evidence": [
+          "fixture:longitudinal-v112:resources:1:attendance_measurement"
+        ],
+        "payload": {
+          "after": {
+            "calls": 92,
+            "compute": 84,
+            "money": 88,
+            "risk": 16,
+            "time": 72
+          },
+          "before": {
+            "calls": 92,
+            "compute": 85,
+            "money": 88,
+            "risk": 16,
+            "time": 73
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "cost": {
+            "calls": 0,
+            "compute": 1,
+            "money": 0,
+            "risk": 0,
+            "time": 1
+          },
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "measurement_scope": "simulated resource units; no real model calls or fees",
+          "period": 1,
+          "stage": "attendance_measurement",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "a386c3223db9af4da367a2ccf7ce8e9fa36007ffd9d655120b0c0bccf317c406",
+        "record_hash": "03ba9acd8c95e4dc54536264c00fd6b85cd6fa74f3e459fc592d3b67ee74f635",
+        "schema": "sea-governance-audit/2",
+        "sequence": 38,
+        "timestamp": "logical:00000038"
+      },
+      {
+        "event": "period_outcome",
+        "evidence": [
+          "fixture:longitudinal-v112:outcome:1"
+        ],
+        "payload": {
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "delivered_candidate_ids": [
+            "c1",
+            "c2"
+          ],
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "link_audit": {
+            "c1": {
+              "available_targets": [
+                "e1"
+              ],
+              "reference_linked_targets": [
+                "e1"
+              ],
+              "staged_linked_targets": [
+                "e1"
+              ]
+            },
+            "c2": {
+              "available_targets": [
+                "e2"
+              ],
+              "reference_linked_targets": [
+                "e2"
+              ],
+              "staged_linked_targets": [
+                "e2"
+              ]
+            },
+            "c3": {
+              "available_targets": [
+                "e3",
+                "e4"
+              ],
+              "reference_linked_targets": [],
+              "staged_linked_targets": []
+            },
+            "c4": {
+              "available_targets": [],
+              "reference_linked_targets": [],
+              "staged_linked_targets": []
+            }
+          },
+          "objective_version": 1,
+          "opened_candidate_ids": [
+            "c1",
+            "c2"
+          ],
+          "operational_target_ledger": [
+            {
+              "available_candidate_ids": [
+                "c1"
+              ],
+              "delivered_candidate_ids": [
+                "c1"
+              ],
+              "failure_composite_omission": 1,
+              "first_failed_stage": "attendance",
+              "latent_actual_consumption": null,
+              "linked_candidate_ids": [
+                "c1"
+              ],
+              "opened_candidate_ids": [
+                "c1"
+              ],
+              "operational_attendance": "negative",
+              "selected_candidate_ids": [
+                "c1"
+              ],
+              "target_id": "e1",
+              "weight": 0.16666666666666666
+            },
+            {
+              "available_candidate_ids": [
+                "c2"
+              ],
+              "delivered_candidate_ids": [
+                "c2"
+              ],
+              "failure_composite_omission": 1,
+              "first_failed_stage": "attendance",
+              "latent_actual_consumption": null,
+              "linked_candidate_ids": [
+                "c2"
+              ],
+              "opened_candidate_ids": [
+                "c2"
+              ],
+              "operational_attendance": "unknown",
+              "selected_candidate_ids": [
+                "c2"
+              ],
+              "target_id": "e2",
+              "weight": 0.16666666666666666
+            },
+            {
+              "available_candidate_ids": [
+                "c3"
+              ],
+              "delivered_candidate_ids": [],
+              "failure_composite_omission": 1,
+              "first_failed_stage": "linkage",
+              "latent_actual_consumption": null,
+              "linked_candidate_ids": [],
+              "opened_candidate_ids": [],
+              "operational_attendance": "not_applicable",
+              "selected_candidate_ids": [],
+              "target_id": "e3",
+              "weight": 0.16666666666666666
+            },
+            {
+              "available_candidate_ids": [
+                "c3"
+              ],
+              "delivered_candidate_ids": [],
+              "failure_composite_omission": 1,
+              "first_failed_stage": "linkage",
+              "latent_actual_consumption": null,
+              "linked_candidate_ids": [],
+              "opened_candidate_ids": [],
+              "operational_attendance": "not_applicable",
+              "selected_candidate_ids": [],
+              "target_id": "e4",
+              "weight": 0.16666666666666666
+            },
+            {
+              "available_candidate_ids": [],
+              "delivered_candidate_ids": [],
+              "failure_composite_omission": 1,
+              "first_failed_stage": "availability",
+              "latent_actual_consumption": null,
+              "linked_candidate_ids": [],
+              "opened_candidate_ids": [],
+              "operational_attendance": "not_applicable",
+              "selected_candidate_ids": [],
+              "target_id": "e5",
+              "weight": 0.16666666666666666
+            },
+            {
+              "available_candidate_ids": [],
+              "delivered_candidate_ids": [],
+              "failure_composite_omission": 1,
+              "first_failed_stage": "availability",
+              "latent_actual_consumption": null,
+              "linked_candidate_ids": [],
+              "opened_candidate_ids": [],
+              "operational_attendance": "not_applicable",
+              "selected_candidate_ids": [],
+              "target_id": "e6",
+              "weight": 0.16666666666666666
+            }
+          ],
+          "outcome_summary": {
+            "evaluation_link_rule": "reference_link_truth_arm_independent",
+            "latent_weighted_actual_omission_M_nu": null,
+            "ledger_scope": "OPERATIONAL_ATTENDANCE_AND_FAILURE_COMPOSITE__NOT_LATENT_ACTUAL_CONSUMPTION",
+            "machine_event_interpretation": "synthetic placeholder predicate only; not attention, comprehension, downstream information use, or a cryptographic evidence chain",
+            "machine_ingestion_and_task_reference": {
+              "c1": false,
+              "c2": false
+            },
+            "missing_by_reason": {
+              "measurement_incomplete_or_failed": 0.16666666666666666
+            },
+            "weighted_fc_omission": 0.9999999999999999,
+            "weighted_operational_negative_known": 0.16666666666666666,
+            "weighted_operational_positive": 1.1102230246251565e-16,
+            "weighted_unknown_terminal": 0.16666666666666666
+          },
+          "period": 1,
+          "ranking": [
+            {
+              "candidate_id": "c2",
+              "score": 138
+            },
+            {
+              "candidate_id": "c1",
+              "score": 130
+            }
+          ],
+          "selected_candidate_ids": [
+            "c2",
+            "c1"
+          ],
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "03ba9acd8c95e4dc54536264c00fd6b85cd6fa74f3e459fc592d3b67ee74f635",
+        "record_hash": "00476f03f874463b90a9e4929ebcad72a4b4f0e1669506b1cb061a1c3dc14410",
+        "schema": "sea-governance-audit/2",
+        "sequence": 39,
+        "timestamp": "logical:00000039"
+      },
+      {
+        "event": "rollback",
+        "evidence": [
+          "fixture:longitudinal-v112:rollback:protocol-demo-rollback"
+        ],
+        "payload": {
+          "accepted": true,
+          "actor": "R",
+          "authorization": {
+            "authorization_id": "protocol-demo-rollback",
+            "operation": "rollback",
+            "principal": "R",
+            "proposal_hash": "9e74f07060b0031b56b1e1ada2dab71f84c551b4adae7b30bef02b4e93893c48",
+            "timestamp": "logical:00000020",
+            "version_token": "89d4cc409ae2b38747f92ac0ace480f5e745e6005b1a028dfbd71325a4273654"
+          },
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "new_value": {
+            "g2": "Prefer useful, credible, durable information while avoiding harm.",
+            "monitoring_list": [
+              "finance",
+              "health",
+              "science"
+            ],
+            "thresholds": {
+              "min_utility": 0
+            },
+            "weights": {
+              "credibility": 4,
+              "durability": 3,
+              "harm_avoidance": 4,
+              "novelty": 2,
+              "relevance": 5
+            }
+          },
+          "new_version": 2,
+          "new_version_token": "f78f2992acfc1b86e3ff83854ff89c6a042f77817d7e04846543f19bac226524",
+          "old_value": {
+            "g2": "Prefer useful, credible, durable information while avoiding harm.",
+            "monitoring_list": [
+              "finance",
+              "health",
+              "science"
+            ],
+            "thresholds": {
+              "min_utility": 0
+            },
+            "weights": {
+              "credibility": 4,
+              "durability": 3,
+              "harm_avoidance": 4,
+              "novelty": 10,
+              "relevance": 5
+            }
+          },
+          "old_version": 1,
+          "old_version_token": "89d4cc409ae2b38747f92ac0ace480f5e745e6005b1a028dfbd71325a4273654",
+          "reason": "authorized_rollback",
+          "restored_from": 0,
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2",
+          "target_version": 0
+        },
+        "previous_hash": "00476f03f874463b90a9e4929ebcad72a4b4f0e1669506b1cb061a1c3dc14410",
+        "record_hash": "c0dbc5c2d4ad3810bb0bb24c2fcca8c9af409f0c80d81d9f1cbb0739f036819b",
+        "schema": "sea-governance-audit/2",
+        "sequence": 40,
+        "timestamp": "logical:00000020"
+      },
+      {
+        "event": "registry_switch_rejected",
+        "evidence": [
+          "fixture:longitudinal-v112:registry-switch-rejected:version_not_in_registry_family"
+        ],
+        "payload": {
+          "active_path_mutated": false,
+          "attempted_target_registry_sha256": "cd775191522cd5f3326a4c4757aac9a0931b0d62862c7e897926349be2b87da9",
+          "attempted_target_registry_version": "unregistered-arbitrary-v999",
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "policy_action": false,
+          "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+          "reason": "version_not_in_registry_family",
+          "registry_objective_budget_mutated": false,
+          "rejection_audit_record_appended": true,
+          "resources_spent": 0,
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "c0dbc5c2d4ad3810bb0bb24c2fcca8c9af409f0c80d81d9f1cbb0739f036819b",
+        "record_hash": "8c3a3537e2898cf2c63f72929eb7a3077ec43a87b3b2bbf9857efbc974410505",
+        "schema": "sea-governance-audit/2",
+        "sequence": 41,
+        "timestamp": "logical:00000041"
+      },
+      {
+        "event": "registry_switch_rejected",
+        "evidence": [
+          "fixture:longitudinal-v112:registry-switch-rejected:registry_content_hash_mismatch"
+        ],
+        "payload": {
+          "active_path_mutated": false,
+          "attempted_target_registry_sha256": "1f663f5872c6d9eaea17141b15f96fef234b94f68370cf22a9a30b229eba627d",
+          "attempted_target_registry_version": "targets-v2",
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "policy_action": false,
+          "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+          "reason": "registry_content_hash_mismatch",
+          "registry_objective_budget_mutated": false,
+          "rejection_audit_record_appended": true,
+          "resources_spent": 0,
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "8c3a3537e2898cf2c63f72929eb7a3077ec43a87b3b2bbf9857efbc974410505",
+        "record_hash": "24be8d71c3d5959e3017f43150dc08d60d0b19726abc2fdb3fb047b1e5c3fbd0",
+        "schema": "sea-governance-audit/2",
+        "sequence": 42,
+        "timestamp": "logical:00000042"
+      },
+      {
+        "event": "registry_switch_rejected",
+        "evidence": [
+          "fixture:longitudinal-v112:registry-switch-rejected:version_not_next_in_protocol_schedule"
+        ],
+        "payload": {
+          "active_path_mutated": false,
+          "attempted_target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "attempted_target_registry_version": "targets-v1",
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "policy_action": false,
+          "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+          "reason": "version_not_next_in_protocol_schedule",
+          "registry_objective_budget_mutated": false,
+          "rejection_audit_record_appended": true,
+          "resources_spent": 0,
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "24be8d71c3d5959e3017f43150dc08d60d0b19726abc2fdb3fb047b1e5c3fbd0",
+        "record_hash": "075551cb8d24c18c0354f50450cf77044633d46e04182c28d36c6184733f5137",
+        "schema": "sea-governance-audit/2",
+        "sequence": 43,
+        "timestamp": "logical:00000043"
+      },
+      {
+        "event": "registry_switch_rejected",
+        "evidence": [
+          "fixture:longitudinal-v112:registry-switch-rejected:sealed_control_path"
+        ],
+        "payload": {
+          "active_path_mutated": false,
+          "attempted_target_registry_sha256": null,
+          "attempted_target_registry_version": "targets-v2",
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "policy_action": false,
+          "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+          "reason": "sealed_control_path",
+          "registry_objective_budget_mutated": false,
+          "rejection_audit_record_appended": true,
+          "resources_spent": 0,
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "075551cb8d24c18c0354f50450cf77044633d46e04182c28d36c6184733f5137",
+        "record_hash": "7f8e918a69bc500419bbfe67c058663aa632b1dbedca4147387ad0e8d2986198",
+        "schema": "sea-governance-audit/2",
+        "sequence": 44,
+        "timestamp": "logical:00000044"
+      },
+      {
+        "event": "registry_switch_rejected",
+        "evidence": [
+          "fixture:longitudinal-v112:registry-switch-rejected:sealed_control_path"
+        ],
+        "payload": {
+          "active_path_mutated": false,
+          "attempted_target_registry_sha256": null,
+          "attempted_target_registry_version": "targets-v2",
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+          "policy_action": false,
+          "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+          "reason": "sealed_control_path",
+          "registry_objective_budget_mutated": false,
+          "rejection_audit_record_appended": true,
+          "resources_spent": 0,
+          "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+          "target_registry_version": "targets-v1"
+        },
+        "previous_hash": "7f8e918a69bc500419bbfe67c058663aa632b1dbedca4147387ad0e8d2986198",
+        "record_hash": "ab6069019190c0a278917fa92d3c3262b232ba1cee4a7ffaf76828216e060b3e",
+        "schema": "sea-governance-audit/2",
+        "sequence": 45,
+        "timestamp": "logical:00000045"
+      },
+      {
+        "event": "control_path_sealed",
+        "evidence": [
+          "fixture:longitudinal-v112:control-path-sealed:targets-v2"
+        ],
+        "payload": {
+          "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+          "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+          "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+          "reason": "protocol_full_reset_new_control_instance",
+          "successor_evaluation_cohort_id": "6f15fb489e5a97e6022cc7b31f826a9a8fd4d8d5722c19ab67244ef709a20133",
+          "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+          "target_registry_version": "targets-v2"
+        },
+        "previous_hash": "ab6069019190c0a278917fa92d3c3262b232ba1cee4a7ffaf76828216e060b3e",
+        "record_hash": "82b676480921a927abdd005a1481e0952e09b88a0fe6df086923b5e3de568657",
+        "schema": "sea-governance-audit/2",
+        "sequence": 46,
+        "timestamp": "logical:00000046"
+      }
+    ],
+    "verification": {
+      "errors": [],
+      "head": "82b676480921a927abdd005a1481e0952e09b88a0fe6df086923b5e3de568657",
+      "length": 46,
+      "valid": true
+    }
+  },
+  "checks": {
+    "audit_chain_valid": true,
+    "backward_out_of_schedule_rejected": true,
+    "backward_reset_is_new_instance_not_rollback": true,
+    "distinct_evaluation_cohorts": true,
+    "early_switch_before_declared_period_rejected": true,
+    "fork_generates_single_version_schedule": true,
+    "fork_is_new_control_instance": true,
+    "fork_seals_parent": true,
+    "late_switch_after_declared_period_rejected": true,
+    "non_family_version_rejected": true,
+    "objective_rollback_does_not_restore_registry": true,
+    "outcome_motivated_timing_edit_rejected": true,
+    "periods_stay_cohort_separated": true,
+    "predecessor_sealed_successor_active": true,
+    "sealed_predecessor_fork_rejected": true,
+    "sealed_predecessor_rollback_rejected": true,
+    "sealed_predecessor_run_rejected": true,
+    "sealed_predecessor_switch_rejected": true,
+    "sealed_predecessor_write_rejected": true,
+    "single_control_instance_across_switch": true,
+    "switch_at_frozen_timing_boundary": true,
+    "tampered_family_hash_rejected": true,
+    "unique_shared_budget_state": true,
+    "unique_shared_history": true
+  },
+  "cohort_change_events": [
+    {
+      "authorization_required": false,
+      "authorization_scope_note": "registry transitions are outside the policy action space; the objective-write guard does not apply",
+      "completed_periods_before_switch": 1,
+      "control_continuity": true,
+      "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+      "cross_version_pooling_allowed": false,
+      "declared_switch_after_period": 0,
+      "event_kind": "exogenous_evaluation_protocol_event",
+      "new_evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+      "new_schedule_index": 1,
+      "new_target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+      "new_target_registry_version": "targets-v2",
+      "old_control_path_sealed": true,
+      "old_evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+      "old_schedule_index": 0,
+      "old_target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+      "old_target_registry_version": "targets-v1",
+      "policy_action": false,
+      "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+      "switch_timing_frozen_before_results": true
+    }
+  ],
+  "full_reset_seal_events": [
+    {
+      "control_instance_id": "1a6e25e916b97a2cd922578a59ef4e86350e191b639c2ac97f832b750c0ad2e8",
+      "evaluation_cohort_id": "6f15fb489e5a97e6022cc7b31f826a9a8fd4d8d5722c19ab67244ef709a20133",
+      "protocol_declaration_sha256": "ab641060ee68c52971d46a5f59d409f9e7a9d5c653500a74af1c6e3e119a68b9",
+      "reason": "protocol_full_reset_new_control_instance",
+      "successor_evaluation_cohort_id": "c8c7a749030d534d46af5c2890644c09507f3e0a5c83bf72d47e3e28860d5072",
+      "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+      "target_registry_version": "targets-v2"
+    }
+  ],
+  "human_data": false,
+  "new_real_model_calls": 0,
+  "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+  "protocol_registry_schedule": [
+    "targets-v1",
+    "targets-v2"
+  ],
+  "protocol_reset_targets": [
+    "targets-v1",
+    "targets-v2"
+  ],
+  "protocol_switch_timing": {
+    "targets-v2": 0
+  },
+  "registry_family_sha256": "e74737efb278d670f788a560d9f1d014c806ae9d885b5ee8c595a1fe88d4b81f",
+  "rejection_events": [
+    {
+      "active_path_mutated": false,
+      "attempted_target_registry_sha256": "cd775191522cd5f3326a4c4757aac9a0931b0d62862c7e897926349be2b87da9",
+      "attempted_target_registry_version": "unregistered-arbitrary-v999",
+      "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+      "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+      "policy_action": false,
+      "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+      "reason": "version_not_in_registry_family",
+      "registry_objective_budget_mutated": false,
+      "rejection_audit_record_appended": true,
+      "resources_spent": 0,
+      "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+      "target_registry_version": "targets-v2"
+    },
+    {
+      "active_path_mutated": false,
+      "attempted_target_registry_sha256": "1f663f5872c6d9eaea17141b15f96fef234b94f68370cf22a9a30b229eba627d",
+      "attempted_target_registry_version": "targets-v2",
+      "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+      "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+      "policy_action": false,
+      "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+      "reason": "registry_content_hash_mismatch",
+      "registry_objective_budget_mutated": false,
+      "rejection_audit_record_appended": true,
+      "resources_spent": 0,
+      "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+      "target_registry_version": "targets-v2"
+    },
+    {
+      "active_path_mutated": false,
+      "attempted_target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+      "attempted_target_registry_version": "targets-v1",
+      "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+      "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+      "policy_action": false,
+      "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+      "reason": "version_not_next_in_protocol_schedule",
+      "registry_objective_budget_mutated": false,
+      "rejection_audit_record_appended": true,
+      "resources_spent": 0,
+      "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+      "target_registry_version": "targets-v2"
+    },
+    {
+      "active_path_mutated": false,
+      "attempted_target_registry_sha256": null,
+      "attempted_target_registry_version": "targets-v2",
+      "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+      "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+      "policy_action": false,
+      "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+      "reason": "sealed_control_path",
+      "registry_objective_budget_mutated": false,
+      "rejection_audit_record_appended": true,
+      "resources_spent": 0,
+      "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+      "target_registry_version": "targets-v1"
+    },
+    {
+      "active_path_mutated": false,
+      "attempted_target_registry_sha256": null,
+      "attempted_target_registry_version": "targets-v2",
+      "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+      "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+      "policy_action": false,
+      "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+      "reason": "sealed_control_path",
+      "registry_objective_budget_mutated": false,
+      "rejection_audit_record_appended": true,
+      "resources_spent": 0,
+      "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+      "target_registry_version": "targets-v1"
+    }
+  ],
+  "run_id": "longitudinal-v112",
+  "schema": "sea.protocol-registry-switch-demo/v2",
+  "seal_events": [
+    {
+      "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+      "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+      "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+      "reason": "protocol_registry_switch",
+      "successor_evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+      "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+      "target_registry_version": "targets-v1"
+    },
+    {
+      "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+      "evaluation_cohort_id": "2f70032bae76fad4506e8888894cca4056c1f50a4f04ae5f574742c648f3ee66",
+      "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+      "reason": "protocol_full_reset_new_control_instance",
+      "successor_evaluation_cohort_id": "6f15fb489e5a97e6022cc7b31f826a9a8fd4d8d5722c19ab67244ef709a20133",
+      "target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+      "target_registry_version": "targets-v2"
+    }
+  ],
+  "semantics": {
+    "authorization": "no objective-write authorization required or accepted; family/schedule/timing validation instead",
+    "full_reset_exception": "declared reset-target allowlist; backward or out-of-schedule family members only if pre-declared; fresh independent single-version schedule; parent sealed",
+    "lifecycle": "single-line control: predecessor sealed, one active path, unique shared budget/ledger",
+    "registry_transition": "exogenous frozen evaluation-protocol event, not a policy action",
+    "rejection_state_effect": "registry, objective store, budget, and active path unchanged; only a rejection audit record appended; zero resource spend",
+    "rollback_interaction": "objective rollback never restores a registry version; continuity transitions append-only forward",
+    "switch_timing": "frozen switch_after_period per scheduled successor, fixed before any arm result is read; early, late, and tampered-timing attempts rejected"
+  },
+  "status": "SYNTHETIC_PROTOCOL_TRANSITION_DEMO__NOT_EFFECTIVENESS_EVIDENCE",
+  "timing_and_declaration_rejection_events": [
+    {
+      "active_path_mutated": false,
+      "attempted_target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+      "attempted_target_registry_version": "targets-v2",
+      "completed_periods": 0,
+      "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+      "declared_switch_after_period": 0,
+      "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+      "policy_action": false,
+      "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+      "reason": "switch_timing_mismatch",
+      "registry_objective_budget_mutated": false,
+      "rejection_audit_record_appended": true,
+      "resources_spent": 0,
+      "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+      "target_registry_version": "targets-v1"
+    },
+    {
+      "active_path_mutated": false,
+      "attempted_target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+      "attempted_target_registry_version": "targets-v2",
+      "completed_periods": 2,
+      "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+      "declared_switch_after_period": 0,
+      "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+      "policy_action": false,
+      "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+      "reason": "switch_timing_mismatch",
+      "registry_objective_budget_mutated": false,
+      "rejection_audit_record_appended": true,
+      "resources_spent": 0,
+      "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+      "target_registry_version": "targets-v1"
+    },
+    {
+      "active_path_mutated": false,
+      "attempted_target_registry_sha256": "d403c84084652c66cda74a8a8f7f158056cea8d6dc3f722d07426995949f0920",
+      "attempted_target_registry_version": "targets-v2",
+      "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
+      "evaluation_cohort_id": "5542af91255f3048db96101f2cde04cbebaf2994304a53dc61b0eb27c1e636e5",
+      "policy_action": false,
+      "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
+      "reason": "protocol_declaration_tampered",
+      "registry_objective_budget_mutated": false,
+      "rejection_audit_record_appended": true,
+      "resources_spent": 0,
+      "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478",
+      "target_registry_version": "targets-v1"
+    }
+  ]
+}

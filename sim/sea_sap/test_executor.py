@@ -1,4 +1,4 @@
-"""Tests for the v1.15 minimal longitudinal SAP executor and measurement rules."""
+"""Tests for the v1.16 minimal longitudinal SAP executor and measurement rules."""
 from __future__ import annotations
 
 import copy
@@ -11,12 +11,15 @@ from sea_sap import (
     SAPExecutor,
     completed_measurement_transport,
     completed_measurement_transport_delta_method,
+    completed_measurement_transport_joint_bootstrap,
+    completed_measurement_transport_sensitivity_grid,
     load_fixture,
     machine_ingestion_and_task_reference,
     operational_attendance_contrast_bounds,
     run_longitudinal_fixture,
     run_matched_implementation_demo,
     run_protocol_registry_switch_demo,
+    transportability_stratified_diagnostics,
 )
 from sea_sap.executor import OperationalAttendanceInstrument, validate_target_registry
 
@@ -493,7 +496,9 @@ class LongitudinalExecutorTest(unittest.TestCase):
         payload = records[-1]["payload"]
         self.assertEqual(payload["attempted_target_registry_version"], "unregistered-arbitrary-v999")
         self.assertFalse(payload["policy_action"])
-        self.assertFalse(payload["state_mutated"])
+        self.assertFalse(payload["registry_objective_budget_mutated"])
+        self.assertFalse(payload["active_path_mutated"])
+        self.assertTrue(payload["rejection_audit_record_appended"])
         self.assertEqual(payload["resources_spent"], 0)
         self.assertEqual(payload["control_instance_id"], executor.control_instance_id)
         self.assertEqual(executor.budget_remaining, before_budget)
@@ -521,6 +526,7 @@ class LongitudinalExecutorTest(unittest.TestCase):
     def test_out_of_schedule_switch_is_rejected(self):
         fixture = load_fixture()
         executor = SAPExecutor(fixture)
+        executor.run_period(0, fixture["period_plans"]["0"])
         registry_v2 = fixture["protocol_registries"]["targets-v2"]
         continued = executor.continue_with_target_registry(registry_v2)
         # Backward switch to the previous scheduled version is not append-only forward.
@@ -585,6 +591,8 @@ class LongitudinalExecutorTest(unittest.TestCase):
         del fixture["registry_family"]
         del fixture["protocol_registry_schedule"]
         del fixture["protocol_registries"]
+        del fixture["protocol_switch_timing"]
+        del fixture["protocol_reset_targets"]
         executor = SAPExecutor(fixture)
         self.assertEqual(executor.protocol_registry_schedule, ["targets-v1"])
         registry_v2 = copy.deepcopy(fixture["target_registry"])
@@ -614,19 +622,165 @@ class LongitudinalExecutorTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             SAPExecutor(bad)  # frozen content no longer matches the family hash
 
+    def test_switch_timing_is_frozen_and_enforced(self):
+        fixture = load_fixture()
+        registry_v2 = fixture["protocol_registries"]["targets-v2"]
+        # Early attempt: no period completed yet, declared boundary is after period 0.
+        early = SAPExecutor(fixture)
+        with self.assertRaises(ValueError) as caught:
+            early.continue_with_target_registry(registry_v2)
+        self.assertIn("switch_timing_mismatch", str(caught.exception))
+        payload = early.governance.audit_records()[-1]["payload"]
+        self.assertEqual(payload["declared_switch_after_period"], 0)
+        self.assertEqual(payload["completed_periods"], 0)
+        self.assertFalse(payload["registry_objective_budget_mutated"])
+        self.assertFalse(payload["active_path_mutated"])
+        self.assertTrue(payload["rejection_audit_record_appended"])
+        self.assertEqual(payload["resources_spent"], 0)
+        self.assertEqual(early.budget_spent, {name: 0 for name in early.budget_spent})
+        self.assertFalse(early._sealed)
+        # Late attempt: the declared boundary was missed; timing cannot be renegotiated.
+        late = SAPExecutor(fixture)
+        late.run_period(0, fixture["period_plans"]["0"])
+        late.run_period(1, fixture["period_plans"]["1"])
+        with self.assertRaises(ValueError) as caught:
+            late.continue_with_target_registry(registry_v2)
+        self.assertIn("switch_timing_mismatch", str(caught.exception))
+        self.assertEqual(late.governance.audit_records()[-1]["payload"]["completed_periods"], 2)
+        # Accepted exactly at the frozen boundary.
+        at_boundary = SAPExecutor(fixture)
+        at_boundary.run_period(0, fixture["period_plans"]["0"])
+        continued = at_boundary.continue_with_target_registry(registry_v2)
+        self.assertEqual(continued.registry["version"], "targets-v2")
+
+    def test_declaration_tampering_after_results_is_rejected(self):
+        fixture = load_fixture()
+        registry_v2 = fixture["protocol_registries"]["targets-v2"]
+        control = SAPExecutor(fixture)
+        control.run_period(0, fixture["period_plans"]["0"])
+        mutations = (
+            lambda ex: ex.protocol_switch_timing.__setitem__("targets-v2", 1),
+            lambda ex: ex.protocol_registry_schedule.append("targets-v9"),
+            lambda ex: ex.registry_family.__setitem__("targets-v9", "0" * 64),
+            lambda ex: ex.protocol_reset_targets.remove("targets-v1"),
+            lambda ex: ex._frozen_protocol_registries.clear(),
+        )
+        for mutate in mutations:
+            executor = SAPExecutor(fixture)
+            executor.run_period(0, fixture["period_plans"]["0"])
+            mutate(executor)  # outcome-motivated edit after reading period-0 results
+            with self.assertRaises(ValueError) as caught:
+                executor.continue_with_target_registry(registry_v2)
+            self.assertIn("protocol_declaration_tampered", str(caught.exception))
+            with self.assertRaises(ValueError) as caught:
+                executor.fork_for_target_registry(registry_v2)
+            self.assertIn("protocol_declaration_tampered", str(caught.exception))
+            self.assertFalse(executor._sealed)
+            self.assertEqual(executor.registry["version"], "targets-v1")
+            self.assertEqual(executor.budget_remaining, control.budget_remaining)
+            self.assertEqual(executor.budget_spent, control.budget_spent)
+
+    def test_full_reset_requires_declared_reset_target(self):
+        fixture = load_fixture()
+        fixture["protocol_reset_targets"] = ["targets-v2"]
+        executor = SAPExecutor(fixture)
+        with self.assertRaises(ValueError) as caught:
+            executor.fork_for_target_registry(fixture["target_registry"])
+        self.assertIn("reset_target_not_declared", str(caught.exception))
+        payload = executor.governance.audit_records()[-1]["payload"]
+        self.assertFalse(payload["registry_objective_budget_mutated"])
+        self.assertTrue(payload["rejection_audit_record_appended"])
+        self.assertFalse(executor._sealed)
+        forked = executor.fork_for_target_registry(fixture["protocol_registries"]["targets-v2"])
+        self.assertEqual(forked.protocol_registry_schedule, ["targets-v2"])
+        # Absent declaration defaults to the whole family (documented default).
+        default = load_fixture()
+        del default["protocol_reset_targets"]
+        self.assertEqual(SAPExecutor(default).protocol_reset_targets, ["targets-v1", "targets-v2"])
+
+    def test_backward_full_reset_is_new_instance_with_single_version_schedule(self):
+        fixture = load_fixture()
+        executor = SAPExecutor(fixture)
+        executor.run_period(0, fixture["period_plans"]["0"])
+        continued = executor.continue_with_target_registry(fixture["protocol_registries"]["targets-v2"])
+        reset = continued.fork_for_target_registry(fixture["target_registry"])
+        self.assertEqual(reset.registry["version"], "targets-v1")
+        self.assertEqual(reset.protocol_registry_schedule, ["targets-v1"])
+        self.assertEqual(reset.protocol_switch_timing, {})
+        self.assertNotEqual(reset.control_instance_id, continued.control_instance_id)
+        self.assertIsNot(reset.governance, continued.governance)
+        self.assertEqual(reset.budget_spent, {name: 0 for name in reset.budget_spent})
+        self.assertTrue(continued._sealed)
+        self.assertFalse(reset._sealed)
+        # The sealed parent keeps its registry version: a reset is not a rollback.
+        self.assertEqual(continued.registry["version"], "targets-v2")
+        # The reset instance has no scheduled successor: continuity is impossible.
+        with self.assertRaises(ValueError) as caught:
+            reset.continue_with_target_registry(fixture["protocol_registries"]["targets-v2"])
+        self.assertIn("version_not_next_in_protocol_schedule", str(caught.exception))
+        reset.run_period(0, fixture["period_plans"]["0"])
+
+    def test_protocol_timing_and_reset_declaration_validation(self):
+        fixture = load_fixture()
+        for mutate in (
+            lambda bad: bad.pop("protocol_switch_timing"),
+            lambda bad: bad.__setitem__("protocol_switch_timing", {}),
+            lambda bad: bad.__setitem__("protocol_switch_timing", {"targets-v1": 0}),
+            lambda bad: bad.__setitem__("protocol_switch_timing", {"targets-v2": -1}),
+            lambda bad: bad.__setitem__("protocol_switch_timing", {"targets-v2": True}),
+            lambda bad: bad.__setitem__("protocol_reset_targets", ["targets-v9"]),
+            lambda bad: bad.__setitem__("protocol_reset_targets", []),
+            lambda bad: bad.__setitem__("protocol_reset_targets", ["targets-v1", "targets-v1"]),
+        ):
+            bad = copy.deepcopy(fixture)
+            mutate(bad)
+            with self.assertRaises(ValueError):
+                SAPExecutor(bad)
+        # A three-version schedule must have strictly increasing switch periods.
+        bad = copy.deepcopy(fixture)
+        v3 = copy.deepcopy(fixture["protocol_registries"]["targets-v2"])
+        v3["version"] = "targets-v3"
+        v3["targets"][0]["canonical_text"] = "Third synthetic proposition e1."
+        bad["protocol_registries"]["targets-v3"] = v3
+        bad["registry_family"]["targets-v3"] = hashlib.sha256(
+            canonical_json(v3).encode("utf-8")).hexdigest()
+        bad["protocol_registry_schedule"] = ["targets-v1", "targets-v2", "targets-v3"]
+        bad["protocol_switch_timing"] = {"targets-v2": 1, "targets-v3": 1}
+        with self.assertRaises(ValueError):
+            SAPExecutor(bad)
+        bad["protocol_switch_timing"] = {"targets-v2": 0, "targets-v3": 2}
+        ok = SAPExecutor(bad)
+        self.assertEqual(ok.protocol_switch_timing, {"targets-v2": 0, "targets-v3": 2})
+        # Timing/reset declarations without a family are rejected.
+        bad = copy.deepcopy(fixture)
+        del bad["registry_family"]
+        del bad["protocol_registry_schedule"]
+        del bad["protocol_registries"]
+        with self.assertRaises(ValueError):
+            SAPExecutor(bad)
+
     def test_protocol_registry_switch_demo_passes_all_checks(self):
         result = run_protocol_registry_switch_demo()
         self.assertEqual(result["status"], "SYNTHETIC_PROTOCOL_TRANSITION_DEMO__NOT_EFFECTIVENESS_EVIDENCE")
         self.assertTrue(all(result["checks"].values()))
         self.assertTrue(result["audit"]["verification"]["valid"])
         self.assertEqual(len(result["rejection_events"]), 5)
+        self.assertEqual(len(result["timing_and_declaration_rejection_events"]), 3)
         self.assertEqual(len(result["seal_events"]), 2)
+        self.assertEqual(len(result["full_reset_seal_events"]), 1)
+        self.assertEqual(result["full_reset_seal_events"][0]["reason"],
+                         "protocol_full_reset_new_control_instance")
         self.assertEqual(len(result["cohort_change_events"]), 1)
         change = result["cohort_change_events"][0]
         self.assertEqual(change["event_kind"], "exogenous_evaluation_protocol_event")
         self.assertFalse(change["policy_action"])
         self.assertFalse(change["authorization_required"])
         self.assertTrue(change["old_control_path_sealed"])
+        self.assertEqual(change["declared_switch_after_period"], 0)
+        self.assertEqual(change["completed_periods_before_switch"], 1)
+        self.assertTrue(change["switch_timing_frozen_before_results"])
+        self.assertEqual(result["protocol_switch_timing"], {"targets-v2": 0})
+        self.assertEqual(result["protocol_reset_targets"], ["targets-v1", "targets-v2"])
         self.assertEqual(result["new_real_model_calls"], 0)
         self.assertFalse(result["human_data"])
 
@@ -663,6 +817,119 @@ class LongitudinalExecutorTest(unittest.TestCase):
         self.assertLess(low, propagated["m_D"])
         self.assertGreater(high, propagated["m_D"])
         self.assertTrue(propagated["input_independence_assumed"])
+
+    def test_s12_delta_method_covariance_terms(self):
+        kwargs = dict(var_m_z=0.001, var_se=0.002, var_sp=0.001)
+        independent = completed_measurement_transport_delta_method(0.13, 0.9, 0.95, **kwargs)
+        self.assertTrue(independent["input_independence_assumed"])
+        dependent = completed_measurement_transport_delta_method(
+            0.13, 0.9, 0.95, cov_se_sp=0.0005, cov_mz_se=0.0002, cov_mz_sp=-0.0001, **kwargs)
+        j, n = 0.85, 0.13 - 1 + 0.9
+        d_se, d_sp, d_mz = (j - n) / j ** 2, -n / j ** 2, 1 / j
+        expected = (d_se ** 2 * 0.002 + d_sp ** 2 * 0.001 + d_mz ** 2 * 0.001
+                    + 2 * d_se * d_sp * 0.0005 + 2 * d_mz * d_se * 0.0002
+                    + 2 * d_mz * d_sp * (-0.0001))
+        self.assertAlmostEqual(dependent["delta_method_variance"], expected)
+        self.assertFalse(dependent["input_independence_assumed"])
+        self.assertNotAlmostEqual(dependent["delta_method_variance"],
+                                  independent["delta_method_variance"])
+        # Invalid covariance inputs are rejected, never silently corrected.
+        with self.assertRaises(ValueError):
+            completed_measurement_transport_delta_method(0.13, 0.9, 0.95, cov_se_sp=1.0, **kwargs)
+        with self.assertRaises(ValueError):
+            completed_measurement_transport_delta_method(0.13, 0.9, 0.95,
+                                                         cov_se_sp=float("nan"), **kwargs)
+
+    def test_s12_joint_bootstrap_preserves_dependence_and_is_deterministic(self):
+        records = ([{"test_positive": True, "truth_positive": True}] * 90
+                   + [{"test_positive": False, "truth_positive": True}] * 10
+                   + [{"test_positive": False, "truth_positive": False}] * 95
+                   + [{"test_positive": True, "truth_positive": False}] * 5)
+        result = completed_measurement_transport_joint_bootstrap(
+            0.13, records, n_bootstrap=2000, seed=42)
+        self.assertAlmostEqual(result["sensitivity"], 0.9)
+        self.assertAlmostEqual(result["specificity"], 0.95)
+        self.assertAlmostEqual(result["m_D"], 0.03 / 0.85)
+        low, high = result["bootstrap_95_interval"]
+        self.assertLess(low, result["m_D"])
+        self.assertGreater(high, result["m_D"])
+        again = completed_measurement_transport_joint_bootstrap(
+            0.13, records, n_bootstrap=2000, seed=42)
+        self.assertEqual(result["bootstrap_95_interval"], again["bootstrap_95_interval"])
+        self.assertEqual(result["degenerate_replicates"], 0)
+        self.assertTrue(result["m_z_held_fixed"])
+        self.assertEqual(result["method"], "joint_bootstrap")
+        clustered = [dict(record, cluster_id=index // 10)
+                     for index, record in enumerate(records)]
+        cluster_result = completed_measurement_transport_joint_bootstrap(
+            0.13, clustered, n_bootstrap=1000, seed=42, cluster_key="cluster_id")
+        self.assertEqual(cluster_result["method"], "joint_cluster_bootstrap")
+        self.assertEqual(cluster_result["n_clusters"], 20)
+        # Near-zero denominator: degenerate replicates are reported, not hidden.
+        unstable = ([{"test_positive": True, "truth_positive": True}] * 20
+                    + [{"test_positive": False, "truth_positive": True}] * 20
+                    + [{"test_positive": False, "truth_positive": False}] * 22
+                    + [{"test_positive": True, "truth_positive": False}] * 18)
+        warning = completed_measurement_transport_joint_bootstrap(
+            0.4, unstable, n_bootstrap=1000, seed=7)
+        self.assertTrue(warning["precision_warning"])
+        self.assertGreater(warning["degenerate_replicates"], 0)
+        self.assertAlmostEqual(warning["degenerate_replicate_fraction"],
+                               warning["degenerate_replicates"] / 1000)
+        with self.assertRaises(ValueError):
+            completed_measurement_transport_joint_bootstrap(
+                0.13, [{"test_positive": True, "truth_positive": True}])
+        with self.assertRaises(ValueError):
+            completed_measurement_transport_joint_bootstrap(0.13, records, n_bootstrap=10)
+
+    def test_s12_sensitivity_grid_reports_inadmissible_and_range(self):
+        grid = completed_measurement_transport_sensitivity_grid(0.13, [0.5, 0.9], [0.5, 0.95])
+        self.assertEqual(grid["grid_size"], 4)
+        self.assertEqual(grid["inadmissible_cells"], 1)
+        self.assertAlmostEqual(grid["m_D_min"], (0.13 - 0.5) / 0.45)
+        self.assertAlmostEqual(grid["m_D_max"], (0.13 - 0.1) / 0.4)
+        self.assertAlmostEqual(grid["outside_unit_interval_fraction"], 1 / 3)
+        with self.assertRaises(ValueError):
+            completed_measurement_transport_sensitivity_grid(0.13, [0.5], [0.5])
+
+    def test_transportability_stratified_diagnostics(self):
+        def block(n_tp, n_fn, n_tn, n_fp, stratum):
+            return ([{"test_positive": True, "truth_positive": True,
+                      "stratum": stratum, "measurement_status": "complete"}] * n_tp
+                    + [{"test_positive": False, "truth_positive": True,
+                        "stratum": stratum, "measurement_status": "complete"}] * n_fn
+                    + [{"test_positive": False, "truth_positive": False,
+                        "stratum": stratum, "measurement_status": "complete"}] * n_tn
+                    + [{"test_positive": True, "truth_positive": False,
+                        "stratum": stratum, "measurement_status": "complete"}] * n_fp)
+
+        validation = (block(36, 4, 38, 2, "a") + block(24, 16, 28, 12, "b")
+                      + [{"test_positive": True, "truth_positive": True,
+                          "stratum": "c", "measurement_status": "complete"}] * 10
+                      + [{"test_positive": True, "truth_positive": True,
+                          "stratum": "a", "measurement_status": "unknown"}] * 2)
+        deployment = ([{"stratum": "a", "measurement_status": "complete"}] * 90
+                      + [{"stratum": "a", "measurement_status": "unknown"}] * 10
+                      + [{"stratum": "b", "measurement_status": "complete"}] * 50
+                      + [{"stratum": "b", "measurement_status": "unknown"}] * 50)
+        diag = transportability_stratified_diagnostics(validation, deployment)
+        self.assertTrue(diag["validation"]["heterogeneity_warning"])
+        self.assertAlmostEqual(diag["validation"]["heterogeneity_max_abs_deviation"], 8 / 45)
+        self.assertIn("not_estimable", diag["validation"]["strata"]["c"])
+        self.assertEqual(diag["validation"]["n_unknown_excluded_from_error_estimation"], 2)
+        representativeness = diag["completion_representativeness"]
+        self.assertTrue(representativeness["warning"])
+        self.assertAlmostEqual(representativeness["max_completion_rate_gap"], 0.5)
+        self.assertEqual(representativeness["strata_missing_in_deployment"], ["c"])
+        self.assertFalse(diag["transportability_proven"])
+        self.assertTrue(diag["sensitivity_grid_required"])
+        solo = transportability_stratified_diagnostics(validation)
+        self.assertIsNone(solo["deployment"])
+        self.assertNotIn("completion_representativeness", solo)
+        with self.assertRaises(ValueError):
+            transportability_stratified_diagnostics([])
+        with self.assertRaises(ValueError):
+            transportability_stratified_diagnostics([{"test_positive": True, "truth_positive": True}])
 
     def test_open_world_absence_cannot_be_asserted_from_closed_snapshot(self):
         fixture = load_fixture()

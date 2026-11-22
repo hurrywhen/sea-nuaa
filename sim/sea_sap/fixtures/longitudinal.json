@@ -269,6 +269,13 @@
     "targets-v1",
     "targets-v2"
   ],
+  "protocol_reset_targets": [
+    "targets-v1",
+    "targets-v2"
+  ],
+  "protocol_switch_timing": {
+    "targets-v2": 0
+  },
   "reference_link_truth": {
     "c1": {
       "e1": true

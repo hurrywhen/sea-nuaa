@@ -38,6 +38,9 @@ fi
 if [ "$VERSION" = "v1.15" ]; then
   DATE_STR="22 November 2026"
 fi
+if [ "$VERSION" = "v1.16" ]; then
+  DATE_STR="22 November 2026"
+fi
 if [ ! -f "$SRC" ]; then
   echo "[fail] 源稿不存在：$SRC" >&2
   exit 2
@@ -133,7 +136,7 @@ main.tex toplevelfile
 EOF
 
 # 5) anc/ 附件：v1.9/v1.10/v1.11/v1.12 候选包含全部 292 分片和数据快照。
-if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11" ] || [ "$VERSION" = "v1.12" ] || [ "$VERSION" = "v1.13" ] || [ "$VERSION" = "v1.14" ] || [ "$VERSION" = "v1.15" ]; then
+if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11" ] || [ "$VERSION" = "v1.12" ] || [ "$VERSION" = "v1.13" ] || [ "$VERSION" = "v1.14" ] || [ "$VERSION" = "v1.15" ] || [ "$VERSION" = "v1.16" ]; then
   cp "docs/REPRODUCIBILITY_${VERSION}.md" "$OUTDIR/anc/"
   cp "docs/审稿回复与修改说明_${VERSION}.md" "$OUTDIR/anc/review_response_${VERSION}_zh.md"
   cp "docs/MINIMAL_VALID_EXPERIMENT_${VERSION}.md" "docs/LITERATURE_SEARCH_${VERSION}.md" "$OUTDIR/anc/"
@@ -141,7 +144,7 @@ if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11"
   cp docs/UNIQUE_KEY_REANALYSIS_SPEC_ZH.md "$OUTDIR/anc/"
   cp "sim/pilot/results/evidence_status_${VERSION}.json" "$OUTDIR/anc/"
   THEORY_VERSION="$VERSION"
-  if [ "$VERSION" = "v1.11" ] || [ "$VERSION" = "v1.12" ] || [ "$VERSION" = "v1.13" ] || [ "$VERSION" = "v1.14" ] || [ "$VERSION" = "v1.15" ]; then THEORY_VERSION="v1.10"; fi
+  if [ "$VERSION" = "v1.11" ] || [ "$VERSION" = "v1.12" ] || [ "$VERSION" = "v1.13" ] || [ "$VERSION" = "v1.14" ] || [ "$VERSION" = "v1.15" ] || [ "$VERSION" = "v1.16" ]; then THEORY_VERSION="v1.10"; fi
   cp -r "sim/theory_${THEORY_VERSION}" "$OUTDIR/anc/"
   cp -r sim/pilot/results/frozen_reanalysis_v1 "$OUTDIR/anc/"
   cp -r sim/pilot/results/v19_financial_caliber_audit "$OUTDIR/anc/"
@@ -155,9 +158,10 @@ if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11"
   if [ "$VERSION" = "v1.13" ]; then AUDIT_VERSION="v113"; fi
   if [ "$VERSION" = "v1.14" ]; then AUDIT_VERSION="v114"; fi
   if [ "$VERSION" = "v1.15" ]; then AUDIT_VERSION="v115"; fi
+  if [ "$VERSION" = "v1.16" ]; then AUDIT_VERSION="v116"; fi
   cp "tools/audit_${AUDIT_VERSION}.py" "tools/audit_${AUDIT_VERSION}_report.json" "$OUTDIR/anc/"
   mkdir -p "$OUTDIR/anc/replay_shards" "$OUTDIR/anc/data" "$OUTDIR/anc/src" "$OUTDIR/anc/logs"
-  if [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11" ] || [ "$VERSION" = "v1.12" ] || [ "$VERSION" = "v1.13" ] || [ "$VERSION" = "v1.14" ] || [ "$VERSION" = "v1.15" ]; then
+  if [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11" ] || [ "$VERSION" = "v1.12" ] || [ "$VERSION" = "v1.13" ] || [ "$VERSION" = "v1.14" ] || [ "$VERSION" = "v1.15" ] || [ "$VERSION" = "v1.16" ]; then
     cp "docs/SUPPLEMENT_NORMATIVE_AND_TRANSFER_${VERSION}.md" "$OUTDIR/anc/"
     cp -r sim/pilot/results/v110_consumption_caliber "$OUTDIR/anc/"
     GOV_VERSION="v1.10"
@@ -165,6 +169,7 @@ if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11"
     if [ "$VERSION" = "v1.13" ]; then GOV_VERSION="v1.13"; fi
     if [ "$VERSION" = "v1.14" ]; then GOV_VERSION="v1.14"; fi
     if [ "$VERSION" = "v1.15" ]; then GOV_VERSION="v1.15"; fi
+    if [ "$VERSION" = "v1.16" ]; then GOV_VERSION="v1.16"; fi
     cp "sim/pilot/results/governance_conformance_${GOV_VERSION}.json" "$OUTDIR/anc/"
     cp tools/reproduce_v110_sap.py tools/test_v110_sap.py tools/check_pdf_layout.py "$OUTDIR/anc/"
     cp -r sim/sea_governance "$OUTDIR/anc/src/"
@@ -198,6 +203,14 @@ if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11"
       cp -r sim/pilot/results/sap_v1.15 "$OUTDIR/anc/"
       cp tools/make_retrospective_tables.py "$OUTDIR/anc/"
       cp -r sim/pilot/results/retrospective_tables_v1.15 "$OUTDIR/anc/"
+    fi
+    if [ "$VERSION" = "v1.16" ]; then
+      cp docs/SUPPLEMENT_FORMAL_AND_SECONDARY_v1.16.md "$OUTDIR/anc/"
+      cp docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.16.md "$OUTDIR/anc/"
+      cp -r sim/sea_sap "$OUTDIR/anc/src/"
+      cp -r sim/pilot/results/sap_v1.16 "$OUTDIR/anc/"
+      cp tools/make_retrospective_tables.py "$OUTDIR/anc/"
+      cp -r sim/pilot/results/retrospective_tables_v1.16 "$OUTDIR/anc/"
     fi
   fi
   cp sim/pilot/results/llm_replay_*.jsonl "$OUTDIR/anc/replay_shards/"

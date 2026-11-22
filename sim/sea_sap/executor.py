@@ -1,23 +1,30 @@
 """Minimal longitudinal SAP executor for deterministic synthetic fixtures.
 
-This is an executable *small instance* of the v1.15 SAP interface, not a general
+This is an executable *small instance* of the v1.16 SAP interface, not a general
 optimizer, an LLM experiment, or deployment-effectiveness evidence.  It keeps
 latent actual consumption unobserved.  Operational attendance, the synthetic
 machine ingestion-and-task-reference placeholder, and the failure-composite
 endpoint are distinct.  The executable ledger is operational/FC, not latent.
 
-v1.15 semantics: the SAP tuple is defined per control instance with the active
+v1.16 semantics: the SAP tuple is defined per control instance with the active
 target registry in state (main text, Section 3.2).  Registry-version transitions
 are **exogenous frozen evaluation-protocol events, not policy actions**: the
 protocol declares ex ante a finite registry family (version -> content-hash
-allowlist with frozen registry content) and an ordered version schedule.
-continue_with_target_registry advances the single control path to the next
-scheduled family member and seals the predecessor path (single-line control:
+allowlist with frozen registry content), an ordered version schedule, and a
+frozen switch timing (``switch_after_period`` per scheduled successor), all
+fixed before any arm result is read.  continue_with_target_registry advances
+the single control path to the next scheduled family member only at the
+declared period boundary and seals the predecessor path (single-line control:
 exactly one active control path per control instance, one shared budget and
-ledger).  fork_for_target_registry is the declared full-reset protocol choice
-starting a new control instance; it also seals the parent path.  Objective
-rollback never restores a registry version; registry transitions are
-append-only forward along the schedule.  Every cohort-scoped audit event carries
+ledger).  fork_for_target_registry is the declared full-reset protocol
+exception: it may select any pre-declared allowed reset target (including a
+backward version or a family member outside the parent schedule), starts a
+new control instance with a fresh independent single-version schedule, and
+seals the parent path.  Objective rollback never restores a registry version;
+continuity transitions are append-only forward along the schedule.  A rejected
+transition leaves the registry, objective store, budget, and active path
+unchanged; only a rejection audit record is appended to the ledger.  Every
+cohort-scoped audit event carries
 control_instance_id, evaluation_cohort_id, target_registry_version and the
 registry hash.  All structural terminal-plan errors, including
 delivered-but-not-selected, are detected by a commit-free selection dry run
@@ -75,11 +82,13 @@ def _is_sha256_hex(value: Any) -> bool:
     return isinstance(value, str) and _SHA256_HEX.fullmatch(value) is not None
 
 
-def _parse_protocol_declaration(fixture: Mapping[str, Any],
-                                registry: Mapping[str, Any]) -> tuple[dict, list, dict]:
-    """Validate the ex-ante frozen registry family and version schedule.
+def _parse_protocol_declaration(
+        fixture: Mapping[str, Any],
+        registry: Mapping[str, Any]) -> tuple[dict, list, dict, list, dict]:
+    """Validate the ex-ante frozen registry family, schedule, timing and resets.
 
-    The protocol declaration is part of the fixture, frozen before the run:
+    The protocol declaration is part of the fixture, frozen before the run and
+    before any arm result is read:
 
     - ``registry_family``: version -> SHA-256 content-hash allowlist of the
       finite frozen family (main text $\\mathfrak R$).  The active registry
@@ -88,6 +97,16 @@ def _parse_protocol_declaration(fixture: Mapping[str, Any],
       must appear, and continuity transitions may only advance to the next
       scheduled member.  Without a declaration the schedule is the single
       active version, so no transition is possible.
+    - ``protocol_switch_timing``: frozen ``switch_after_period`` for every
+      scheduled successor (schedule[1:]); values are nonnegative integers,
+      strictly increasing along the schedule.  A continuity transition to a
+      version is accepted only when exactly ``switch_after_period + 1``
+      periods have completed, so the switch timing cannot be chosen after
+      seeing interim results.  Required whenever the schedule has successors.
+    - ``protocol_reset_targets``: pre-declared allowlist of family members
+      permitted as full-reset targets (may include backward versions and
+      members outside the parent schedule).  Defaults to the whole family
+      when absent; a fork outside the allowlist is rejected.
     - ``protocol_registries``: frozen full content for scheduled versions other
       than the initial one, making the allowlist self-contained.
 
@@ -99,9 +118,11 @@ def _parse_protocol_declaration(fixture: Mapping[str, Any],
     registry_hash = _sha(registry)
     family = fixture.get("registry_family")
     schedule = fixture.get("protocol_registry_schedule")
+    timing = fixture.get("protocol_switch_timing")
+    reset_targets = fixture.get("protocol_reset_targets")
     frozen = fixture.get("protocol_registries", {})
     if family is None:
-        if schedule is not None or frozen:
+        if schedule is not None or frozen or timing is not None or reset_targets is not None:
             raise ValueError("schedule/frozen registries require a declared registry_family")
         family = {version: registry_hash}
     else:
@@ -124,6 +145,28 @@ def _parse_protocol_declaration(fixture: Mapping[str, Any],
         raise ValueError("every scheduled version must be a declared family member")
     if version not in schedule:
         raise ValueError("active registry version must appear in the protocol schedule")
+    successors = schedule[1:]
+    if timing is None:
+        if successors:
+            raise ValueError("a multi-version protocol schedule requires frozen protocol_switch_timing")
+        timing = {}
+    if not isinstance(timing, dict):
+        raise ValueError("protocol_switch_timing must map scheduled successors to switch_after_period")
+    if set(timing) != set(successors):
+        raise ValueError("protocol_switch_timing keys must be exactly the scheduled successors")
+    ordered_timings = []
+    for item in successors:
+        ordered_timings.append(_nonnegative_int(timing[item], f"switch_after_period[{item}]"))
+    if any(later <= earlier for earlier, later in zip(ordered_timings, ordered_timings[1:])):
+        raise ValueError("switch_after_period must strictly increase along the protocol schedule")
+    if reset_targets is None:
+        reset_targets = sorted(family)
+    if (not isinstance(reset_targets, list) or not reset_targets
+            or any(not isinstance(item, str) or not item for item in reset_targets)
+            or len(set(reset_targets)) != len(reset_targets)):
+        raise ValueError("protocol_reset_targets must be a nonempty list of unique versions")
+    if any(item not in family for item in reset_targets):
+        raise ValueError("every reset target must be a declared family member")
     if not isinstance(frozen, dict):
         raise ValueError("protocol_registries must map versions to frozen registry content")
     for key, content in frozen.items():
@@ -136,7 +179,7 @@ def _parse_protocol_declaration(fixture: Mapping[str, Any],
             raise ValueError("frozen protocol registry content hash does not match the family")
         if key == version and content != registry:
             raise ValueError("frozen content for the active version must equal the active registry")
-    return dict(family), list(schedule), _detached(frozen)
+    return dict(family), list(schedule), dict(timing), list(reset_targets), _detached(frozen)
 
 
 def load_fixture(path: Optional[Path] = None) -> dict[str, Any]:
@@ -544,14 +587,18 @@ def completed_measurement_transport(m_z: float, sensitivity: float, specificity:
 def completed_measurement_transport_delta_method(
     m_z: float, sensitivity: float, specificity: float, *,
     var_m_z: float, var_se: float, var_sp: float,
+    cov_se_sp: float = 0.0, cov_mz_se: float = 0.0, cov_mz_sp: float = 0.0,
     precision_warning_threshold: float = 0.1,
 ) -> dict[str, Any]:
-    """Delta-method uncertainty propagation for (S12), assuming independent inputs.
+    """Delta-method uncertainty propagation for (S12), with optional covariances.
 
     With N = m^Z - 1 + se and J = se + sp - 1, the partial derivatives are
-    d/se = (J - N)/J^2, d/sp = -N/J^2, d/m^Z = 1/J.  If the inputs are dependent,
-    covariance terms must be added; this helper deliberately does not invent them.
-    The normal-approximation interval is unreliable when the precision warning
+    d/se = (J - N)/J^2, d/sp = -N/J^2, d/m^Z = 1/J.  The default zero
+    covariances encode independent inputs; when sensitivity, specificity, and
+    operational omission are estimated from the same validation set, the
+    corresponding covariance terms must be supplied (or a joint bootstrap used
+    instead), because independence then fails by construction.  The
+    normal-approximation interval is unreliable when the precision warning
     fires (J near zero); use a sensitivity grid instead.
     """
     base = completed_measurement_transport(
@@ -561,36 +608,331 @@ def completed_measurement_transport_delta_method(
         if (isinstance(value, bool) or not isinstance(value, (int, float))
                 or not math.isfinite(value) or value < 0):
             raise ValueError(f"{name} must be a finite nonnegative variance")
+    for name, value in (("cov_se_sp", cov_se_sp), ("cov_mz_se", cov_mz_se),
+                        ("cov_mz_sp", cov_mz_sp)):
+        if (isinstance(value, bool) or not isinstance(value, (int, float))
+                or not math.isfinite(value)):
+            raise ValueError(f"{name} must be a finite covariance")
     youden = base["youden_denominator"]
     numerator = m_z - 1 + sensitivity
     d_se = (youden - numerator) / (youden * youden)
     d_sp = -numerator / (youden * youden)
     d_mz = 1.0 / youden
-    variance = d_se * d_se * var_se + d_sp * d_sp * var_sp + d_mz * d_mz * var_m_z
+    variance = (d_se * d_se * var_se + d_sp * d_sp * var_sp + d_mz * d_mz * var_m_z
+                + 2 * d_se * d_sp * cov_se_sp
+                + 2 * d_mz * d_se * cov_mz_se
+                + 2 * d_mz * d_sp * cov_mz_sp)
+    if variance < 0:
+        raise ValueError("covariance inputs imply a negative variance; they are not jointly valid")
     half_width = 1.959963984540054 * math.sqrt(variance)
+    independent = cov_se_sp == 0.0 and cov_mz_se == 0.0 and cov_mz_sp == 0.0
     return dict(
         base,
         delta_method_variance=variance,
         approx_95_interval=[base["m_D"] - half_width, base["m_D"] + half_width],
-        input_independence_assumed=True,
-        covariance_note="add covariance terms if m^Z, se, sp estimates are dependent",
+        input_independence_assumed=independent,
+        covariance_terms={"cov_se_sp": float(cov_se_sp), "cov_mz_se": float(cov_mz_se),
+                          "cov_mz_sp": float(cov_mz_sp)},
+        covariance_note=("independent inputs assumed (all covariance terms zero)" if independent
+                         else "supplied covariance terms included; same-validation-set estimates "
+                              "are dependent by construction and need covariances or a joint bootstrap"),
     )
+
+
+def _binary_validation_rates(records: Sequence[Mapping[str, Any]]) -> tuple[float, float, dict]:
+    """Sensitivity/specificity from paired (test, truth) binary validation records."""
+    tp = fn = tn = fp = 0
+    for record in records:
+        test = record.get("test_positive")
+        truth = record.get("truth_positive")
+        if not isinstance(test, bool) or not isinstance(truth, bool):
+            raise ValueError("validation records need boolean test_positive and truth_positive")
+        if truth:
+            tp, fn = (tp + 1, fn) if test else (tp, fn + 1)
+        else:
+            fp, tn = (fp + 1, tn) if test else (fp, tn + 1)
+    if tp + fn == 0 or tn + fp == 0:
+        raise ValueError("validation records must contain both truth-positive and truth-negative units")
+    counts = {"tp": tp, "fn": fn, "tn": tn, "fp": fp}
+    return tp / (tp + fn), tn / (tn + fp), counts
+
+
+def completed_measurement_transport_joint_bootstrap(
+    m_z: float, validation_records: Sequence[Mapping[str, Any]], *,
+    n_bootstrap: int = 10000, seed: int = 42,
+    cluster_key: Optional[str] = None,
+    precision_warning_threshold: float = 0.1,
+) -> dict[str, Any]:
+    """Joint (optionally cluster) bootstrap for the (S12) completed-measurement transport.
+
+    Sensitivity and specificity are re-estimated jointly from resampled paired
+    validation records, so their dependence (same validation set) is preserved
+    instead of assumed away; with ``cluster_key`` whole clusters are resampled
+    to respect within-cluster correlation.  The operational omission m^Z is
+    held fixed: it comes from the deployment operational measurement, a
+    separate sample, and its uncertainty is not modeled here.  This is a
+    method demonstration on synthetic paired records, not real measurement
+    validation.  Replicates with a nonpositive Youden denominator are counted
+    and excluded from the percentile interval (reported, never silently
+    dropped); the interval is a sensitivity-analysis summary under the
+    explicit error model and the transportability assumption, not an
+    assumption-free bound.
+    """
+    import random
+
+    if (isinstance(m_z, bool) or not isinstance(m_z, (int, float))
+            or not math.isfinite(m_z) or not 0 <= m_z <= 1):
+        raise ValueError("m_z must be a finite number in [0,1]")
+    if isinstance(n_bootstrap, bool) or not isinstance(n_bootstrap, int) or n_bootstrap < 100:
+        raise ValueError("n_bootstrap must be an integer >= 100")
+    if not validation_records:
+        raise ValueError("validation_records must be nonempty")
+    se, sp, counts = _binary_validation_rates(validation_records)
+    base = completed_measurement_transport(m_z, se, sp,
+                                           precision_warning_threshold=precision_warning_threshold)
+    if cluster_key is not None:
+        clusters: dict[Any, list[Mapping[str, Any]]] = {}
+        for record in validation_records:
+            if cluster_key not in record:
+                raise ValueError(f"every record needs the cluster key {cluster_key!r}")
+            clusters.setdefault(record[cluster_key], []).append(record)
+        units = list(clusters.values())
+    else:
+        units = [[record] for record in validation_records]
+    rng = random.Random(seed)
+    estimates: list[float] = []
+    degenerate = 0
+    n = len(units)
+    for _ in range(n_bootstrap):
+        sample = [record for _ in range(n) for record in units[rng.randrange(n)]]
+        try:
+            b_se, b_sp, _ = _binary_validation_rates(sample)
+        except ValueError:
+            degenerate += 1  # resample lost one truth class
+            continue
+        youden = b_se + b_sp - 1
+        if youden <= 0:
+            degenerate += 1
+            continue
+        estimates.append((m_z - (1 - b_se)) / youden)
+    if len(estimates) < 100:
+        raise ValueError("too few nondegenerate bootstrap replicates; the error model is unstable")
+    estimates.sort()
+
+    def percentile(fraction: float) -> float:
+        index = fraction * (len(estimates) - 1)
+        lower = int(math.floor(index))
+        upper = min(lower + 1, len(estimates) - 1)
+        return estimates[lower] + (index - lower) * (estimates[upper] - estimates[lower])
+
+    return {
+        **base,
+        "method": "joint_cluster_bootstrap" if cluster_key is not None else "joint_bootstrap",
+        "validation_counts": counts,
+        "n_bootstrap": n_bootstrap, "seed": seed,
+        "cluster_key": cluster_key,
+        "n_clusters": len(units) if cluster_key is not None else None,
+        "degenerate_replicates": degenerate,
+        "degenerate_replicate_fraction": degenerate / n_bootstrap,
+        "bootstrap_95_interval": [percentile(0.025), percentile(0.975)],
+        "bootstrap_median": percentile(0.5),
+        "bootstrap_estimates_outside_unit_interval": sum(
+            not 0 <= value <= 1 for value in estimates),
+        "m_z_held_fixed": True,
+        "scope_note": "synthetic paired-record method demonstration; transportability still assumed, "
+                      "not validated; m^Z uncertainty from the deployment sample is not modeled",
+    }
+
+
+def completed_measurement_transport_sensitivity_grid(
+    m_z: float, sensitivities: Sequence[float], specificities: Sequence[float], *,
+    precision_warning_threshold: float = 0.1,
+) -> dict[str, Any]:
+    """Pre-specified sensitivity grid for (S12) over plausible error rates.
+
+    Required whenever the precision warning can fire: the transport is
+    evaluated on the full grid, cells with a nonpositive Youden denominator
+    are reported as inadmissible (never silently skipped), and the range of
+    transported estimates and the fraction outside [0,1] are returned without
+    truncation.  A sensitivity summary under the explicit error model, not an
+    assumption-free bound.
+    """
+    if not sensitivities or not specificities:
+        raise ValueError("sensitivity and specificity grids must be nonempty")
+    cells = []
+    inadmissible = 0
+    for se in sensitivities:
+        for sp in specificities:
+            if se + sp - 1 <= 0:
+                inadmissible += 1
+                cells.append({"sensitivity": se, "specificity": sp, "admissible": False})
+                continue
+            cell = completed_measurement_transport(
+                m_z, se, sp, precision_warning_threshold=precision_warning_threshold)
+            cells.append({"sensitivity": se, "specificity": sp, "admissible": True,
+                          "m_D": cell["m_D"], "precision_warning": cell["precision_warning"],
+                          "outside_unit_interval": cell["latent_estimate_outside_unit_interval"]})
+    values = [cell["m_D"] for cell in cells if cell["admissible"]]
+    if not values:
+        raise ValueError("no admissible grid cell has se+sp>1")
+    return {
+        "identity": "S12", "m_Z": float(m_z),
+        "grid_size": len(cells), "inadmissible_cells": inadmissible,
+        "m_D_min": min(values), "m_D_max": max(values),
+        "outside_unit_interval_fraction": sum(not 0 <= v <= 1 for v in values) / len(values),
+        "precision_warning_cells": sum(cell.get("precision_warning", False) for cell in cells),
+        "cells": cells,
+        "scope": "pre-specified sensitivity grid under the explicit error model; not an assumption-free bound",
+    }
+
+
+def transportability_stratified_diagnostics(
+    validation_records: Sequence[Mapping[str, Any]],
+    deployment_records: Optional[Sequence[Mapping[str, Any]]] = None, *,
+    stratum_key: str = "stratum",
+    heterogeneity_warning_threshold: float = 0.1,
+    completion_warning_threshold: float = 0.1,
+) -> dict[str, Any]:
+    """Testable stratified diagnostics for the (S12) transportability conditions.
+
+    Conditional stability of error rates and completion-subset
+    representativeness cannot be certified by a textual assumption alone.
+    This helper turns them into reportable diagnostics on synthetic or real
+    stratified records:
+
+    - validation: stratum-specific sensitivity/specificity (strata missing a
+      truth class are reported as not estimable, never pooled away), pooled
+      rates, and the maximum absolute deviation of any stratum from the pool
+      (heterogeneity warning above the declared threshold);
+    - completion: stratum-specific completion rates and the shift between the
+      completed subset's stratum shares and all assigned units, within each
+      dataset and between validation and deployment when both are supplied.
+
+    The diagnostics support, but never prove, transportability: deployment
+    error rates remain unobserved, so a pre-specified sensitivity grid is
+    still required.  No truncation, imputation, or silent exclusion.
+    """
+    for name, value in (("heterogeneity_warning_threshold", heterogeneity_warning_threshold),
+                        ("completion_warning_threshold", completion_warning_threshold)):
+        if (isinstance(value, bool) or not isinstance(value, (int, float))
+                or not math.isfinite(value) or not 0 < value <= 1):
+            raise ValueError(f"{name} must lie in (0,1]")
+    if not validation_records:
+        raise ValueError("validation_records must be nonempty")
+
+    def stratum_of(record: Mapping[str, Any]) -> Any:
+        if stratum_key not in record:
+            raise ValueError(f"every record needs the stratum key {stratum_key!r}")
+        value = record[stratum_key]
+        if not isinstance(value, (str, int)) or isinstance(value, bool):
+            raise ValueError("stratum values must be strings or integers")
+        return value
+
+    def completion_table(records: Sequence[Mapping[str, Any]]) -> dict:
+        assigned: dict[Any, int] = {}
+        completed: dict[Any, int] = {}
+        for record in records:
+            stratum = stratum_of(record)
+            status = record.get("measurement_status", "complete")
+            if status not in {"complete", "unknown"}:
+                raise ValueError("measurement_status must be 'complete' or 'unknown'")
+            assigned[stratum] = assigned.get(stratum, 0) + 1
+            if status == "complete":
+                completed[stratum] = completed.get(stratum, 0) + 1
+        total = sum(assigned.values())
+        total_complete = sum(completed.values())
+        rates = {s: completed.get(s, 0) / n for s, n in assigned.items()}
+        share_shift = {
+            s: abs(completed.get(s, 0) / total_complete - n / total)
+            for s, n in assigned.items()
+        } if total_complete else {s: 0.0 for s in assigned}
+        return {"assigned": assigned, "completed": completed,
+                "completion_rate_by_stratum": rates,
+                "complete_subset_share_shift_by_stratum": share_shift,
+                "max_share_shift": max(share_shift.values()),
+                "overall_completion_rate": total_complete / total}
+
+    validation_completion = completion_table(validation_records)
+    paired = [record for record in validation_records
+              if record.get("measurement_status", "complete") == "complete"]
+    n_unknown_excluded = len(validation_records) - len(paired)
+    pooled_se, pooled_sp, pooled_counts = _binary_validation_rates(paired)
+    strata: dict[Any, list] = {}
+    for record in paired:
+        strata.setdefault(stratum_of(record), []).append(record)
+    per_stratum = {}
+    deviations = []
+    for stratum, records in sorted(strata.items(), key=lambda item: str(item[0])):
+        truths = {record["truth_positive"] for record in records}
+        if len(truths) < 2:
+            per_stratum[stratum] = {"n": len(records), "not_estimable": "stratum lacks one truth class"}
+            continue
+        se, sp, counts = _binary_validation_rates(records)
+        per_stratum[stratum] = {"n": len(records), "sensitivity": se, "specificity": sp,
+                                "counts": counts}
+        deviations.extend((abs(se - pooled_se), abs(sp - pooled_sp)))
+    heterogeneity = max(deviations) if deviations else 0.0
+    result: dict[str, Any] = {
+        "scope": "diagnostics support, never prove, validation-to-deployment transportability",
+        "stratum_key": stratum_key,
+        "validation": {
+            "pooled": {"sensitivity": pooled_se, "specificity": pooled_sp, "counts": pooled_counts},
+            "strata": per_stratum,
+            "n_unknown_excluded_from_error_estimation": n_unknown_excluded,
+            "heterogeneity_max_abs_deviation": heterogeneity,
+            "heterogeneity_warning": heterogeneity > heterogeneity_warning_threshold,
+            "heterogeneity_warning_threshold": heterogeneity_warning_threshold,
+            "completion": validation_completion,
+        },
+        "deployment": None,
+        "sensitivity_grid_required": True,
+        "transportability_proven": False,
+    }
+    if deployment_records is not None:
+        if not deployment_records:
+            raise ValueError("deployment_records must be nonempty when supplied")
+        deployment_completion = completion_table(deployment_records)
+        validation_rates = validation_completion["completion_rate_by_stratum"]
+        deployment_rates = deployment_completion["completion_rate_by_stratum"]
+        common = set(validation_rates) & set(deployment_rates)
+        gaps = {s: abs(validation_rates[s] - deployment_rates[s]) for s in common}
+        missing_in_deployment = sorted(set(validation_rates) - set(deployment_rates), key=str)
+        missing_in_validation = sorted(set(deployment_rates) - set(validation_rates), key=str)
+        max_gap = max(gaps.values()) if gaps else 0.0
+        result["deployment"] = {"completion": deployment_completion}
+        result["completion_representativeness"] = {
+            "completion_rate_gap_by_stratum": gaps,
+            "max_completion_rate_gap": max_gap,
+            "strata_missing_in_deployment": missing_in_deployment,
+            "strata_missing_in_validation": missing_in_validation,
+            "max_complete_subset_share_shift_validation": validation_completion["max_share_shift"],
+            "max_complete_subset_share_shift_deployment": deployment_completion["max_share_shift"],
+            "warning": (max_gap > completion_warning_threshold
+                        or bool(missing_in_deployment) or bool(missing_in_validation)
+                        or validation_completion["max_share_shift"] > completion_warning_threshold
+                        or deployment_completion["max_share_shift"] > completion_warning_threshold),
+            "completion_warning_threshold": completion_warning_threshold,
+        }
+    return result
 
 
 class SAPExecutor:
     """Execute a small target registry under one control history and evaluation cohort.
 
-    Under the v1.15 tuple, the SAP control instance spans evaluation cohorts:
+    Under the v1.16 tuple, the SAP control instance spans evaluation cohorts:
     the active registry is part of state, and a registry-version transition is
     an **exogenous frozen evaluation-protocol event, not a policy action**.
     The protocol declares ex ante a finite registry family (content-hash
-    allowlist) and an ordered schedule.  This object serves one cohort (one
-    constant registry version).  continue_with_target_registry advances the
-    single control path to the next scheduled family member, seals this
-    predecessor path, and shares the unique objective/authorization/audit/
-    budget state; fork_for_target_registry is the declared full-reset protocol
-    choice starting a new control instance.  Objective rollback never restores
-    a registry version.
+    allowlist), an ordered schedule, and a frozen switch timing
+    (``switch_after_period`` per scheduled successor), all fixed before any
+    arm result is read.  This object serves one cohort (one constant registry
+    version).  continue_with_target_registry advances the single control path
+    to the next scheduled family member only at the declared period boundary,
+    seals this predecessor path, and shares the unique objective/authorization/
+    audit/budget state; fork_for_target_registry is the declared full-reset
+    protocol exception starting a new control instance with an independent
+    single-version schedule from the pre-declared reset-target allowlist.
+    Objective rollback never restores a registry version.
     """
 
     def __init__(self, fixture: Mapping[str, Any], *, arm: str = "sea"):
@@ -598,13 +940,10 @@ class SAPExecutor:
         self.registry = _detached(fixture["target_registry"])
         validate_target_registry(self.registry)
         (self.registry_family, self.protocol_registry_schedule,
+         self.protocol_switch_timing, self.protocol_reset_targets,
          self._frozen_protocol_registries) = _parse_protocol_declaration(fixture, self.registry)
         self._schedule_index = self.protocol_registry_schedule.index(self.registry["version"])
-        self.protocol_declaration_sha256 = _sha({
-            "registry_family": self.registry_family,
-            "protocol_registry_schedule": self.protocol_registry_schedule,
-            "protocol_registries": self._frozen_protocol_registries,
-        })
+        self.protocol_declaration_sha256 = self._declaration_hash()
         self.arm = arm
         self.control_instance_id = domain_digest("sea-sap-control-instance/1", {
             "run_id": fixture["run_id"], "arm": arm,
@@ -628,6 +967,26 @@ class SAPExecutor:
         self._document_by_id = {
             doc["document_id"]: doc for doc in self.registry["reference_corpus"]["documents"]
         }
+
+    def _declaration_hash(self) -> str:
+        return _sha({
+            "registry_family": self.registry_family,
+            "protocol_registry_schedule": self.protocol_registry_schedule,
+            "protocol_switch_timing": self.protocol_switch_timing,
+            "protocol_reset_targets": self.protocol_reset_targets,
+            "protocol_registries": self._frozen_protocol_registries,
+        })
+
+    def _assert_declaration_intact(self, registry: Any, attempted_hash: Optional[str]) -> None:
+        """The declaration is frozen at construction, before any result is read.
+
+        Any post-construction mutation of the family, schedule, switch timing,
+        reset allowlist, or frozen content invalidates every transition attempt
+        (including outcome-motivated timing edits), which is then rejected and
+        logged like any other unauthorized attempt.
+        """
+        if self._declaration_hash() != self.protocol_declaration_sha256:
+            self._reject_switch(registry, "protocol_declaration_tampered", attempted_hash)
 
     def _cohort_context(self) -> dict[str, str]:
         """Attribution carried by every cohort-scoped audit event payload."""
@@ -660,8 +1019,16 @@ class SAPExecutor:
             evidence=[f"fixture:{self.fixture['run_id']}:control-path-sealed:{self.registry['version']}"])
 
     def _reject_switch(self, registry: Any, reason: str,
-                       attempted_hash: Optional[str] = None) -> None:
-        """Log a rejected protocol-transition attempt with zero state mutation."""
+                       attempted_hash: Optional[str] = None,
+                       extra: Optional[Mapping[str, Any]] = None) -> None:
+        """Log a rejected protocol-transition attempt.
+
+        The registry, objective store, budget, history, and active control path
+        are unchanged; the only state change is the appended rejection audit
+        record in the ledger (which is part of the SAP state), and no resource
+        is spent.  The payload states this precisely instead of claiming that
+        the whole SAP state is unmutated.
+        """
         version = registry.get("version") if isinstance(registry, Mapping) else None
         payload = {
             **self._cohort_context(),
@@ -670,43 +1037,54 @@ class SAPExecutor:
             "reason": reason,
             "policy_action": False,
             "protocol_declaration_sha256": self.protocol_declaration_sha256,
-            "state_mutated": False,
+            "registry_objective_budget_mutated": False,
+            "active_path_mutated": False,
+            "rejection_audit_record_appended": True,
             "resources_spent": 0,
         }
+        if extra:
+            payload.update(extra)
         self.governance.append_record(
             "registry_switch_rejected", payload,
             evidence=[f"fixture:{self.fixture['run_id']}:registry-switch-rejected:{reason}"])
         raise ValueError(f"registry switch rejected: {reason}")
 
     def fork_for_target_registry(self, registry: Mapping[str, Any]) -> "SAPExecutor":
-        """Declared full-reset protocol choice: a NEW control instance and cohort.
+        """Declared full-reset protocol exception: a NEW control instance and cohort.
 
         This is an evaluation-protocol choice, not a theorem that SAP control
-        must reset, and not a policy action.  The forked registry must be a
-        content-hash-verified member of the frozen family.  The parent path is
-        sealed so that exactly one active control path remains per protocol
-        run; the new instance has its own control identity, objective store,
-        budget, and ledger.  Its schedule is the declared suffix starting at
-        the fork version (or a single-version schedule if the version is a
-        family member outside the parent schedule).
+        must reset, and not a policy action.  Unlike continuity transitions,
+        which strictly advance along the frozen schedule, a full reset may
+        select any member of the pre-declared ``protocol_reset_targets``
+        allowlist — including a backward version or a family member outside
+        the parent schedule.  A backward reset starts a new control instance;
+        it is not a registry rollback of the sealed parent path.  The forked
+        registry must be content-hash verified, and the new instance receives
+        a fresh independent single-version schedule (further transitions
+        require a new protocol declaration).  The parent path is sealed so
+        that exactly one active control path remains per protocol run; the
+        new instance has its own control identity, objective store, budget,
+        and ledger.
         """
         if self._sealed:
             self._reject_switch(registry, "sealed_control_path")
         validate_target_registry(registry)
         version = registry["version"]
         attempted_hash = _sha(registry)
+        self._assert_declaration_intact(registry, attempted_hash)
         if version not in self.registry_family:
             self._reject_switch(registry, "version_not_in_registry_family", attempted_hash)
         if self.registry_family[version] != attempted_hash:
             self._reject_switch(registry, "registry_content_hash_mismatch", attempted_hash)
+        if version not in self.protocol_reset_targets:
+            self._reject_switch(registry, "reset_target_not_declared", attempted_hash)
         fixture = _detached(self.fixture)
         fixture["run_id"] = f"{self.fixture['run_id']}:{version}"
         fixture["target_registry"] = _detached(registry)
-        if version in self.protocol_registry_schedule:
-            index = self.protocol_registry_schedule.index(version)
-            fixture["protocol_registry_schedule"] = self.protocol_registry_schedule[index:]
-        else:
-            fixture["protocol_registry_schedule"] = [version]
+        # Full reset generates a new independent single-version schedule; the
+        # parent schedule and its switch timing do not carry over.
+        fixture["protocol_registry_schedule"] = [version]
+        fixture["protocol_switch_timing"] = {}
         forked = SAPExecutor(fixture, arm=self.arm)
         self._seal("protocol_full_reset_new_control_instance",
                    successor_evaluation_cohort_id=forked.evaluation_cohort_id)
@@ -720,19 +1098,25 @@ class SAPExecutor:
         policy action space (main text, Section 3.2).  Instead the transition
         is validated against the ex-ante frozen protocol declaration: the new
         registry must be the NEXT scheduled family member with a matching
-        content hash.  Non-family, tampered, out-of-schedule, and sealed-path
-        attempts are logged as rejections with zero state mutation and zero
-        resource spend.  On acceptance the predecessor path is sealed
-        (single-line control), objective/authorization/audit/budget state is
-        shared as the unique control state, and a cohort-boundary record is
-        appended.  The transition is append-only forward: objective rollback
-        never restores a registry version.
+        content hash, and the transition must occur exactly at the frozen
+        ``switch_after_period`` boundary (after that many periods plus one
+        have completed), so the switch timing cannot be chosen after seeing
+        interim results.  Non-family, tampered, out-of-schedule, mistimed,
+        declaration-tampered, and sealed-path attempts are rejected: the
+        registry, objective store, budget, and active path stay unchanged and
+        only a rejection audit record is appended, with zero resource spend.
+        On acceptance the predecessor path is sealed (single-line control),
+        objective/authorization/audit/budget state is shared as the unique
+        control state, and a cohort-boundary record is appended.  The
+        transition is append-only forward: objective rollback never restores
+        a registry version.
         """
         if self._sealed:
             self._reject_switch(registry, "sealed_control_path")
         validate_target_registry(registry)
         version = registry["version"]
         attempted_hash = _sha(registry)
+        self._assert_declaration_intact(registry, attempted_hash)
         if version not in self.registry_family:
             self._reject_switch(registry, "version_not_in_registry_family", attempted_hash)
         if self.registry_family[version] != attempted_hash:
@@ -740,6 +1124,13 @@ class SAPExecutor:
         schedule = self.protocol_registry_schedule
         if self._schedule_index + 1 >= len(schedule) or schedule[self._schedule_index + 1] != version:
             self._reject_switch(registry, "version_not_next_in_protocol_schedule", attempted_hash)
+        declared_after = self.protocol_switch_timing[version]
+        completed_periods = len(self.period_results)
+        if completed_periods != declared_after + 1:
+            self._reject_switch(
+                registry, "switch_timing_mismatch", attempted_hash,
+                extra={"declared_switch_after_period": declared_after,
+                       "completed_periods": completed_periods})
         fixture = _detached(self.fixture)
         fixture["target_registry"] = _detached(registry)
         continued = SAPExecutor(fixture, arm=self.arm)
@@ -771,6 +1162,9 @@ class SAPExecutor:
             "protocol_declaration_sha256": self.protocol_declaration_sha256,
             "old_schedule_index": self._schedule_index,
             "new_schedule_index": continued._schedule_index,
+            "declared_switch_after_period": declared_after,
+            "completed_periods_before_switch": completed_periods,
+            "switch_timing_frozen_before_results": True,
             "old_control_path_sealed": True,
         }, evidence=[f"fixture:{self.fixture['run_id']}:evaluation-cohort:{registry['version']}"])
         return continued
@@ -1170,7 +1564,7 @@ class SAPExecutor:
     def result(self) -> dict[str, Any]:
         verification = self.governance.verify_audit(anchor=self.governance.audit_anchor())
         return {
-            "schema": "sea.sap-longitudinal-executor/v4",
+            "schema": "sea.sap-longitudinal-executor/v5",
             "status": "SYNTHETIC_IMPLEMENTATION_RUN__NOT_EFFECTIVENESS_EVIDENCE",
             "run_id": self.fixture["run_id"], "arm": self.arm,
             "control_instance_id": self.control_instance_id,
@@ -1185,6 +1579,8 @@ class SAPExecutor:
             "registry_family_sha256": _sha(self.registry_family),
             "protocol_registry_schedule": list(self.protocol_registry_schedule),
             "protocol_schedule_index": self._schedule_index,
+            "protocol_switch_timing": dict(self.protocol_switch_timing),
+            "protocol_reset_targets": list(self.protocol_reset_targets),
             "protocol_declaration_sha256": self.protocol_declaration_sha256,
             "instrument_registry_scope": self.fixture["attendance_instrument"]["registry_scope"],
             "ledger_scope": "OPERATIONAL_ATTENDANCE_AND_FAILURE_COMPOSITE__NOT_LATENT_ACTUAL_CONSUMPTION",
@@ -1266,7 +1662,7 @@ def run_matched_implementation_demo() -> dict[str, Any]:
             "evaluation_link_rule": "reference_link_truth_arm_independent",
         }
     return {
-        "schema": "sea.matched-implementation-fixture/v4",
+        "schema": "sea.matched-implementation-fixture/v5",
         "status": "MECHANISTIC_MATCHED_FIXTURE__NOT_A_MODEL_OR_DEPLOYMENT_EXPERIMENT",
         "matching": {
             "mock_scorer": "symmetric_binary/1 + GovernanceReference integer ranking",
@@ -1282,13 +1678,18 @@ def run_matched_implementation_demo() -> dict[str, Any]:
 
 
 def run_protocol_registry_switch_demo() -> dict[str, Any]:
-    """Exogenous protocol transition, single-line sealing, and rejection negatives.
+    """Exogenous protocol transition, frozen timing, single-line sealing, resets.
 
-    Demonstrates the v1.15 registry governance semantics on the shipped frozen
-    family/schedule declaration: a protocol event advances the single control
-    path and seals the predecessor; non-family, tampered-hash, out-of-schedule,
-    and sealed-path attempts are rejected with logged records and zero
-    mutation; objective rollback does not restore the registry version.
+    Demonstrates the v1.16 registry governance semantics on the shipped frozen
+    family/schedule/timing/reset declaration: a protocol event advances the
+    single control path at the declared switch_after_period boundary and seals
+    the predecessor; non-family, tampered-hash, out-of-schedule, mistimed
+    (early/late), declaration-tampered, and sealed-path attempts are rejected
+    with the registry/objective/budget/active path unchanged and only a
+    rejection audit record appended; a full reset forks a new control instance
+    from the declared reset-target allowlist (including a declared backward
+    reset with a fresh single-version schedule) and seals its parent;
+    objective rollback does not restore the registry version.
     Synthetic interface demonstration only, not effectiveness evidence.
     """
     fixture = load_fixture()
@@ -1299,44 +1700,77 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
                                 authorization_id="protocol-demo-write",
                                 timestamp="logical:00000010")
     registry_v2 = fixture["protocol_registries"]["targets-v2"]
+    registry_v1 = fixture["target_registry"]
+    # Accepted exactly at the frozen boundary: switch_after_period(targets-v2)=0.
     continued = executor.continue_with_target_registry(registry_v2)
     second = continued.run_period(1, plans[1])
     restored = continued.rollback_after_period(
         0, authorization_id="protocol-demo-rollback", timestamp="logical:00000020")
 
-    def expect_rejection(method, registry, reason):
-        before_records = len(executor.governance.audit_records())
-        before_budget = dict(continued.budget_remaining)
+    def expect_rejection(method, registry, reason, *, records_from, budget_from):
+        before_records = len(records_from.governance.audit_records())
+        before_budget = dict(budget_from.budget_remaining)
         try:
             method(registry)
         except ValueError as exc:
-            records = executor.governance.audit_records()
+            records = records_from.governance.audit_records()
+            payload = records[-1]["payload"]
             return (str(exc) == f"registry switch rejected: {reason}"
                     and len(records) == before_records + 1
                     and records[-1]["event"] == "registry_switch_rejected"
-                    and records[-1]["payload"]["reason"] == reason
-                    and records[-1]["payload"]["state_mutated"] is False
-                    and records[-1]["payload"]["resources_spent"] == 0
-                    and dict(continued.budget_remaining) == before_budget)
+                    and payload["reason"] == reason
+                    and payload["registry_objective_budget_mutated"] is False
+                    and payload["active_path_mutated"] is False
+                    and payload["rejection_audit_record_appended"] is True
+                    and payload["resources_spent"] == 0
+                    and dict(budget_from.budget_remaining) == before_budget)
         return False
 
     arbitrary = _detached(registry_v2)
     arbitrary["version"] = "unregistered-arbitrary-v999"
     tampered = _detached(registry_v2)
     tampered["targets"][0]["canonical_text"] = "Tampered proposition text."
-    registry_v1 = fixture["target_registry"]
     negatives = {
         "non_family_version_rejected": expect_rejection(
-            continued.continue_with_target_registry, arbitrary, "version_not_in_registry_family"),
+            continued.continue_with_target_registry, arbitrary, "version_not_in_registry_family",
+            records_from=executor, budget_from=continued),
         "tampered_family_hash_rejected": expect_rejection(
-            continued.continue_with_target_registry, tampered, "registry_content_hash_mismatch"),
+            continued.continue_with_target_registry, tampered, "registry_content_hash_mismatch",
+            records_from=executor, budget_from=continued),
         "backward_out_of_schedule_rejected": expect_rejection(
-            continued.continue_with_target_registry, registry_v1, "version_not_next_in_protocol_schedule"),
+            continued.continue_with_target_registry, registry_v1, "version_not_next_in_protocol_schedule",
+            records_from=executor, budget_from=continued),
         "sealed_predecessor_switch_rejected": expect_rejection(
-            executor.continue_with_target_registry, registry_v2, "sealed_control_path"),
+            executor.continue_with_target_registry, registry_v2, "sealed_control_path",
+            records_from=executor, budget_from=continued),
         "sealed_predecessor_fork_rejected": expect_rejection(
-            executor.fork_for_target_registry, registry_v2, "sealed_control_path"),
+            executor.fork_for_target_registry, registry_v2, "sealed_control_path",
+            records_from=executor, budget_from=continued),
     }
+    # Frozen switch timing: early and late attempts are rejected, so the switch
+    # point cannot be chosen after seeing interim results.
+    early = SAPExecutor(fixture, arm="sea")
+    negatives["early_switch_before_declared_period_rejected"] = expect_rejection(
+        early.continue_with_target_registry, registry_v2, "switch_timing_mismatch",
+        records_from=early, budget_from=early)
+    late = SAPExecutor(fixture, arm="sea")
+    late.run_period(0, plans[0])
+    late.run_period(1, plans[1])
+    negatives["late_switch_after_declared_period_rejected"] = expect_rejection(
+        late.continue_with_target_registry, registry_v2, "switch_timing_mismatch",
+        records_from=late, budget_from=late)
+    # Outcome-motivated declaration edit after reading period-0 results: the
+    # declaration hash no longer matches, and the transition is rejected.
+    tamper = SAPExecutor(fixture, arm="sea")
+    tamper.run_period(0, plans[0])
+    tamper.protocol_switch_timing["targets-v2"] = 1
+    negatives["outcome_motivated_timing_edit_rejected"] = expect_rejection(
+        tamper.continue_with_target_registry, registry_v2, "protocol_declaration_tampered",
+        records_from=tamper, budget_from=tamper)
+    # The timing/tamper probes run on separate control instances; their
+    # rejection records live in their own ledgers, reported separately.
+    probe_rejections = [probe.governance.audit_records()[-1]["payload"]
+                        for probe in (early, late, tamper)]
     sealed_reuse = {}
     for name, call in (
         ("run_period", lambda: executor.run_period(1, plans[1])),
@@ -1352,7 +1786,10 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
         except RuntimeError:
             sealed_reuse[name] = True
     predecessor_sealed_successor_active = executor._sealed and not continued._sealed
+    # Full reset (declared exception): same-version reset, then a declared
+    # backward reset to targets-v1 as a NEW control instance, not a rollback.
     forked = continued.fork_for_target_registry(registry_v2)
+    reset_backward = forked.fork_for_target_registry(registry_v1)
     checks = {
         **negatives,
         "sealed_predecessor_run_rejected": sealed_reuse["run_period"],
@@ -1364,12 +1801,22 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
         and continued.budget_spent is executor.budget_spent,
         "unique_shared_history": continued.history is executor.history,
         "predecessor_sealed_successor_active": predecessor_sealed_successor_active,
+        "switch_at_frozen_timing_boundary": len(executor.period_results) == 2
+        and executor.protocol_switch_timing["targets-v2"] == 0,
         "objective_rollback_does_not_restore_registry": restored["accepted"]
         and continued.registry["version"] == "targets-v2"
         and continued.governance.inspect_objective()["version"] == restored["version"],
         "fork_is_new_control_instance": forked.control_instance_id != continued.control_instance_id
         and forked.budget_spent == {name: 0 for name in RESOURCE_NAMES},
-        "fork_seals_parent": continued._sealed and not forked._sealed,
+        "fork_seals_parent": continued._sealed and forked._sealed and not reset_backward._sealed,
+        "fork_generates_single_version_schedule": forked.protocol_registry_schedule == ["targets-v2"]
+        and forked.protocol_switch_timing == {},
+        "backward_reset_is_new_instance_not_rollback": reset_backward.control_instance_id != forked.control_instance_id
+        and reset_backward.registry["version"] == "targets-v1"
+        and reset_backward.protocol_registry_schedule == ["targets-v1"]
+        and reset_backward.budget_spent == {name: 0 for name in RESOURCE_NAMES}
+        and reset_backward.governance is not forked.governance
+        and forked.registry["version"] == "targets-v2",
         "periods_stay_cohort_separated": first["evaluation_cohort_id"] != second["evaluation_cohort_id"]
         and first["target_registry_version"] == "targets-v1"
         and second["target_registry_version"] == "targets-v2",
@@ -1380,23 +1827,31 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
         raise AssertionError(f"protocol registry-switch demo checks failed: {checks}")
     records = continued.governance.audit_records()
     return {
-        "schema": "sea.protocol-registry-switch-demo/v1",
+        "schema": "sea.protocol-registry-switch-demo/v2",
         "status": "SYNTHETIC_PROTOCOL_TRANSITION_DEMO__NOT_EFFECTIVENESS_EVIDENCE",
         "run_id": fixture["run_id"],
         "semantics": {
             "registry_transition": "exogenous frozen evaluation-protocol event, not a policy action",
-            "authorization": "no objective-write authorization required or accepted; family/schedule validation instead",
+            "authorization": "no objective-write authorization required or accepted; family/schedule/timing validation instead",
+            "switch_timing": "frozen switch_after_period per scheduled successor, fixed before any arm result is read; early, late, and tampered-timing attempts rejected",
             "lifecycle": "single-line control: predecessor sealed, one active path, unique shared budget/ledger",
-            "rollback_interaction": "objective rollback never restores a registry version; transitions append-only forward",
+            "full_reset_exception": "declared reset-target allowlist; backward or out-of-schedule family members only if pre-declared; fresh independent single-version schedule; parent sealed",
+            "rejection_state_effect": "registry, objective store, budget, and active path unchanged; only a rejection audit record appended; zero resource spend",
+            "rollback_interaction": "objective rollback never restores a registry version; continuity transitions append-only forward",
         },
         "protocol_declaration_sha256": executor.protocol_declaration_sha256,
         "registry_family_sha256": _sha(executor.registry_family),
         "protocol_registry_schedule": executor.protocol_registry_schedule,
+        "protocol_switch_timing": executor.protocol_switch_timing,
+        "protocol_reset_targets": executor.protocol_reset_targets,
         "checks": checks,
         "rejection_events": [record["payload"] for record in records
                              if record["event"] == "registry_switch_rejected"],
+        "timing_and_declaration_rejection_events": probe_rejections,
         "seal_events": [record["payload"] for record in records
                         if record["event"] == "control_path_sealed"],
+        "full_reset_seal_events": [record["payload"] for record in forked.governance.audit_records()
+                                   if record["event"] == "control_path_sealed"],
         "cohort_change_events": [record["payload"] for record in records
                                  if record["event"] == "evaluation_cohort_change"],
         "audit": {"records": records,
