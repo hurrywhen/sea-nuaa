@@ -43,16 +43,17 @@ def main() -> int:
     if "v1.17" in os.path.basename(pdf):
         captions = [f"Table {i}." for i in range(1, 8)]
         keystrings = ["4.389337888", "71,970", "72,000", "18/18", "77.27%",
-                      "v1.17.0", "Frozen Retrospective Sensitivity Audits",
+                      "v1.17.1", "Frozen Retrospective Sensitivity Audits",
                       "operational attendance omission", "commit-free selection dry run",
                       "synthetic_instrument_fixture", "evaluation cohort",
-                      "exogenous", "single-line", "unregistered-arbitrary",
+                      "exogenous", "single-line", "mandatory cohort boundary",
                       "transportability", "precision warning",
                       "switch_after_period", "switch_timing_mismatch",
-                      "protocol_declaration_tampered", "covariance terms",
-                      "joint (cluster) bootstrap", "next_period",
+                      "protocol_declaration_tampered", "full covariance",
+                      "nondegenerate replicates", "next_period",
                       "no_completed_measurements", "positive semidefinite",
-                      "Wilson"]
+                      "Wilson", "unchecked", "allowlist alone",
+                      "three-input", "outcome unlock"]
     elif "v1.16" in os.path.basename(pdf):
         captions = [f"Table {i}." for i in range(1, 8)]
         keystrings = ["4.389337888", "71,970", "72,000", "18/18", "77.27%",

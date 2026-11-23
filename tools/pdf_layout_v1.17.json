@@ -5,6 +5,6 @@
   "safety_band_points": 20.0,
   "status": "PASS",
   "findings": [],
-  "max_word_xmax_to_page_width": 0.9358280595891654,
+  "max_word_xmax_to_page_width": 0.8939382488123158,
   "note": "Coordinate checks do not replace full-page visual inspection."
 }

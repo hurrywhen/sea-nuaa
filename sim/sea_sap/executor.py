@@ -557,9 +557,11 @@ def completed_measurement_transport(m_z: float, sensitivity: float, specificity:
     under an explicit arm-specific error model whose rates are assumed
     conditionally stable between the validation and deployment populations
     (transportability).  It is not an assumption-free bound.  When
-    J = se + sp - 1 approaches zero the transport is highly unstable: estimation
-    variance is amplified by 1/J^2, so a precision warning is raised below the
-    declared threshold and a sensitivity grid over error rates is required.
+    J = se + sp - 1 approaches zero the transport is highly unstable.  The
+    delta gradient has a common 1/J scale (hence a common 1/J^2 variance
+    factor), but this is not a complete asymptotic order when N/J also varies;
+    a precision warning is raised below the declared threshold and a
+    sensitivity grid over error rates is required.
     """
     values = {"m_z": m_z, "sensitivity": sensitivity, "specificity": specificity,
               "precision_warning_threshold": precision_warning_threshold}
@@ -582,10 +584,13 @@ def completed_measurement_transport(m_z: float, sensitivity: float, specificity:
         "sensitivity": float(sensitivity), "specificity": float(specificity),
         "youden_denominator": youden,
         "variance_amplification_factor": 1.0 / (youden * youden),
+        "variance_amplification_scope": "common delta-gradient scale, not the complete asymptotic order when N/J varies",
         "precision_warning": youden < precision_warning_threshold,
         "precision_warning_threshold": float(precision_warning_threshold),
         "transportability_assumption_required": True,
+        "population_feasible_m_Z_interval_given_error_rates": [1.0 - sensitivity, specificity],
         "latent_estimate_outside_unit_interval": not 0 <= m_d <= 1,
+        "outside_unit_interval_meaning": "the plug-in quadruple violates exact population constraints or reflects sampling instability; not by itself proof that the true error model is false",
     }
 
 
@@ -623,7 +628,8 @@ def _checked_s12_covariance_matrix(
         correlation = covariance / math.sqrt(variances[i]) / math.sqrt(variances[j])
         if not math.isfinite(correlation) or abs(correlation) > 1.0 + 1e-12:
             raise ValueError(
-                "covariance inputs are not jointly valid: matrix must be positive semidefinite")
+                "covariance inputs are not jointly valid: matrix must be positive semidefinite "
+                "within the declared 1e-12 roundoff tolerance")
         correlations.append(correlation)
     if all(value > 0.0 for value in variances):
         r01, r02, r12 = correlations
@@ -631,7 +637,8 @@ def _checked_s12_covariance_matrix(
                                  -r01 * r01, -r02 * r02, -r12 * r12))
         if not math.isfinite(determinant) or determinant < -1e-12:
             raise ValueError(
-                "covariance inputs are not jointly valid: matrix must be positive semidefinite")
+                "covariance inputs are not jointly valid: matrix must be positive semidefinite "
+                "within the declared 1e-12 roundoff tolerance")
     return matrix
 
 
@@ -644,15 +651,17 @@ def completed_measurement_transport_delta_method(
     """Delta-method uncertainty propagation for (S12), with optional covariances.
 
     With N = m^Z - 1 + se and J = se + sp - 1, the partial derivatives are
-    d/se = (J - N)/J^2, d/sp = -N/J^2, d/m^Z = 1/J.  The default zero
-    covariances encode independent inputs; when sensitivity, specificity, and
-    operational omission are estimated from the same validation set, the
-    corresponding covariance terms must be supplied (or a joint bootstrap used
-    instead), because independence then fails by construction.  The
-    normal-approximation interval is unreliable when the precision warning
-    fires (J near zero); use a sensitivity grid instead.  Supplied variances
-    and covariances must form a positive-semidefinite 3x3 covariance matrix;
-    checking only the final scalar variance would accept jointly impossible
+    d/se = (J - N)/J^2, d/sp = -N/J^2, d/m^Z = 1/J.  Default zero
+    covariances encode a zero-covariance approximation, not independence;
+    independence requires separate sampling-design evidence.  When all three
+    estimators share units, their full covariance or genuinely three-input
+    design-consistent resampling is required; the shipped two-input bootstrap
+    with m^Z held fixed is not a substitute.  The normal-approximation
+    interval is unreliable when the precision warning fires (J near zero);
+    use a sensitivity grid instead.  Supplied variances and covariances must
+    form a 3x3 covariance matrix accepted as PSD within the declared 1e-12
+    dimensionless roundoff tolerance, not an exact-arithmetic certificate.
+    Checking only the final scalar variance would accept jointly impossible
     inputs in directions other than the S12 gradient.
     """
     base = completed_measurement_transport(
@@ -682,21 +691,26 @@ def completed_measurement_transport_delta_method(
     if not math.isfinite(variance) or variance < 0:
         raise ValueError("covariance inputs imply a non-finite or negative variance; they are not jointly valid")
     half_width = 1.959963984540054 * math.sqrt(variance)
-    independent = cov_se_sp == 0.0 and cov_mz_se == 0.0 and cov_mz_sp == 0.0
+    zero_covariance = cov_se_sp == 0.0 and cov_mz_se == 0.0 and cov_mz_sp == 0.0
     return dict(
         base,
         delta_method_variance=variance,
+        delta_method_variance_status="first_order_asymptotic_approximation_not_exact_finite_sample_variance",
         approx_95_interval=[base["m_D"] - half_width, base["m_D"] + half_width],
-        input_independence_assumed=independent,
+        zero_covariance_approximation=zero_covariance,
+        input_independence_assumed=None,
+        independence_status="not_inferred_from_covariance_inputs__separate_design_evidence_required",
         covariance_terms={"cov_se_sp": float(cov_se_sp), "cov_mz_se": float(cov_mz_se),
                           "cov_mz_sp": float(cov_mz_sp)},
         covariance_matrix_order=["sensitivity", "specificity", "operational_omission"],
         covariance_matrix=covariance_matrix,
-        covariance_matrix_positive_semidefinite=True,
-        covariance_psd_method="normalized_principal_minors_with_exact_zero_variance_rows",
-        covariance_note=("independent inputs assumed (all covariance terms zero)" if independent
-                         else "supplied covariance terms included; same-validation-set estimates "
-                              "are dependent by construction and need covariances or a joint bootstrap"),
+        **{"covariance_matrix_psd_within_1e-12_tolerance": True},
+        covariance_psd_tolerance=1e-12,
+        covariance_psd_method="normalized_principal_minors_with_exact_zero_variance_rows__dimensionless_roundoff_tolerance_not_exact_arithmetic_certificate",
+        covariance_note=("zero-covariance approximation; zero covariance does not establish independence, "
+                         "which requires separate sampling-design evidence" if zero_covariance
+                         else "supplied covariance terms included; shared-unit estimates need covariances "
+                              "or a design-consistent joint resampling of every dependent input"),
     )
 
 
@@ -793,8 +807,13 @@ def completed_measurement_transport_joint_bootstrap(
     method demonstration on synthetic paired records, not real measurement
     validation.  Replicates with a nonpositive Youden denominator are counted
     and excluded from the percentile interval (reported, never silently
-    dropped); the interval is a sensitivity-analysis summary under the
-    explicit error model and the transportability assumption, not an
+    dropped).  Consequently, that interval describes the distribution
+    conditional on nondegenerate replicates; a high degenerate fraction or few
+    clusters precludes an unconditional, automatically calibrated claim.  The
+    helper does not jointly resample m^Z with se/sp: if all three estimators
+    share units, a genuinely three-input resampling design or full covariance
+    is required instead.  The interval is a sensitivity-analysis summary under
+    the explicit error model and transportability assumption, not an
     assumption-free bound.
     """
     import random
@@ -858,8 +877,12 @@ def completed_measurement_transport_joint_bootstrap(
         "bootstrap_estimates_outside_unit_interval": sum(
             not 0 <= value <= 1 for value in estimates),
         "m_z_held_fixed": True,
+        "jointly_reestimated_inputs": ["sensitivity", "specificity"],
+        "three_input_joint_resampling_performed": False,
+        "bootstrap_interval_condition": "conditional_on_nondegenerate_replicates__not_unconditional_calibration",
         "scope_note": "synthetic paired-record method demonstration; transportability still assumed, "
-                      "not validated; m^Z uncertainty from the deployment sample is not modeled",
+                      "not validated; m^Z uncertainty from the deployment sample is not modeled; "
+                      "shared-unit se/sp/m^Z inputs require genuine three-input resampling or full covariance",
     }
 
 
@@ -871,10 +894,12 @@ def completed_measurement_transport_sensitivity_grid(
 
     Required whenever the precision warning can fire: the transport is
     evaluated on the full grid, cells with a nonpositive Youden denominator
-    are reported as inadmissible (never silently skipped), and the range of
-    transported estimates and the fraction outside [0,1] are returned without
-    truncation.  A sensitivity summary under the explicit error model, not an
-    assumption-free bound.
+    are reported as inadmissible under the preregistered positive-J rule
+    (never silently skipped), and the range of transported estimates and the
+    fraction outside [0,1] are returned without truncation.  At J=0 the cell
+    reason distinguishes nonidentification (N=0) from no compatible population
+    (N!=0); J<0 is outside the declared positive-Youden model.  A sensitivity
+    summary under the explicit error model, not an assumption-free bound.
     """
     if not sensitivities or not specificities:
         raise ValueError("sensitivity and specificity grids must be nonempty")
@@ -882,9 +907,17 @@ def completed_measurement_transport_sensitivity_grid(
     inadmissible = 0
     for se in sensitivities:
         for sp in specificities:
-            if se + sp - 1 <= 0:
+            youden = se + sp - 1
+            if youden <= 0:
                 inadmissible += 1
-                cells.append({"sensitivity": se, "specificity": sp, "admissible": False})
+                numerator = m_z - (1 - se)
+                reason = (
+                    "nonidentifiable_zero_youden_zero_numerator" if youden == 0 and numerator == 0
+                    else "no_compatible_population_at_zero_youden" if youden == 0
+                    else "outside_preregistered_positive_youden_model")
+                cells.append({"sensitivity": se, "specificity": sp, "admissible": False,
+                              "youden_denominator": youden, "numerator_N": numerator,
+                              "not_admissible_reason": reason})
                 continue
             cell = completed_measurement_transport(
                 m_z, se, sp, precision_warning_threshold=precision_warning_threshold)
@@ -901,6 +934,7 @@ def completed_measurement_transport_sensitivity_grid(
         "outside_unit_interval_fraction": sum(not 0 <= v <= 1 for v in values) / len(values),
         "precision_warning_cells": sum(cell.get("precision_warning", False) for cell in cells),
         "cells": cells,
+        "nonpositive_youden_admissibility_rule": "excluded under the preregistered se+sp>1 rule; J=0,N=0 is nonidentification, J=0,N!=0 has no compatible population, and J<0 is outside the declared model",
         "scope": "pre-specified sensitivity grid under the explicit error model; not an assumption-free bound",
     }
 
@@ -1241,6 +1275,31 @@ class SAPExecutor:
         """
         if self._declaration_hash() != self.protocol_declaration_sha256:
             self._reject_switch(registry, "protocol_declaration_tampered", attempted_hash)
+
+    def _assert_period_protocol_ready(self, period: int) -> None:
+        """Reject a period that would bypass the frozen cohort schedule.
+
+        This is a commit-free precheck: unlike a canonical rejected switch
+        attempt, an invalid period run appends no audit record.  Declaration
+        integrity is rechecked so editing the mutable input view after seeing
+        results cannot move the boundary and legitimize another old-cohort
+        period.  At the exact boundary (and in any legacy/deserialized late
+        state), the caller must perform the scheduled exogenous transition
+        before committing another period on the old path.
+        """
+        if self._declaration_hash() != self.protocol_declaration_sha256:
+            raise RuntimeError(
+                "protocol declaration integrity violation; period commit rejected before mutation")
+        next_index = self._schedule_index + 1
+        if next_index >= len(self.protocol_registry_schedule):
+            return
+        successor = self.protocol_registry_schedule[next_index]
+        transition_period = self.protocol_switch_timing[successor] + 1
+        if period >= transition_period:
+            raise RuntimeError(
+                f"protocol registry transition required before period {period}: "
+                f"scheduled successor {successor!r} must be accepted at period {transition_period}; "
+                "the old evaluation cohort cannot commit beyond its frozen boundary")
 
     def _cohort_context(self) -> dict[str, str]:
         """Attribution carried by every cohort-scoped audit event payload."""
@@ -1737,7 +1796,10 @@ class SAPExecutor:
         and delivered ⊆ selected is checked by a commit-free selection dry run.
         An invalid period or infeasible plan therefore leaves next_period,
         budgets, ledgers, and audit records untouched.  Repeated, regressed,
-        and skipped periods cannot manufacture a frozen switch boundary.
+        and skipped periods cannot manufacture a frozen switch boundary.  At
+        a due registry boundary, the old cohort must complete the scheduled
+        transition before another commit; declaration tampering cannot move
+        that requirement.  Both failures are commit-free precheck rejections.
         """
         self._assert_active()
         expected_period = self.next_period
@@ -1745,6 +1807,7 @@ class SAPExecutor:
             raise ValueError(
                 f"period sequence rejected: expected period {expected_period}, got {period!r}; "
                 "periods must be unique, contiguous, and increasing")
+        self._assert_period_protocol_ready(expected_period)
         candidate_ids = {item["candidate_id"] for item in self.fixture["candidates"]}
         delivered = set(plan.get("delivered", []))
         opened = set(plan.get("opened", []))
@@ -1830,7 +1893,7 @@ class SAPExecutor:
     def result(self) -> dict[str, Any]:
         verification = self.governance.verify_audit(anchor=self.governance.audit_anchor())
         return {
-            "schema": "sea.sap-longitudinal-executor/v6",
+            "schema": "sea.sap-longitudinal-executor/v7",
             "status": "SYNTHETIC_IMPLEMENTATION_RUN__NOT_EFFECTIVENESS_EVIDENCE",
             "run_id": self.fixture["run_id"], "arm": self.arm,
             "control_instance_id": self.control_instance_id,
@@ -1844,6 +1907,7 @@ class SAPExecutor:
             "seal_reason": self._seal_reason,
             "next_period": self.next_period,
             "period_sequence_rule": "period == next_period; unique, contiguous, increasing; reset starts at 0",
+            "registry_schedule_rule": "at a due frozen switch boundary, the old cohort cannot commit another period before the scheduled exogenous transition; declaration integrity is rechecked before every period commit",
             "registry_family_sha256": _sha(self.registry_family),
             "protocol_registry_schedule": list(self.protocol_registry_schedule),
             "protocol_schedule_index": self._schedule_index,
@@ -1864,8 +1928,16 @@ class SAPExecutor:
 
 
 def run_longitudinal_fixture() -> dict[str, Any]:
-    """Two complete periods plus a post-rollback ranking identity check."""
-    executor = SAPExecutor(load_fixture(), arm="sea")
+    """Two periods on a declared single-version schedule plus rollback checks.
+
+    Cohort-transition behavior belongs to the separate protocol demonstration;
+    this guard/budget fixture must not silently overrun the base fixture's
+    two-version switch boundary.
+    """
+    fixture = load_fixture()
+    fixture["protocol_registry_schedule"] = ["targets-v1"]
+    fixture["protocol_switch_timing"] = {}
+    executor = SAPExecutor(fixture, arm="sea")
     plans = {int(key): value for key, value in executor.fixture["period_plans"].items()}
     first = executor.run_period(0, plans[0])
     mismatch = executor.write_after_period(
@@ -1930,7 +2002,7 @@ def run_matched_implementation_demo() -> dict[str, Any]:
             "evaluation_link_rule": "reference_link_truth_arm_independent",
         }
     return {
-        "schema": "sea.matched-implementation-fixture/v6",
+        "schema": "sea.matched-implementation-fixture/v7",
         "status": "MECHANISTIC_MATCHED_FIXTURE__NOT_A_MODEL_OR_DEPLOYMENT_EXPERIMENT",
         "matching": {
             "mock_scorer": "symmetric_binary/1 + GovernanceReference integer ranking",
@@ -1956,7 +2028,9 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
     with the registry/objective/budget/active path unchanged and only a
     rejection audit record appended; duplicate, regressed, and skipped actual
     periods are rejected before any state mutation, so repeated rows cannot
-    satisfy a frozen boundary; a full reset forks a new control instance
+    satisfy a frozen boundary; once a switch is due, the old cohort cannot
+    skip it and commit another period, and declaration tampering cannot move
+    the boundary; a full reset forks a new control instance
     from the declared reset-target allowlist (including a declared backward
     reset with a fresh single-version schedule) and seals its parent;
     objective rollback does not restore the registry version.
@@ -2036,7 +2110,31 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
         records_from=early, budget_from=early)
     late = SAPExecutor(fixture, arm="sea")
     late.run_period(0, plans[0])
-    late.run_period(1, plans[1])
+    missed_before = (late.next_period, len(late.period_results), len(late.history),
+                     len(late.governance.audit_records()), dict(late.budget_remaining))
+    try:
+        late.run_period(1, plans[1])
+        missed_reason = None
+    except RuntimeError as exc:
+        missed_reason = str(exc)
+    missed_after = (late.next_period, len(late.period_results), len(late.history),
+                    len(late.governance.audit_records()), dict(late.budget_remaining))
+    missed_transition_ok = (missed_reason is not None
+                            and missed_reason.startswith("protocol registry transition required")
+                            and missed_after == missed_before)
+    negatives["missed_switch_period_rejected_before_mutation"] = missed_transition_ok
+    missed_transition_probe = {
+        "reason": missed_reason,
+        "next_period": late.next_period,
+        "committed_periods": len(late.period_results),
+        "state_unchanged": missed_after == missed_before,
+    }
+    # Defense-in-depth for legacy/deserialized late states: public run_period
+    # can no longer create this state, so inject a contiguous legacy result row
+    # solely to recheck the pre-existing late-switch rejection.
+    legacy_second = _detached(late.period_results[0])
+    legacy_second["period"] = 1
+    late.period_results.append(legacy_second)
     negatives["late_switch_after_declared_period_rejected"] = expect_rejection(
         late.continue_with_target_registry, registry_v2, "switch_timing_mismatch",
         records_from=late, budget_from=late)
@@ -2066,7 +2164,10 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
     duplicate_switch_payload = duplicate.governance.audit_records()[-1]["payload"]
     duplicate.run_period(1, plans[1])
     duplicate_continued = duplicate.continue_with_target_registry(registry_v2)
-    regressed = SAPExecutor(fixture, arm="sea")
+    regressed_fixture = _detached(fixture)
+    regressed_fixture["protocol_registry_schedule"] = ["targets-v1"]
+    regressed_fixture["protocol_switch_timing"] = {}
+    regressed = SAPExecutor(regressed_fixture, arm="sea")
     regressed.run_period(0, plans[0])
     regressed.run_period(1, plans[1])
     regressed_period_rejected = expect_period_rejection(regressed, 0, plans[0])
@@ -2144,7 +2245,7 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
         raise AssertionError(f"protocol registry-switch demo checks failed: {checks}")
     records = continued.governance.audit_records()
     return {
-        "schema": "sea.protocol-registry-switch-demo/v3",
+        "schema": "sea.protocol-registry-switch-demo/v4",
         "status": "SYNTHETIC_PROTOCOL_TRANSITION_DEMO__NOT_EFFECTIVENESS_EVIDENCE",
         "run_id": fixture["run_id"],
         "semantics": {
@@ -2152,6 +2253,7 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
             "authorization": "no objective-write authorization required or accepted; family/schedule/timing validation instead",
             "switch_timing": "frozen switch_after_period per scheduled successor, fixed before any arm result is read; early, late, duplicate-counting, and tampered-timing attempts rejected",
             "period_sequence": "run_period accepts only period == next_period; unique, contiguous, increasing actual periods; continuity preserves the counter and full reset starts at 0; invalid periods change no state",
+            "mandatory_cohort_boundary": "once a frozen switch is due, the old cohort cannot commit another period before the scheduled exogenous transition; declaration tampering cannot move the boundary; rejected runs are commit-free",
             "lifecycle": "single-line control: predecessor sealed, one active path, unique shared budget/ledger",
             "full_reset_exception": "declared reset-target allowlist; backward or out-of-schedule family members only if pre-declared; fresh independent single-version schedule; parent sealed",
             "rejection_state_effect": "registry, objective store, budget, and active path unchanged; only a rejection audit record appended; zero resource spend",
@@ -2167,6 +2269,7 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
                              if record["event"] == "registry_switch_rejected"],
         "timing_and_declaration_rejection_events": probe_rejections,
         "duplicate_period_switch_rejection_events": [duplicate_switch_payload],
+        "missed_transition_period_probe": missed_transition_probe,
         "seal_events": [record["payload"] for record in records
                         if record["event"] == "control_path_sealed"],
         "full_reset_seal_events": [record["payload"] for record in forked.governance.audit_records()

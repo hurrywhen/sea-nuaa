@@ -37,6 +37,7 @@ def main() -> None:
         ROOT / "docs/REPRODUCIBILITY_v1.17.md",
         ROOT / "docs/MINIMAL_VALID_EXPERIMENT_v1.17.md",
         ROOT / "docs/LITERATURE_SEARCH_v1.17.md",
+        ROOT / "docs/INDEPENDENT_REVIEW_HANDOFF_v1.17.md",
         ROOT / "docs/SUPPLEMENT_NORMATIVE_AND_TRANSFER_v1.17.md",
         ROOT / "docs/SUPPLEMENT_FORMAL_AND_SECONDARY_v1.17.md",
         ROOT / "docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.17.md",

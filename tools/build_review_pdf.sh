@@ -8,11 +8,14 @@
 # v1.6 起：工件身份戳（版本+构建日期）注入标题页首行之下并写入 PDF 元数据（pdftitle/pdfsubject），
 #          以杜绝"评审读到陈旧工件"类混淆（四审意见2 的教训）；构建后必须跑 tools/check_pdf_textlayer.py。
 # 依赖：pandoc（>=3）、xelatex、lualatex、Noto Serif CJK SC 与 DejaVu 字体。
+# 补丁发布可设 SEA_RELEASE_LABEL=v1.17.1：路径仍用 v1.17，首页身份戳和 PDF 元数据用完整标签。
 set -euo pipefail
 cd "$(dirname "$0")/.."
 MODE="${1:-zh}"
 BUILD_DATE="$(date +%F)"
 PDFVER="${2:-v1.8}"
+# File paths may stay on a minor-version line while the immutable release is a patch.
+PDFLABEL="${SEA_RELEASE_LABEL:-$PDFVER}"
 PDFAUTHORS="Wen Hu; Xutong Wang; Ya Yu"
 
 if [ "$MODE" = "en" ]; then
@@ -22,8 +25,8 @@ if [ "$MODE" = "en" ]; then
   LANG=""
   CONTENTS="Contents"
   FIRSTPART='^# Part I'
-  STAMP="*Review artifact: **${PDFVER}** · built ${BUILD_DATE} · working revision — verify the source hash and evidence-status matrix before review; earlier PDFs are separate versions.*"
-  PDFTITLE="Sovereign Epistemic Acquisition: A Conditional Framework and Synthetic Audit Artifacts (${PDFVER}; built ${BUILD_DATE})"
+  STAMP="*Review artifact: **${PDFLABEL}** · built ${BUILD_DATE} · working revision — verify the source hash and evidence-status matrix before review; earlier PDFs are separate versions.*"
+  PDFTITLE="Sovereign Epistemic Acquisition: A Conditional Framework and Synthetic Audit Artifacts (${PDFLABEL}; built ${BUILD_DATE})"
 else
   SRC="input/主权认知获取_统一理论_${PDFVER}.md"
   OUT="latex/主权认知获取_统一理论_${PDFVER}_内审稿.pdf"
@@ -31,8 +34,8 @@ else
   LANG="zh-CN"
   CONTENTS="目录"
   FIRSTPART='^#\s+第一部分'
-  STAMP="*审稿工件：**${PDFVER}** · 构建于 ${BUILD_DATE} · 工作修订稿——评审前请对照源文件哈希与证据状态矩阵；旧 PDF 属于各自历史版本。*"
-  PDFTITLE="主权认知获取（SEA）${PDFVER} - 构建于 ${BUILD_DATE}"
+  STAMP="*审稿工件：**${PDFLABEL}** · 构建于 ${BUILD_DATE} · 工作修订稿——评审前请对照源文件哈希与证据状态矩阵；旧 PDF 属于各自历史版本。*"
+  PDFTITLE="主权认知获取（SEA）${PDFLABEL} - 构建于 ${BUILD_DATE}"
 fi
 if [ "$MODE" = "zh-preprint" ]; then
   # 预印本用中文 PDF：与内审稿同源但**不含审稿工件身份戳**（公开预印本不需要）
@@ -43,7 +46,7 @@ if [ "$MODE" = "zh-preprint" ]; then
   CONTENTS="目录"
   FIRSTPART='^#\s+第一部分'
   STAMP=""
-  PDFTITLE="主权认知获取（SEA）v1.8 预印本 - ${BUILD_DATE}"
+  PDFTITLE="主权认知获取（SEA）${PDFLABEL} 预印本 - ${BUILD_DATE}"
 fi
 
 if [ ! -f "$SRC" ]; then
@@ -105,7 +108,7 @@ cat > "$TMP/preamble.tex" <<TEX
     \fi
   \fi
 }
-\AtBeginDocument{\hypersetup{pdftitle={$PDFTITLE},pdfauthor={$PDFAUTHORS},pdfsubject={Review artifact $PDFVER (built $BUILD_DATE)},pdfkeywords={SEA; SAP; epistemic sovereignty; $PDFVER}}}
+\AtBeginDocument{\hypersetup{pdftitle={$PDFTITLE},pdfauthor={$PDFAUTHORS},pdfsubject={Review artifact $PDFLABEL (built $BUILD_DATE)},pdfkeywords={SEA; SAP; epistemic sovereignty; $PDFLABEL}}}
 TEX
 
 # 3) pandoc -> xelatex

@@ -1,7 +1,7 @@
 {
   "schema": "sea.v117.release-audit/v1",
-  "n_checks": 157,
-  "n_passed": 157,
+  "n_checks": 162,
+  "n_passed": 162,
   "n_failed": 0,
   "status": "PASS",
   "failures": [],
@@ -74,6 +74,11 @@
     },
     {
       "name": "exists:docs/LITERATURE_SEARCH_v1.17.md",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "exists:docs/INDEPENDENT_REVIEW_HANDOFF_v1.17.md",
       "passed": true,
       "detail": ""
     },
@@ -214,6 +219,11 @@
     },
     {
       "name": "release:three_contributions",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "release:independent_review_handoff_is_blank_not_signoff",
       "passed": true,
       "detail": ""
     },
@@ -450,7 +460,7 @@
     {
       "name": "structure:compression",
       "passed": true,
-      "detail": "8951"
+      "detail": "8992"
     },
     {
       "name": "structure:standard_foundations_demoted",
@@ -638,6 +648,21 @@
       "detail": ""
     },
     {
+      "name": "main_supplement_protocol:v1171_sharpness_and_calibration_boundaries",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "main_supplement_protocol:v1171_reset_and_measure_lookup_scope",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "main_supplement_protocol_code:v1171_s12_identification_and_resampling_scope",
+      "passed": true,
+      "detail": ""
+    },
+    {
       "name": "evidence:v117_schemas_counts_and_no_contradiction",
       "passed": true,
       "detail": ""
@@ -788,7 +813,7 @@
       "detail": ""
     },
     {
-      "name": "layout:author_metadata",
+      "name": "layout:author_and_release_metadata",
       "passed": true,
       "detail": ""
     }

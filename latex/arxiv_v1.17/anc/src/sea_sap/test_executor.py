@@ -44,6 +44,14 @@ def _refresh_protocol_declaration(fixture):
         family[version] = hashlib.sha256(canonical_json(registry).encode("utf-8")).hexdigest()
 
 
+def _single_version_fixture():
+    """A valid declaration for tests unrelated to cohort transitions."""
+    fixture = load_fixture()
+    fixture["protocol_registry_schedule"] = [fixture["target_registry"]["version"]]
+    fixture["protocol_switch_timing"] = {}
+    return fixture
+
+
 def _validated_instrument_registry(base):
     """A structurally complete preregistered instrument registration (synthetic values)."""
     registry = copy.deepcopy(base)
@@ -161,7 +169,7 @@ class LongitudinalExecutorTest(unittest.TestCase):
             operational_attendance_contrast_bounds({"sea": 0.1, "control": 0.1}, {"sea": 0.2, "control": 0.0})
 
     def test_delayed_first_available_period_changes_longitudinal_availability(self):
-        fixture = load_fixture()
+        fixture = _single_version_fixture()
         registry = fixture["target_registry"]
         for doc in registry["reference_corpus"]["documents"]:
             if doc["document_id"] == "doc2":
@@ -182,7 +190,7 @@ class LongitudinalExecutorTest(unittest.TestCase):
         self.assertAlmostEqual(period1["outcome_summary"]["weighted_unknown_terminal"], 0.0)
 
     def test_first_available_period_expiry_restores_availability(self):
-        fixture = load_fixture()
+        fixture = _single_version_fixture()
         registry = fixture["target_registry"]
         for doc in registry["reference_corpus"]["documents"]:
             if doc["document_id"] == "doc2":
@@ -657,7 +665,7 @@ class LongitudinalExecutorTest(unittest.TestCase):
         self.assertEqual([row["period"] for row in continued.period_results], [0, 1])
 
     def test_regressed_period_is_rejected_before_mutation(self):
-        fixture = load_fixture()
+        fixture = _single_version_fixture()
         executor = SAPExecutor(fixture)
         executor.run_period(0, fixture["period_plans"]["0"])
         executor.run_period(1, fixture["period_plans"]["1"])
@@ -730,10 +738,23 @@ class LongitudinalExecutorTest(unittest.TestCase):
         self.assertEqual(payload["resources_spent"], 0)
         self.assertEqual(early.budget_spent, {name: 0 for name in early.budget_spent})
         self.assertFalse(early._sealed)
-        # Late attempt: the declared boundary was missed; timing cannot be renegotiated.
+        # Missing the boundary cannot extend the old cohort by another period.
         late = SAPExecutor(fixture)
         late.run_period(0, fixture["period_plans"]["0"])
-        late.run_period(1, fixture["period_plans"]["1"])
+        before = (late.next_period, copy.deepcopy(late.period_results),
+                  copy.deepcopy(late.history), late.governance.audit_records(),
+                  copy.deepcopy(late.budget_remaining), copy.deepcopy(late.budget_spent))
+        with self.assertRaises(RuntimeError) as caught:
+            late.run_period(1, fixture["period_plans"]["1"])
+        self.assertIn("protocol registry transition required", str(caught.exception))
+        after = (late.next_period, late.period_results, late.history,
+                 late.governance.audit_records(), late.budget_remaining, late.budget_spent)
+        self.assertEqual(after, before)
+        # A legacy/deserialized late state remains unable to renegotiate timing.
+        # Public run_period can no longer create it, so construct it explicitly.
+        legacy_second = copy.deepcopy(late.period_results[0])
+        legacy_second["period"] = 1
+        late.period_results.append(legacy_second)
         with self.assertRaises(ValueError) as caught:
             late.continue_with_target_registry(registry_v2)
         self.assertIn("switch_timing_mismatch", str(caught.exception))
@@ -760,6 +781,13 @@ class LongitudinalExecutorTest(unittest.TestCase):
             executor = SAPExecutor(fixture)
             executor.run_period(0, fixture["period_plans"]["0"])
             mutate(executor)  # outcome-motivated edit after reading period-0 results
+            before_run = (executor.next_period, copy.deepcopy(executor.period_results),
+                          executor.governance.audit_records(), copy.deepcopy(executor.budget_remaining))
+            with self.assertRaises(RuntimeError) as caught:
+                executor.run_period(1, fixture["period_plans"]["1"])
+            self.assertIn("protocol declaration integrity violation", str(caught.exception))
+            self.assertEqual((executor.next_period, executor.period_results,
+                              executor.governance.audit_records(), executor.budget_remaining), before_run)
             with self.assertRaises(ValueError) as caught:
                 executor.continue_with_target_registry(registry_v2)
             self.assertIn("protocol_declaration_tampered", str(caught.exception))
@@ -853,7 +881,7 @@ class LongitudinalExecutorTest(unittest.TestCase):
 
     def test_protocol_registry_switch_demo_passes_all_checks(self):
         result = run_protocol_registry_switch_demo()
-        self.assertEqual(result["schema"], "sea.protocol-registry-switch-demo/v3")
+        self.assertEqual(result["schema"], "sea.protocol-registry-switch-demo/v4")
         self.assertEqual(result["status"], "SYNTHETIC_PROTOCOL_TRANSITION_DEMO__NOT_EFFECTIVENESS_EVIDENCE")
         self.assertTrue(all(result["checks"].values()))
         self.assertTrue(result["audit"]["verification"]["valid"])
@@ -862,6 +890,9 @@ class LongitudinalExecutorTest(unittest.TestCase):
         self.assertEqual(len(result["duplicate_period_switch_rejection_events"]), 1)
         self.assertEqual(result["duplicate_period_switch_rejection_events"][0]["completed_periods"], 1)
         self.assertIn("period == next_period", result["semantics"]["period_sequence"])
+        self.assertTrue(result["missed_transition_period_probe"]["state_unchanged"])
+        self.assertIn("protocol registry transition required",
+                      result["missed_transition_period_probe"]["reason"])
         self.assertEqual(len(result["seal_events"]), 2)
         self.assertEqual(len(result["full_reset_seal_events"]), 1)
         self.assertEqual(result["full_reset_seal_events"][0]["reason"],
@@ -893,6 +924,10 @@ class LongitudinalExecutorTest(unittest.TestCase):
         self.assertAlmostEqual(worked["m_D"], 0.03 / 0.85)
         self.assertAlmostEqual(worked["youden_denominator"], 0.85)
         self.assertAlmostEqual(worked["variance_amplification_factor"], 1 / 0.85 ** 2)
+        feasible_low, feasible_high = worked["population_feasible_m_Z_interval_given_error_rates"]
+        self.assertAlmostEqual(feasible_low, 0.1)
+        self.assertAlmostEqual(feasible_high, 0.95)
+        self.assertIn("not the complete asymptotic order", worked["variance_amplification_scope"])
         self.assertFalse(worked["precision_warning"])
         # Near-zero Youden denominator fires the precision warning.
         unstable = completed_measurement_transport(0.4, 0.55, 0.5)
@@ -912,12 +947,15 @@ class LongitudinalExecutorTest(unittest.TestCase):
         low, high = propagated["approx_95_interval"]
         self.assertLess(low, propagated["m_D"])
         self.assertGreater(high, propagated["m_D"])
-        self.assertTrue(propagated["input_independence_assumed"])
+        self.assertIsNone(propagated["input_independence_assumed"])
+        self.assertTrue(propagated["zero_covariance_approximation"])
+        self.assertIn("not_inferred", propagated["independence_status"])
 
     def test_s12_delta_method_covariance_terms(self):
         kwargs = dict(var_m_z=0.001, var_se=0.002, var_sp=0.001)
         independent = completed_measurement_transport_delta_method(0.13, 0.9, 0.95, **kwargs)
-        self.assertTrue(independent["input_independence_assumed"])
+        self.assertIsNone(independent["input_independence_assumed"])
+        self.assertTrue(independent["zero_covariance_approximation"])
         dependent = completed_measurement_transport_delta_method(
             0.13, 0.9, 0.95, cov_se_sp=0.0005, cov_mz_se=0.0002, cov_mz_sp=-0.0001, **kwargs)
         j, n = 0.85, 0.13 - 1 + 0.9
@@ -926,8 +964,9 @@ class LongitudinalExecutorTest(unittest.TestCase):
                     + 2 * d_se * d_sp * 0.0005 + 2 * d_mz * d_se * 0.0002
                     + 2 * d_mz * d_sp * (-0.0001))
         self.assertAlmostEqual(dependent["delta_method_variance"], expected)
-        self.assertFalse(dependent["input_independence_assumed"])
-        self.assertTrue(dependent["covariance_matrix_positive_semidefinite"])
+        self.assertIsNone(dependent["input_independence_assumed"])
+        self.assertFalse(dependent["zero_covariance_approximation"])
+        self.assertTrue(dependent["covariance_matrix_psd_within_1e-12_tolerance"])
         self.assertEqual(dependent["covariance_matrix_order"],
                          ["sensitivity", "specificity", "operational_omission"])
         self.assertNotAlmostEqual(dependent["delta_method_variance"],
@@ -963,12 +1002,12 @@ class LongitudinalExecutorTest(unittest.TestCase):
         extreme = completed_measurement_transport_delta_method(
             0.13, 0.9, 0.95, var_m_z=0.0, var_se=1e-200, var_sp=1e200,
             cov_se_sp=1.0)
-        self.assertTrue(extreme["covariance_matrix_positive_semidefinite"])
+        self.assertTrue(extreme["covariance_matrix_psd_within_1e-12_tolerance"])
         # A singular but valid PSD boundary remains admissible.
         singular = completed_measurement_transport_delta_method(
             0.13, 0.9, 0.95, var_m_z=0.0, var_se=0.002, var_sp=0.002,
             cov_se_sp=0.002)
-        self.assertTrue(singular["covariance_matrix_positive_semidefinite"])
+        self.assertTrue(singular["covariance_matrix_psd_within_1e-12_tolerance"])
 
     def test_s12_joint_bootstrap_preserves_dependence_and_is_deterministic(self):
         records = ([{"test_positive": True, "truth_positive": True}] * 90
@@ -988,6 +1027,9 @@ class LongitudinalExecutorTest(unittest.TestCase):
         self.assertEqual(result["bootstrap_95_interval"], again["bootstrap_95_interval"])
         self.assertEqual(result["degenerate_replicates"], 0)
         self.assertTrue(result["m_z_held_fixed"])
+        self.assertFalse(result["three_input_joint_resampling_performed"])
+        self.assertEqual(result["jointly_reestimated_inputs"], ["sensitivity", "specificity"])
+        self.assertIn("conditional_on_nondegenerate", result["bootstrap_interval_condition"])
         self.assertEqual(result["method"], "joint_bootstrap")
         clustered = [dict(record, cluster_id=index // 10)
                      for index, record in enumerate(records)]
@@ -1019,6 +1061,12 @@ class LongitudinalExecutorTest(unittest.TestCase):
         self.assertAlmostEqual(grid["m_D_min"], (0.13 - 0.5) / 0.45)
         self.assertAlmostEqual(grid["m_D_max"], (0.13 - 0.1) / 0.4)
         self.assertAlmostEqual(grid["outside_unit_interval_fraction"], 1 / 3)
+        zero_cell = next(cell for cell in grid["cells"] if not cell["admissible"])
+        self.assertEqual(zero_cell["not_admissible_reason"], "no_compatible_population_at_zero_youden")
+        nonidentified = completed_measurement_transport_sensitivity_grid(0.5, [0.5], [0.5, 0.95])
+        zero_numerator = nonidentified["cells"][0]
+        self.assertEqual(zero_numerator["not_admissible_reason"],
+                         "nonidentifiable_zero_youden_zero_numerator")
         with self.assertRaises(ValueError):
             completed_measurement_transport_sensitivity_grid(0.13, [0.5], [0.5])
 

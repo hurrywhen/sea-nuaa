@@ -122,7 +122,7 @@
   pdfcreator={LaTeX via pandoc}}
 
 \author{}
-\date{23 November 2026}
+\date{24 November 2026}
 
 \begin{document}
 
@@ -405,27 +405,21 @@ persistent from that period onward and filters longitudinal eligibility
 by period.
 
 Dynamic target sets separate \textbf{control continuity} from
-\textbf{evaluation cohorts}. A target-set or mapping version change
-creates a new evaluation cohort
-(\texttt{NEW\_EVALUATION\_COHORT\_\_NO\_CROSS\_VERSION\_POOLING});
-estimates are not pooled across versions. Version changes are
-\textbf{exogenous evaluation-protocol events, not policy actions}: the
-protocol freezes a finite registry family, an ordered version schedule,
-and a switch timing (\texttt{switch\_after\_period} per scheduled
-successor) before the run and before any arm result is read, and the
-control instance follows that schedule along a single active control
-path. Actual protocol time is a strict \texttt{next\_period} counter,
-not a count of result rows: duplicate, regressed, and skipped periods
-are rejected before mutation (Section 3.2). At a protocol transition,
-accepted only at the declared period boundary, the preceding control
-path is sealed, so objective, authorization, rollback, audit, and
-resource state remain unique; a full reset starts a new control instance
-as a declared protocol exception, selecting a pre-declared allowed reset
-target and generating a fresh independent schedule, not a theorem about
-SAP control. Section 3.2 makes this explicit in the tuple: the active
-registry is part of state, and each cohort evaluates under its own
-measure \(\nu^{(v)}\). Merge/split changes are estimand changes unless
-weights, mapping, and terminal events are jointly aligned.
+\textbf{evaluation cohorts}. Every target-set or mapping version change
+creates a new cohort
+(\texttt{NEW\_EVALUATION\_COHORT\_\_NO\_CROSS\_VERSION\_POOLING}).
+Version changes are \textbf{exogenous evaluation-protocol events, not
+policy actions}: a finite registry family, ordered schedule, and
+\texttt{switch\_after\_period} timing are frozen before arm results are
+read. Strict \texttt{next\_period} sequencing rejects duplicate,
+regressed, and skipped periods (Section 3.2). A valid transition seals
+the predecessor, preserving one objective/authorization/audit/resource
+path. A full reset is an implementation exception: a new control
+instance selects an allowed reset target and receives a fresh schedule,
+subject to the confirmatory restrictions in Section 3.2. The active
+registry is part of state, and each cohort uses its own \(\nu^{(v)}\).
+Merge/split changes are estimand changes unless weights, mapping, and
+terminal events are jointly aligned.
 
 A small synthetic target-construction audit is provided in
 \texttt{sim/sea\_sap/target\_construction.py}. It reports agreement
@@ -482,8 +476,9 @@ tuple}\label{finite-horizon-sap-tuple}
 A conditional SAP instance is defined \textbf{per control instance}: the
 active target registry is part of state, registry-version transitions
 are exogenous frozen evaluation-protocol events rather than policy
-actions, and the evaluation measure is selected per cohort from a
-declared version-indexed family (the dynamic-target closure):
+actions, and each cohort looks up the pre-frozen measure for its
+registry version from a declared version-indexed family, never an
+outcome-dependent choice (the dynamic-target closure):
 
 \[\mathrm{SAP}=\langle H,\gamma,\mathcal X,\mathcal Y,\widetilde{\mathcal A},\{\mathcal A_t\},P,r,\Phi,\mu_0,\mathcal G,\{\nu^{(v)}\}_{\rho^{(v)}\in\mathfrak R}\rangle.\tag{1}\]
 
@@ -534,41 +529,43 @@ declared version-indexed family (the dynamic-target closure):
   replenishment \(\zeta_t\).
 \item
   \textbf{Exogenous registry transitions and evaluation cohorts.} The
-  evaluation protocol declares ex ante the finite frozen family
-  \(\mathfrak R\), an ordered version schedule, and a frozen switch
-  timing (\texttt{switch\_after\_period} per scheduled successor), all
-  fixed before any arm result is read. The executable control instance
-  maintains \texttt{next\_period}, initially 0, and \texttt{run\_period}
-  accepts only \texttt{period\ ==\ next\_period}; the counter increments
-  only after a successful period commit. Continuity transitions preserve
-  the counter across their shared history, whereas a full-reset instance
-  restarts at 0. A registry-version transition replaces \(\rho_t\) by
-  the next scheduled family member, content-hash verified, only when
+  protocol freezes ex ante the finite family \(\mathfrak R\), ordered
+  schedule, and \texttt{switch\_after\_period} timing before arm results
+  are read. The executor derives read-only \texttt{next\_period} as
+  \(N\) from the exact committed sequence \(0,\ldots,N-1\), never an
+  unchecked \texttt{len(period\_results)}; \texttt{run\_period} accepts
+  only \texttt{period\ ==\ next\_period}, and a commit appends one
+  period before \(N\) is recomputed. Continuity shares that sequence; a
+  full-reset instance restarts at 0. A transition replaces \(\rho_t\) by
+  the next content-verified member only when
   \texttt{next\_period\ ==\ switch\_after\_period\ +\ 1}, and appends a
-  cohort-boundary record to \(L_t\). Thus the boundary counts unique
-  contiguous actual periods, never \texttt{len(period\_results)} or
-  repeated attempts; duplicate, regressed, and skipped periods are
-  rejected before any state mutation. It is an evaluation-protocol event
-  outside every \(\mathcal A_t\): the policy cannot switch registries,
-  and no objective-write authorization is required or meaningful for it,
-  because it is not a policy action; protocol membership/schedule/timing
-  validation replaces authorization here. The control lifecycle is
-  \textbf{single-line}: at a transition the preceding control path is
-  sealed and can no longer act, the successor is the unique active path
-  of the same control instance, and objective, authorization, audit, and
-  resource state are shared as one unique state, never copied into
-  parallel branches. Continuity transitions strictly advance along the
-  schedule; a full reset is a declared exception for an independent
-  control instance, selecting a pre-declared allowed reset target from
-  the family (backward versions or members outside the parent schedule
-  only if declared) and generating a fresh independent single-version
-  schedule; it is never a registry rollback of the sealed parent. An
-  \textbf{evaluation cohort} is a maximal interval of constant \(v_t\)
-  along the single path. Its estimand uses \(\nu^{(v_t)}\), chosen at
-  evaluation time from the declared family rather than fixed permanently
-  as a control parameter; estimates are never pooled across cohorts.
-  There is no registry rollback, and objective rollback restores an
-  objective version only, never a registry version.
+  cohort-boundary record to \(L_t\). Duplicate, regressed, and skipped
+  periods are rejected before mutation. A period is an ordinal
+  evaluation commit, not wall-clock duration; the real protocol
+  separately freezes observation windows and point-in-time snapshots.
+  For \texttt{switch\_after\_period=k}, the old cohort ends at \(k\) and
+  the new starts at \(k+1\) without relabeling; the old path cannot
+  commit a later period before transition, and declaration integrity is
+  rechecked at every commit. Ordering alone proves neither equal
+  durations nor temporal independence. The event is outside every
+  \(\mathcal A_t\): the policy cannot switch registries, no
+  objective-write authorization is required or meaningful, and protocol
+  validation replaces authorization. The lifecycle is
+  \textbf{single-line}: the predecessor is sealed, the successor is the
+  unique active path, and objective, authorization, audit, and resource
+  state are shared, never copied into parallel branches. A full reset is
+  an implementation exception selecting an allowlisted target
+  (backward/outside the parent schedule only if declared) for an
+  independent instance with a fresh independent single-version schedule,
+  not a registry rollback. An allowlist alone does not make reset
+  exogenous: confirmatory use must also freeze its trigger/timing and
+  deterministic target-selection rule before outcomes; otherwise it is
+  an exploratory new experiment. Proposition 3.1 is per instance, not
+  global across resets. An \textbf{evaluation cohort} is a maximal
+  interval of constant \(v_t\); its \(\nu^{(v_t)}\) is frozen for each
+  version before outcome unlock and merely looked up at evaluation, with
+  no outcome-dependent selection or cross-cohort pooling. Objective
+  rollback restores an objective version only, never a registry version.
 \item
   \textbf{Reward.} For authorized \(\vartheta_t\),
   \(r_t=r^{dec}_{\vartheta_t}(s_t,a_t,D_t)+r^{ref}_{\vartheta_t}(s_t,a_t)-\sum_\ell\lambda_{\ell,t}h_{\ell,t}(s_t,a_t)\),
@@ -684,8 +681,10 @@ interface}, not a globally optimal SAP solver.
 \begin{Highlighting}[]
 \NormalTok{Input: history h, objective θ, versions V, budgets B, next\_period n,}
 \NormalTok{       raw candidates X, active protocol registry ρ\_t, instrument registry}
-\NormalTok{ 0  Require period == n. Whole{-}period resource precheck and commit{-}free}
-\NormalTok{    selection dry run; reject invalid periods/plans before any state mutation.}
+\NormalTok{ 0  Require period == n, an intact declaration, and no due}
+\NormalTok{    registry transition. Whole{-}period resource precheck and}
+\NormalTok{    commit{-}free selection dry run; reject invalid}
+\NormalTok{    periods/schedules/plans before any state mutation.}
 \NormalTok{ 1  Observe y; inspect objective, defaults, provenance.}
 \NormalTok{ 2  Apply one frozen update kernel to every signal; log resource use.}
 \NormalTok{ 3  Verify period{-}specific reference availability and link candidates}
@@ -696,7 +695,8 @@ interface}, not a globally optimal SAP solver.
 \NormalTok{    distinct events; keep unknown distinct from observed negative.}
 \NormalTok{ 7  Compute target{-}level first{-}failed{-}stage and failure{-}composite ledger.}
 \NormalTok{ 8  Process write/rollback attempts through the guard for t+1.}
-\NormalTok{ 9  Append domain{-}separated hash records; roll forward B, h, and n.}
+\NormalTok{ 9  Append domain{-}separated hash records; roll forward B and h, append the}
+\NormalTok{    committed period, and recompute n from the verified sequence.}
 \NormalTok{Output: next state, resource ledger, target omission ledger, audit anchor}
 \end{Highlighting}
 \end{Shaded}
@@ -771,8 +771,9 @@ Operational attendance contrast bounds & Arm-specific operational bound
 function & Extreme-bound and misclassification counterexample tests \\
 Registry in state; exogenous protocol transition &
 Family/schedule/timing/content-hash validation; strict
-\texttt{next\_period}; no policy authorization & Non-family,
-tampered-hash, out-of-schedule, mistimed, declaration-tamper,
+\texttt{next\_period}; mandatory cohort boundary; no policy
+authorization & Non-family, tampered-hash, out-of-schedule, mistimed,
+missed-transition, declaration-tamper,
 duplicate/regressed/skipped-period rejection tests \\
 Single-line control lifecycle & Predecessor sealed on switch/fork;
 unique shared budget/ledger & Sealed-path reuse rejection and
@@ -788,12 +789,13 @@ Domain-separated hash chain & Append/verify audit records & Exact
 canonical-body hash test \\
 \end{longtable}
 
-The longitudinal fixture runs two complete periods. In period 0, one
-target has positive operational attendance and five are
-failure-composite omissions. In period 1, one opened target has unknown
-terminal measurement, so failure-composite omission is 1 and weighted
-unknown terminal outcome is 1/6. Latent actual consumption remains null.
-A platform actor carrying R's authorization is rejected; an authorized R
+The guard/budget longitudinal fixture uses a declared single-version
+schedule and runs two complete periods. In period 0, one target has
+positive operational attendance and five are failure-composite
+omissions. In period 1, one opened target has unknown terminal
+measurement, so failure-composite omission is 1 and weighted unknown
+terminal outcome is 1/6. Latent actual consumption remains null. A
+platform actor carrying R's authorization is rejected; an authorized R
 write changes the next-period ranking; rollback restores the baseline
 ranking. All five resource coordinates are deducted. The audit anchor
 verifies. Every cohort-scoped audit event carries the control-instance,
@@ -803,27 +805,21 @@ delivered-but-not-selected plan is rejected by the commit-free dry run
 before any record or resource change. These are synthetic implementation
 checks, not effectiveness estimates.
 
-A separate protocol-transition demonstration runs the declared
-two-version schedule with its frozen switch timing: the exogenous event
-advances the single control path at the declared period boundary, seals
-the predecessor, and shares the unique budget and ledger; an objective
-rollback after the switch leaves the registry version unchanged.
-Non-family (\texttt{unregistered-arbitrary-v999}), tampered-hash,
-backward/out-of-schedule, and sealed-path attempts are each rejected
-with the registry, objective, budget, and active path unchanged---only a
-rejection audit record is appended, with zero spend. Early and late
-switch attempts, and an outcome-motivated timing edit after reading
-period results, are likewise rejected
-(\texttt{switch\_timing\_mismatch},
-\texttt{protocol\_declaration\_tampered}). With the boundary moved to
-period 1 in a probe, repeating period 0 leaves \texttt{next\_period=1}
-and cannot unlock the switch; regressed, skipped, and post-switch
-old-period runs are also rejected before any ledger, budget, history, or
-result change. A full reset forks a new control instance from the
-declared reset-target allowlist and seals its parent; a declared
-backward reset starts a fresh independent single-version schedule, not a
-rollback of the sealed parent. These are interface semantics checks, not
-effectiveness estimates.
+The two-version protocol demonstration advances at the frozen boundary,
+seals the predecessor, and shares one budget/ledger; objective rollback
+leaves the registry unchanged. Invalid family/hash/schedule/path and
+early/late switches are rejected with only one rejection audit record
+and zero spend. Once due, an old-cohort period is rejected before
+mutation; declaration edits cannot move the boundary
+(\texttt{switch\_timing\_mismatch} and
+\texttt{protocol\_declaration\_tampered} remain switch-rejection
+diagnostics). With \texttt{switch\_after\_period=1}, repeating period 0
+leaves \texttt{next\_period=1} and cannot unlock the switch; regressed,
+skipped, and post-switch old periods are likewise rejected. The
+implementation-only full reset creates an allowlisted control instance
+with a fresh schedule and seals its parent, never a registry rollback;
+it is not a confirmatory reset without the additional frozen rules
+above. These are interface checks, not effectiveness estimates.
 
 A separate matched implementation fixture runs staged SEA and direct S2d
 arms with the same mock scorer, raw input hash, target registry,
@@ -1004,10 +1000,13 @@ the sharp no-assumption bounds are
 \[\Delta^{FC}-u_{sea}\ \le\ \mathcal M_{\nu,sea}^{Z}-\mathcal M_{\nu,control}^{Z}\ \le\ \Delta^{FC}+u_{control}.\tag{6}\]
 
 These are \textbf{operational} bounds, not latent actual-consumption
-bounds. The lower extreme assigns sea unknowns to operational success
-and control unknowns to operational failure; the upper extreme reverses
-the assignment. Both arm-specific extremes must be reported, together
-with missingness by arm, stage, and reason.
+bounds. For either arm, \(\mathcal M^{FC}_{\nu,a}-\mathcal M^Z_{\nu,a}\)
+is exactly the weight of unknown targets assigned to operational
+success, hence lies in \([0,u_a]\). The lower extreme assigns sea
+unknowns to success and control unknowns to failure; the upper reverses
+this. Both endpoints are jointly attainable under the stated
+no-assumption model, so the contrast bounds are sharp; both arm-specific
+extremes and missingness by arm, stage, and reason must be reported.
 
 They do not bound \(\mathcal M_{\nu,sea}-\mathcal M_{\nu,control}\)
 without a measurement-consistency assumption. For example, with no
@@ -1024,17 +1023,24 @@ conditionally stable between the validation and deployment populations,
 completed-measurement omission transports by the supplement's identity
 (S12), with a precision warning and an error-rate sensitivity grid when
 the Youden denominator \(se_a+sp_a-1\) approaches zero. When
-sensitivity, specificity, and operational omission share a validation
-set, uncertainty propagation needs covariance terms or a joint (cluster)
-bootstrap, not assumed independence; manually supplied covariance inputs
-must be positive semidefinite as a joint matrix, not merely produce one
-nonnegative projected variance. Stratified heterogeneity and
-completion-gap diagnostics support---but never prove---transportability
-and completion-subset representativeness. They report rate denominators
-and unit-level Wilson 95\% intervals (Wilson, 1927; not cluster-adjusted
-or simultaneous); zero completed measurements returns
-\texttt{no\_completed\_measurements}, \texttt{not\_estimable} share
-shifts/error rates, and a representativeness warning rather than
+sensitivity, specificity, and operational omission share units,
+uncertainty propagation needs their full covariance or genuine
+three-input design-consistent resampling. The shipped bootstrap jointly
+re-estimates only sensitivity/specificity, holds operational omission
+fixed from a separate sample, and conditions its percentile summary on
+nondegenerate replicates; it is not a three-input bootstrap. Manually
+supplied covariance inputs must be positive semidefinite as a joint
+matrix, not merely produce one nonnegative projected variance. PSD
+establishes algebraic admissibility only---not covariance-estimation
+accuracy, transportability, or interval calibration; clustered or
+near-zero-denominator analyses require design-consistent resampling and
+sensitivity analysis rather than a calibrated-normal claim. Stratified
+heterogeneity and completion-gap diagnostics support---but never
+prove---transportability and completion-subset representativeness. They
+report rate denominators and unit-level Wilson 95\% intervals (Wilson,
+1927; not cluster-adjusted or simultaneous); zero completed measurements
+returns \texttt{no\_completed\_measurements}, \texttt{not\_estimable}
+share shifts/error rates, and a representativeness warning rather than
 throwing a pooled-rate exception or assigning zero shift. The future
 protocol therefore preregisters misclassification validation,
 transportability checks, and arm-differential error comparison before
@@ -1262,24 +1268,29 @@ and the primary endpoint. Agent-day multiplication is forbidden as a
 substitute.
 
 Before unlocking outcomes, the protocol must freeze the registry family,
-version schedule, switch timing, strict contiguous \texttt{next\_period}
-rule, and allowed reset targets (exogenous protocol events, not policy
-actions), reference availability audits, attendance instruments,
-thresholds, validation sets, blind adjudication, sensitivity versions,
-and the arm-specific missing-outcome bounds. Instrument validation must
-estimate arm-specific sensitivity and specificity on an independent
-blinded reference set, check validation-to-deployment error
-transportability and completion-subset representativeness with
-stratified diagnostics, report the AND rule's operational false-negative
-rate, and preregister an arm-differential error comparison; the
-completed-measurement transport identity (supplement S12) is a
-sensitivity analysis under that explicit error model, with
-positive-semidefinite covariance-aware or joint-bootstrap uncertainty
-propagation, stratified Wilson-interval and zero-completion diagnostics,
-a near-zero-denominator precision warning, and a pre-specified
-sensitivity grid, not an assumption-free bound. A time-stamped public
-registry entry must precede final-corpus unlock; an internally frozen
-document is not public preregistration. The complete protocol is
+version schedule, switch timing, and strict contiguous
+\texttt{next\_period} rule for exogenous continuity transitions; any
+reset additionally needs trigger/timing and deterministic selection
+rules, or it is exploratory. It must also freeze reference availability
+audits, attendance instruments, thresholds, validation sets, blind
+adjudication, sensitivity versions, and the arm-specific missing-outcome
+bounds. Instrument validation must estimate arm-specific sensitivity and
+specificity on an independent blinded reference set, check
+validation-to-deployment error transportability and completion-subset
+representativeness with stratified diagnostics, report the AND rule's
+operational false-negative rate, and preregister an arm-differential
+error comparison; the completed-measurement transport identity
+(supplement S12) is a sensitivity analysis under that explicit error
+model, with positive-semidefinite covariance-aware or design-consistent
+joint-resampling uncertainty propagation (subject to the
+input-dependence limits in Section 4.3), stratified Wilson-interval and
+zero-completion diagnostics, a near-zero-denominator precision warning,
+and a pre-specified sensitivity grid, not an assumption-free bound. Any
+inferential arm-by-stratum-by-metric interval family requires
+preregistered simultaneous coverage and a design-consistent cluster
+method; marginal Wilson intervals remain diagnostics. A time-stamped
+public registry entry must precede final-corpus unlock; an internally
+frozen document is not public preregistration. The complete protocol is
 \texttt{docs/MINIMAL\_VALID\_EXPERIMENT\_v1.17.md}. No human RCT is a
 precondition for the present framework/artifact contribution; direct
 human evidence becomes necessary only for human learning, welfare, or
@@ -1312,13 +1323,15 @@ remain pending.
 \subsection{Data and Code
 Availability}\label{data-and-code-availability}
 
-The current public candidate snapshot is \textbf{\texttt{v1.17.0}},
+The current public candidate snapshot is \textbf{\texttt{v1.17.1}},
 maintained at \url{https://github.com/hurrywhen/sea-nuaa} and
 \url{https://gitee.com/jiangsu-yunhefeng-intelligent_0/sea-nuaa}. Entry
 points are \texttt{RELEASE\_v1.17.md},
 \texttt{docs/REPRODUCIBILITY\_v1.17.md},
-\texttt{sim/pilot/results/evidence\_status\_v1.17.json}, and the
-versioned artifact manifest. The historical v1.7 version DOI
+\texttt{sim/pilot/results/evidence\_status\_v1.17.json}, the versioned
+artifact manifest, and the blank independent-review handoff
+\texttt{docs/INDEPENDENT\_REVIEW\_HANDOFF\_v1.17.md} (not a sign-off).
+The historical v1.7 version DOI
 \url{https://doi.org/10.5281/zenodo.23620920} and concept DOI
 \url{https://doi.org/10.5281/zenodo.23620919} do not cover v1.9, v1.10,
 v1.11, v1.13, v1.14, v1.15, v1.16, or v1.17. No v1.17-specific DOI or
@@ -1630,8 +1643,8 @@ target registry in state & Frozen transition; contiguous
 \texttt{next\_period}; single path; declared reset \\
 \(\mu_0\) & Initial state--observation law & Initial law; distinct from
 registry symbols \(\rho_t,\rho^{(v)}\) \\
-\(\nu^{(v)}\) & Version-indexed target measure & Chosen at evaluation
-time per cohort; not KKT price \\
+\(\nu^{(v)}\) & Version-indexed target measure & Frozen per version
+before unlock; evaluation-time lookup only, not KKT price \\
 \(u_t\) & User state & Ranking input, not target map \\
 \(c_e(S)\) & Union reference-coverage probability & Not independent
 unless certified \\

@@ -2,11 +2,11 @@
 
 ## 1. 状态与证据边界
 
-- 当前版本：`v1.17.0` candidate / prerelease（v1.16.0 综合评审后的小修候选：严格连续真实期次＋零完成结构化诊断＋联合协方差半正定检查＋分层小样本区间）。
+- 当前版本：`v1.17.1` candidate / prerelease（v1.17.0 综合评审后的边界与统计澄清补丁：强制冻结 cohort 切换点＋精确 sharp/PSD/bootstrap 语义＋独立复审交接模板；v1.17.0 的严格期次、零完成诊断和 Wilson 改进全部保留）。
 - GitHub：https://github.com/hurrywhen/sea-nuaa
 - Gitee：https://gitee.com/jiangsu-yunhefeng-intelligent_0/sea-nuaa
 - 路线：条件化框架＋治理/执行器参考工件＋可 falsify 审计规范；不是联合最优 SAP 算法或已验证系统。
-- 四种状态必须分开：代码测试通过、历史数据可重算、理论经独立复核、系统效果已验证。当前仅前两项中的作者侧检查完成；独立数学复核、第三方复现、真实匹配实验和人类数据均未完成。
+- 四种状态必须分开：代码测试通过、历史数据可重算、理论经独立复核、系统效果已验证。当前仅前两项中的作者侧检查完成；独立数学复核、第三方复现、真实匹配实验和人类数据均未完成。`docs/INDEPENDENT_REVIEW_HANDOFF_v1.17.md` 是空白交接／签核模板，不是已完成的独立复审。
 - v1.7 DOI `10.5281/zenodo.23620920` 不覆盖 v1.9/v1.10/v1.11/v1.13/v1.14/v1.15/v1.16/v1.17；v1.17 专属 DOI 未登记。
 - 所有核心 Python 审计不调用 LLM、不下载数据、不创建人类数据。默认只读；`--write` 才写专用工件，覆盖还需 `--force`。
 
@@ -34,7 +34,7 @@
 
 ### 3.3 合成纵向执行器输入
 
-`sim/sea_sap/fixtures/longitudinal.json` 与 `target_construction.json` 是公开合成 fixture，不含人类数据。参考语料快照哈希、候选—目标链接、可用性证据、资源成本、attendance 阈值和终端事件均显式冻结。纵向 fixture 另含**事前冻结的协议声明**：`registry_family`（版本→登记内容哈希 allowlist）、`protocol_registry_schedule`（有序版本日程）、`protocol_switch_timing`（每个日程后继版本的冻结 `switch_after_period`，演示中 targets-v2 在周期 0 之后切换）、`protocol_reset_targets`（完全重置目标白名单，演示声明 targets-v1/v2 均允许，含回退）与 `protocol_registries`（日程后续版本的完整冻结登记内容）。连续性登记切换只能沿该日程在声明期次边界推进；`next_period` 由已提交的精确连续结果序列 $0,\ldots,N-1$ 派生且只读，执行只接受 `period == next_period`，重复/倒退/跳期/非整数期次在状态变更前拒绝，切换保留共享序列，完全重置从 0 开始；完全重置只能选白名单成员并生成独立单版本日程。attendance 注册对象显式声明 `registry_scope="synthetic_instrument_fixture"`；`validation_status="validated"` 的注册必须携带完整预注册字段（真 64 位十六进制哈希、敏感度/特异度区间、可迁移性假设、盲法参考集构造/解锁记录、完成子集代表性说明），否则拒绝。执行器不访问网络或真实模型。
+`sim/sea_sap/fixtures/longitudinal.json` 与 `target_construction.json` 是公开合成 fixture，不含人类数据。参考语料快照哈希、候选—目标链接、可用性证据、资源成本、attendance 阈值和终端事件均显式冻结。`run_longitudinal_fixture()` 为治理／预算算例显式派生 `protocol_registry_schedule=["targets-v1"]`、`protocol_switch_timing={}` 的单版本声明；`run_protocol_registry_switch_demo()` 才执行基础 fixture 的两版本日程，避免治理算例无意越过冻结切换点。纵向 fixture 另含**事前冻结的协议声明**：`registry_family`（版本→登记内容哈希 allowlist）、`protocol_registry_schedule`（有序版本日程）、`protocol_switch_timing`（每个日程后继版本的冻结 `switch_after_period`，演示中 targets-v2 在周期 0 之后切换）、`protocol_reset_targets`（完全重置目标白名单，演示声明 targets-v1/v2 均允许，含回退）与 `protocol_registries`（日程后续版本的完整冻结登记内容）。连续性登记切换只能沿该日程在声明期次边界推进；`next_period` 由已提交的精确连续结果序列 $0,\ldots,N-1$ 派生且只读，执行只接受 `period == next_period`，重复/倒退/跳期/非整数期次在状态变更前拒绝，切换保留共享序列，完全重置从 0 开始；一旦切换到期，旧 cohort 不先转移就提交下一期会在任何结果／预算／history／审计变更前拒绝，每次提交也重新核验声明完整性，篡改时机不能重开旧路径；完全重置只能选白名单成员并生成独立单版本日程。白名单本身不保证 reset 外生，确证使用还需另冻结触发／时机和确定性选目规则，当前执行器未实现这些额外字段。attendance 注册对象显式声明 `registry_scope="synthetic_instrument_fixture"`；`validation_status="validated"` 的注册必须携带完整预注册字段（真 64 位十六进制哈希、敏感度/特异度区间、可迁移性假设、盲法参考集构造/解锁记录、完成子集代表性说明），否则拒绝。执行器不访问网络或真实模型。
 
 ## 4. 核心命令
 
@@ -70,6 +70,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 sim/sea_sap/reproduce.py \
 
 预期：9 项旧数学回归、4 项 SAP 算例回归、18 项治理符合性、20 项冻结重放回归、3 项金融公开输入回归、6 项消费口径／未来 schema 回归、**49 项纵向执行器回归**和 4 项目标构造回归；六组 sim 测试合计 **100 项**，数学/SAP 合计 13 项。数量表示实现一致性，不是独立数学证明或端到端有效性。
 
+v1.17.1 在不增加测试数的前提下加入：到期后旧 cohort 不得越过切换提交、每次提交的声明完整性核验、单版本治理算例与两版本协议演示分离；纵向／匹配 schema `/v7`、协议演示 `/v4`。S12 返回对象进一步明确公共 \(J^{-2}\) 尺度而非完整渐近阶、精确总体可行区间、零协方差近似而非独立、两输入 bootstrap 与非退化 replicate 条件区间，以及零 Youden 下不识别／不相容原因。上述均是合成接口／方法工件，不是独立数学或真实测量验证。
+
 v1.17 执行器新增：严格连续真实期次（只读 `next_period` 从精确序列 $0,\ldots,N-1$ 派生，重复/倒退/跳期/非整数期次在任何状态变更前拒绝，手工写时钟或破坏序列不能通过切换）、重复 period 0 不能满足 `switch_after_period=1` 的对抗性反例、切换后旧期次拒绝、完全重置从 0 开始；零完成/单真值类/单完成 stratum/缺失 stratum 的结构化 `not_estimable`（零完成份额偏移为 `None`，不是 0）；分层 sensitivity/specificity 分指标异质性、样本量与 Wilson 95% 区间；手工协方差输入的归一化 3×3 PSD 检查（含小子块、零方差行、联合行列式和极端尺度负例）。
 
 v1.16 既有语义保留：冻结切换时机（过早/过晚以 `switch_timing_mismatch` 拒绝）、声明完整性哈希（`protocol_declaration_tampered`）、完全重置白名单（`reset_target_not_declared`、新实例独立单版本日程）、拒绝 payload 精确状态效应字段（`registry_objective_budget_mutated=False`、`active_path_mutated=False`、`rejection_audit_record_appended=True`、`resources_spent=0`）、S12 协方差展开、联合/聚类 bootstrap、敏感性网格与分层诊断。v1.15 及以前语义继续保留：新评价队列、外生登记转移、单线控制、目标回滚不恢复登记版本、无族声明切换拒绝、validated 注册强制字段、无效遥测→unknown、delivered-未-selected 的无提交预演拒绝、first_available_period 到期恢复与跨队列全事件归因。
@@ -104,7 +106,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 \
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 tools/make_retrospective_tables.py
 PYTHONDONTWRITEBYTECODE=1 python3 tools/audit_v117.py
-bash tools/build_review_pdf.sh en v1.17
+SEA_RELEASE_LABEL=v1.17.1 bash tools/build_review_pdf.sh en v1.17
 python3 tools/check_pdf_textlayer.py \
   latex/SEA_EN_v1.17_draft.pdf \
   input/sovereign_epistemic_acquisition_EN_v1.17.md
@@ -114,7 +116,7 @@ python3 tools/check_pdf_layout.py \
 bash tools/make_arxiv_source.sh v1.17
 ```
 
-发布还需用 `pdftoppm` 渲染并目检首页标题、宽表、图和附录分页。文本层检查和坐标检查都不能单独替代完整视觉审阅。v1.17 内审 PDF 实测 **22 页**：附录 A 从新页开始，表 6（稳定记号）与表 7（falsification 映射）共同完整位于最后一页，无孤儿行；文本层、20 pt 坐标边界和首页/宽表/两幅图/参考文献/末页渲染目检均通过。arXiv XeLaTeX 试编译同为 22 页、Missing character 为 0；`anc/SHA256SUMS` 实测 **733/733** 个附件哈希通过（数量与 v1.16 相同是实测巧合，不是继承预设）。arXiv 附件只包含被 Git 跟踪的公开内容：内部 dispatch 运维日志（被 `.gitignore` 排除、含节点地址）不进入源包，工作树构建与脱敏副本构建均核验同一 `anc/SHA256SUMS`。`make_public.py` 对导出的 arXiv 源包执行开包敏感模式扫描，发现内部标识时自动从脱敏树重建并复检；旧版 arXiv 源包与解包目录不随公开快照导出。
+发布还需用 `pdftoppm` 渲染并目检首页标题、宽表、图和附录分页。文本层检查和坐标检查都不能单独替代完整视觉审阅。v1.17.1 内审 PDF 实测 **22 页**，首页身份戳与 PDF Title/Subject/Keywords 均明确为 `v1.17.1`：附录 A 从新页开始，表 6（稳定记号）与表 7（falsification 映射）共同完整位于最后一页，无孤儿行；Algorithm 1 的换行已修复一处坐标越界，文本层、20 pt 坐标边界和全 22 页联系表／首页／Algorithm／两幅图／参考文献／Data Availability／末页渲染目检均通过。arXiv XeLaTeX 试编译同为 22 页、Missing character 为 0；`anc/SHA256SUMS` 实测 **734/734** 个附件哈希通过（较 v1.17.0 增加空白独立复审交接表一份）。arXiv 附件只包含被 Git 跟踪的公开内容：内部 dispatch 运维日志（被 `.gitignore` 排除、含节点地址）不进入源包，工作树构建与脱敏副本构建均核验同一 `anc/SHA256SUMS`。`make_public.py` 对导出的 arXiv 源包执行开包敏感模式扫描，发现内部标识时自动从脱敏树重建并复检；旧版 arXiv 源包与解包目录不随公开快照导出。
 
 ## 5. 无 `.git` 公开副本检查
 
@@ -130,17 +132,17 @@ env -i HOME="$HOME" PATH=/tmp/sea-nogit-bin \
 
 如果 Python/NumPy 安装在其他前缀，应使用对应解释器，而不是恢复 Git 依赖。发布者另在干净公开副本中执行第 4.1–4.3 节命令并比较工件。第三方独立重跑仍不得因此宣称已完成。
 
-本版已在无 `.git` 的脱敏公开副本实际完成 **19/19 组验证命令**：13 项数学/SAP、100 项治理/重放/金融/消费口径/执行器/目标构造测试、四类数据审计、合成 SAP 工件重建（含严格期次协议转移演示）、R5 单源核对、157 项发布审计、22 页 PDF/arXiv 构建，以及专用无 Git PATH（`shutil.which('git')` 为 None）下的金融默认和 `--write --force`。公开 arXiv 的 **733/733** 个附件哈希全部通过。机器报告为 `tools/clean_verification_v1.17.json`。这是**作者执行的公开副本验证**，不是第三方独立复现；不同时刻的 PDF/压缩包可因构建时间产生不同二进制哈希，arXiv 包另因附件基础设施标识脱敏而不同，报告将“干净重建哈希”与金融固定输入哈希分开。
+本版已在无 `.git` 的脱敏公开副本实际完成 **19/19 组验证命令**：13 项数学/SAP、100 项治理/重放/金融/消费口径/执行器/目标构造测试、四类数据审计、合成 SAP 工件重建（含严格期次协议转移演示）、R5 单源核对、162 项发布审计、22 页 PDF/arXiv 构建，以及专用无 Git PATH（`shutil.which('git')` 为 None）下的金融默认和 `--write --force`。公开 arXiv 的 **734/734** 个附件哈希全部通过。机器报告为 `tools/clean_verification_v1.17.json`。这是**作者执行的公开副本验证**，不是第三方独立复现；不同时刻的 PDF/压缩包可因构建时间产生不同二进制哈希，arXiv 包另因附件基础设施标识脱敏而不同，报告将“干净重建哈希”与金融固定输入哈希分开。
 
 ## 6. 工件清单与 arXiv 附件
 
 发布分两步解决“提交不能包含自身哈希”的溯源问题。先提交候选内容并创建 annotated tag，再在标签已存在且可解引用时生成最终清单：
 
 ```bash
-SEA_RELEASE_STATUS=PUBLIC_CANDIDATE_RELEASE__PRERELEASE \
-SEA_RELEASE_ID=v1.17.0 \
-SEA_TARGET_TAG=v1.17.0 \
-SEA_TARGET_COMMIT=<v1.17.0^{} 的完整 40 位提交哈希> \
+SEA_RELEASE_STATUS=PUBLIC_CANDIDATE_RELEASE__PRERELEASE_NOT_INDEPENDENTLY_REVIEWED \
+SEA_RELEASE_ID=v1.17.1 \
+SEA_TARGET_TAG=v1.17.1 \
+SEA_TARGET_COMMIT=<v1.17.1^{} 的完整 40 位提交哈希> \
 SEA_GITHUB_URL=https://github.com/hurrywhen/sea-nuaa \
 SEA_GITEE_URL=https://gitee.com/jiangsu-yunhefeng-intelligent_0/sea-nuaa \
 PYTHONDONTWRITEBYTECODE=1 python3 tools/make_v117_manifest.py
@@ -156,4 +158,4 @@ PYTHONDONTWRITEBYTECODE=1 python3 tools/make_v117_manifest.py
 
 ## 8. 后续直接实验
 
-`docs/MINIMAL_VALID_EXPERIMENT_v1.17.md` 给出建议的识别结构：唯一主要比较为 SEA 对同模型端到端筛选，唯一主要结局为全分配失败复合操作性 attendance 加权遗漏 \(\mathcal M_\nu^{FC}\)，与潜在 \(\mathcal M_\nu\) 分离。协议按域注册 attendance 工具、明确 AND 判定、阈值验证和盲法，报告臂别 unknown 极端边界（操作性 attendance 遗漏差值，不是潜在消费差值），unknown 在主分析中进入失败复合结局。§1.4.1 规定解锁前误分类验证与臂间误差比较：独立盲法参考集（构造/哈希/解锁记录）、臂别敏感度/特异度及区间、AND 操作性假阴性率、预声明臂间差异界值、验证集→部署集误差可迁移性条件与完成子集代表性的分层诊断、相关输入下联合半正定的协方差矩阵或联合/聚类 bootstrap、分层 Wilson 区间与零完成 `not_estimable` 诊断、显式误差模型下的 (S12) 传输敏感性与近零分母精度预警/敏感性网格。目标集版本变更创建新评价队列（`NEW_EVALUATION_COHORT__NO_CROSS_VERSION_POOLING`）；主稿 §3.2 将登记 \(\rho_t\) 纳入状态，版本切换为**外生冻结评价协议事件**（有限族 \(\mathfrak R\) 内容哈希 allowlist＋有序日程＋冻结切换期次＋严格连续只读 `next_period`＋重置白名单，非策略行动、无需目标写入式授权），**单线控制**：切换封存原路径、唯一活动路径共享预算/账本；完全重置是声明例外，选白名单目标生成独立单版本日程并封存父路径；拒绝切换仅追加拒绝审计记录（登记/目标/预算/活动路径不变）；目标回滚绝不恢复登记版本；每个队列相关审计事件携带控制实例/队列/登记版本归因。还需要独立语料/月份功效模拟、锁定语料、严格 point-in-time、记忆审计、效率日志和结果解锁前公共注册。该协议目前未执行，也不等于已经公共注册。
+`docs/MINIMAL_VALID_EXPERIMENT_v1.17.md` 给出建议的识别结构：唯一主要比较为 SEA 对同模型端到端筛选，唯一主要结局为全分配失败复合操作性 attendance 加权遗漏 \(\mathcal M_\nu^{FC}\)，与潜在 \(\mathcal M_\nu\) 分离。协议按域注册 attendance 工具、明确 AND 判定、阈值验证和盲法，报告臂别 unknown 极端边界（操作性 attendance 遗漏差值，不是潜在消费差值），unknown 在主分析中进入失败复合结局。§1.4.1 规定解锁前误分类验证与臂间误差比较：独立盲法参考集（构造/哈希/解锁记录）、臂别敏感度/特异度及区间、AND 操作性假阴性率、预声明臂间差异界值、验证集→部署集误差可迁移性条件与完成子集代表性的分层诊断、相关输入下联合半正定的完整协方差矩阵或对所有依赖估计量的设计一致联合／聚类重抽（随附 bootstrap 仅联合重估 \(se,sp\)，固定 \(m^Z\)，百分位区间条件于非退化 replicate）、分层 Wilson 区间与零完成 `not_estimable` 诊断、显式误差模型下的 (S12) 传输敏感性与近零分母精度预警／敏感性网格；零协方差不自动等于独立，PSD 不等于校准。目标集版本变更创建新评价队列（`NEW_EVALUATION_COHORT__NO_CROSS_VERSION_POOLING`）；主稿 §3.2 将登记 \(\rho_t\) 纳入状态，版本切换为**外生冻结评价协议事件**（有限族 \(\mathfrak R\) 内容哈希 allowlist＋有序日程＋冻结切换期次＋严格连续只读 `next_period`＋重置白名单，非策略行动、无需目标写入式授权），**单线控制**：切换封存原路径、唯一活动路径共享预算/账本，到期后旧路径不得越过切换提交；完全重置是实现层例外，选白名单目标生成独立单版本日程并封存父路径，确证使用另需事前冻结触发／时机与确定性选目规则，否则仅属探索性新实验；各版本 \(\nu^{(v)}\) 在解锁前冻结、评价时仅查表；拒绝切换仅追加拒绝审计记录（登记/目标/预算/活动路径不变）；目标回滚绝不恢复登记版本；每个队列相关审计事件携带控制实例/队列/登记版本归因。还需要独立语料/月份功效模拟、锁定语料、严格 point-in-time、记忆审计、效率日志和结果解锁前公共注册。该协议目前未执行，也不等于已经公共注册。

@@ -42,7 +42,7 @@ if [ "$VERSION" = "v1.16" ]; then
   DATE_STR="22 November 2026"
 fi
 if [ "$VERSION" = "v1.17" ]; then
-  DATE_STR="23 November 2026"
+  DATE_STR="24 November 2026"
 fi
 if [ ! -f "$SRC" ]; then
   echo "[fail] 源稿不存在：$SRC" >&2
@@ -218,6 +218,7 @@ if [ "$VERSION" = "v1.9" ] || [ "$VERSION" = "v1.10" ] || [ "$VERSION" = "v1.11"
       cp -r sim/pilot/results/retrospective_tables_v1.16 "$OUTDIR/anc/"
     fi
     if [ "$VERSION" = "v1.17" ]; then
+      cp docs/INDEPENDENT_REVIEW_HANDOFF_v1.17.md "$OUTDIR/anc/"
       cp docs/SUPPLEMENT_FORMAL_AND_SECONDARY_v1.17.md "$OUTDIR/anc/"
       cp docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.17.md "$OUTDIR/anc/"
       cp -r sim/sea_sap "$OUTDIR/anc/src/"

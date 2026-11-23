@@ -5,7 +5,7 @@
   "git_directory_present": false,
   "financial_PATH_contains_git_executable": false,
   "financial_historical_sha256": "80e953d19efb44787d4fb8b03e37ee6cbfbfc325488769df8a0e89281b495024",
-  "arxiv_hash_manifest_entries_verified": 733,
+  "arxiv_hash_manifest_entries_verified": 734,
   "checks": [
     {
       "name": "math-and-SAP-tests",
@@ -28,7 +28,7 @@
         "test_symmetric_channel_and_attendance_measurement (tools.test_v110_sap.V110SapExampleTests.test_symmetric_channel_and_attendance_measurement) ... ok",
         "",
         "----------------------------------------------------------------------",
-        "Ran 13 tests in 0.744s",
+        "Ran 13 tests in 0.141s",
         "",
         "OK"
       ]
@@ -84,7 +84,7 @@
         "test_kappa_handles_perfect_and_chance_agreement (sea_sap.test_target_construction.TargetConstructionTest.test_kappa_handles_perfect_and_chance_agreement) ... ok",
         "",
         "----------------------------------------------------------------------",
-        "Ran 100 tests in 1.532s",
+        "Ran 100 tests in 1.206s",
         "",
         "OK"
       ]
@@ -198,7 +198,7 @@
       ],
       "returncode": 0,
       "output_tail": [
-        "v1.17 audit: 157/157 passed; failures=0",
+        "v1.17 audit: 162/162 passed; failures=0",
         "report: /tmp/opencode/sea-v117-clean-verify/tools/audit_v117_report.json"
       ]
     },
@@ -212,7 +212,7 @@
       ],
       "returncode": 0,
       "output_tail": [
-        "[preprocess] 524 -> 524 行, 目录替换=False, 身份戳=True",
+        "[preprocess] 527 -> 527 行, 目录替换=False, 身份戳=True",
         "[ok] 已生成 latex/SEA_EN_v1.17_draft.pdf",
         "Pages:           22",
         "Page size:       595.276 x 841.89 pts (A4)"
@@ -228,7 +228,7 @@
       ],
       "returncode": 0,
       "output_tail": [
-        "PDF=latex/SEA_EN_v1.17_draft.pdf 页数≈22 文本层字符=58137 源稿字符=62824 比=0.93",
+        "PDF=latex/SEA_EN_v1.17_draft.pdf 页数≈22 文本层字符=58776 源稿字符=63514 比=0.93",
         "标题 14 个，断裂 0；问题 0"
       ]
     },
@@ -321,7 +321,7 @@
       ]
     }
   ],
-  "rebuilt_clean_pdf_sha256": "b4765c9526a221d3e02a16e4636bc128d6cd73df95d7a4eb8e2827b7236bb5fc",
-  "rebuilt_clean_arxiv_source_sha256": "3dac47d565cac51497a1d3104bb564d6b3fcfb2d901a33d0eef3287c07f3b69b",
-  "binary_hash_note": "Clean-rebuild PDF hashes differ from working-tree builds by embedded build timestamps; clean-rebuild arXiv tarball hashes additionally differ by infrastructure-identifier sanitization of ancillary sources. Financial frozen-input hashes are byte-stable. The working-tree arXiv package excludes gitignored internal dispatch logs, so both builds verify the same 733-entry manifest."
+  "rebuilt_clean_pdf_sha256": "35970a1ed56762935f8e246fb8d0a150b15de2a283a4ddbc0643b72ed60dc3ad",
+  "rebuilt_clean_arxiv_source_sha256": "abf081324afe8ecee4484679b383e0a6e2063571dae6e3e8865cce5191bd697b",
+  "binary_hash_note": "Clean-rebuild PDF hashes differ from working-tree builds by embedded build timestamps; clean-rebuild arXiv tarball hashes additionally differ by infrastructure-identifier sanitization of ancillary sources. Financial frozen-input hashes are byte-stable. The working-tree arXiv package excludes gitignored internal dispatch logs, so both builds verify the same 734-entry manifest."
 }

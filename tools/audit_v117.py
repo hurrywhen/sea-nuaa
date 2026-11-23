@@ -53,6 +53,7 @@ def main() -> int:
         ROOT / "docs/REPRODUCIBILITY_v1.17.md",
         ROOT / "docs/MINIMAL_VALID_EXPERIMENT_v1.17.md",
         ROOT / "docs/LITERATURE_SEARCH_v1.17.md",
+        ROOT / "docs/INDEPENDENT_REVIEW_HANDOFF_v1.17.md",
         ROOT / "docs/SUPPLEMENT_NORMATIVE_AND_TRANSFER_v1.17.md",
         ROOT / "docs/SUPPLEMENT_FORMAL_AND_SECONDARY_v1.17.md",
         ROOT / "docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.17.md",
@@ -87,6 +88,7 @@ def main() -> int:
     formal = (ROOT / "docs/SUPPLEMENT_FORMAL_AND_SECONDARY_v1.17.md").read_text(encoding="utf-8")
     normative = (ROOT / "docs/SUPPLEMENT_NORMATIVE_AND_TRANSFER_v1.17.md").read_text(encoding="utf-8")
     literature = (ROOT / "docs/LITERATURE_SEARCH_v1.17.md").read_text(encoding="utf-8")
+    handoff = (ROOT / "docs/INDEPENDENT_REVIEW_HANDOFF_v1.17.md").read_text(encoding="utf-8")
     reproducibility = (ROOT / "docs/REPRODUCIBILITY_v1.17.md").read_text(encoding="utf-8")
     evidence = json.loads(EVIDENCE_PATH.read_text(encoding="utf-8"))
     consumption = json.loads(CONSUMPTION_PATH.read_text(encoding="utf-8"))
@@ -100,17 +102,23 @@ def main() -> int:
 
     check("release:route", evidence["release_route"] == "CONDITIONAL_COMPONENTS_GOVERNANCE_AND_EVIDENCE_AUDIT")
     scope = evidence["global_scope"]
-    check("release:tag_and_doi_boundary", scope["public_tag"] == "v1.17.0"
+    check("release:tag_and_doi_boundary", scope["public_tag"] == "v1.17.1"
           and scope["v1.17_specific_doi"] is None
           and scope["historical_v1.7_version_doi_not_covering_this_release"] == "10.5281/zenodo.23620920")
     check("release:no_effect_or_human_claim", not scope["overall_SEA_structural_effect_identified"]
           and not scope["prospective_cross_corpus_confirmation"]
           and scope["human_subjects_data"] == "none"
           and scope["synthetic_executor_is_effectiveness_evidence"] is False)
-    check("release:manuscript_version", "current public candidate snapshot is **`v1.17.0`**" in text)
+    check("release:manuscript_version", "current public candidate snapshot is **`v1.17.1`**" in text)
     check("release:historical_doi_not_mislabeled", "do not cover v1.9, v1.10, v1.11, v1.13, v1.14, v1.15, v1.16, or v1.17" in text)
     check("release:three_contributions", "one conditional framework and two checkable artifacts" in text
           and "The paper makes three bounded contributions" in text)
+    check("release:independent_review_handoff_is_blank_not_signoff",
+          "未签核、未执行独立复审" in handoff
+          and "复审人签名与日期（待填写）" in handoff
+          and scope["independent_human_mathematical_review"] == "pending"
+          and "blank template; not a signature" in scope["independent_review_handoff_template"]
+          and "INDEPENDENT_REVIEW_HANDOFF_v1.17.md` (not a sign-off)" in text)
 
     check("governance:18_pass", governance["status"] == "PASS"
           and governance["tests_run"] == 18 and not governance["failures"] and not governance["errors"])
@@ -298,8 +306,8 @@ def main() -> int:
           "single-line" in text and "sealed" in text
           and "unique active path" in text
           and "never copied into parallel branches" in text
-          and "no registry rollback" in text
-          and "objective rollback restores an objective version only, never a registry version" in text)
+          and ("no registry rollback" in text.lower() or "not a registry rollback" in text.lower())
+          and "objective rollback restores an objective version only, never a registry version" in text.lower())
     check("sap:symbols_deduplicated",
           "\\mathfrak R" in text and "\\mu_0(x_0,y_0)" in text
           and "\\rho_0" not in text and "R_t" not in text
@@ -348,8 +356,12 @@ def main() -> int:
           and len(protocol_demo["timing_and_declaration_rejection_events"]) == 3
           and len(protocol_demo["duplicate_period_switch_rejection_events"]) == 1
           and protocol_demo["duplicate_period_switch_rejection_events"][0]["completed_periods"] == 1
-          and protocol_demo["schema"] == "sea.protocol-registry-switch-demo/v3"
+          and protocol_demo["schema"] == "sea.protocol-registry-switch-demo/v4"
           and "period == next_period" in protocol_demo["semantics"]["period_sequence"]
+          and protocol_demo["missed_transition_period_probe"]["state_unchanged"]
+          and protocol_demo["missed_transition_period_probe"]["reason"].startswith(
+              "protocol registry transition required")
+          and protocol_demo["checks"]["missed_switch_period_rejected_before_mutation"]
           and len(protocol_demo["seal_events"]) == 2
           and len(protocol_demo["full_reset_seal_events"]) == 1
           and len(protocol_demo["cohort_change_events"]) == 1
@@ -380,19 +392,33 @@ def main() -> int:
           and "period sequence rejected" in executor_source
           and "completed_periods = self.next_period" in executor_source
           and "continued.next_period = self.next_period" not in executor_source
-          and longitudinal["schema"] == "sea.sap-longitudinal-executor/v6"
+          and "_assert_period_protocol_ready" in executor_source
+          and "protocol registry transition required" in executor_source
+          and "protocol declaration integrity violation" in executor_source
+          and longitudinal["schema"] == "sea.sap-longitudinal-executor/v7"
           and longitudinal["next_period"] == 2
-          and matched["schema"] == "sea.matched-implementation-fixture/v6")
+          and longitudinal["protocol_registry_schedule"] == ["targets-v1"]
+          and longitudinal["protocol_switch_timing"] == {}
+          and "registry_schedule_rule" in longitudinal
+          and matched["schema"] == "sea.matched-implementation-fixture/v7")
     check("main:v117_strict_actual_periods",
           "next_period == switch_after_period + 1" in text
-          and "never `len(period_results)`" in text
+          and "never an unchecked `len(period_results)`" in text
+          and "recompute n from the verified sequence" in text
           and "duplicate, regressed, and skipped periods" in text
-          and "repeating period 0 leaves `next_period=1`" in text)
+          and "repeating period 0 leaves `next_period=1`" in text
+          and "old path cannot commit a later period" in text
+          and "declaration integrity is rechecked at every commit" in text
+          and "single-version schedule" in text)
     check("supplement_and_protocol:v117_strict_actual_periods",
           "**Strict actual-period boundary.**" in formal
           and "manually writable counter" in formal
           and "真实连续期次计数 `next_period == switch_after_period + 1`" in protocol
-          and "不是公开可写时钟" in protocol)
+          and "不是公开可写时钟" in protocol
+          and "切换一旦到期" in protocol
+          and "commit-free period precheck" in protocol
+          and "Formal correspondence and scope" in formal
+          and "run_period(k+1)` on the old cohort is rejected" in formal)
     check("executor:v117_joint_psd_code_and_tests",
           "_checked_s12_covariance_matrix" in executor_source
           and "normalized_principal_minors_with_exact_zero_variance_rows" in executor_source
@@ -413,26 +439,73 @@ def main() -> int:
           "must be positive semidefinite" in text
           and "no_completed_measurements" in text and "Wilson 95% intervals" in text
           and "**Small-sample and zero-completion semantics.**" in formal
-          and "correlation-matrix determinant" in formal
+          and "principal minors" in formal
           and "至少需要两个可估计 strata" in protocol
           and "联合半正定" in protocol
           and "reason=no_completed_measurements" in protocol)
+    check("main_supplement_protocol:v1171_sharpness_and_calibration_boundaries",
+          "Both endpoints are jointly attainable" in text
+          and "PSD establishes algebraic admissibility only" in text
+          and "Sharp operational-attendance contrast bounds" in formal
+          and "PSD is only algebraic admissibility" in formal
+          and "simultaneous confidence and multiplicity handling" in formal
+          and "Sharp 性推导" in protocol
+          and "PSD 只证明所输矩阵在代数上可接受" in protocol
+          and "区间族、聚类与多重性" in protocol
+          and "不得把各层单独 95% Wilson 区间的笛卡尔积" in protocol
+          and "period_window_map" in protocol
+          and "功效与 Monte Carlo 误差" in protocol
+          and "不等于已公共预注册" in protocol)
+    check("main_supplement_protocol:v1171_reset_and_measure_lookup_scope",
+          "An allowlist alone does not make reset exogenous" in text
+          and "deterministic target-selection rule" in text
+          and "Proposition 3.1 is per instance" in text
+          and "frozen for each version before outcome unlock" in text
+          and "The allowlist alone does not make reset exogenous" in formal
+          and "no global optimality or common-estimand claim across resets" in formal
+          and "protocol_reset_trigger" in protocol
+          and "protocol_reset_target_selection_rule" in protocol
+          and "评价测度查表而非选择" in protocol
+          and "当前执行器只实现白名单" in protocol)
+    check("main_supplement_protocol_code:v1171_s12_identification_and_resampling_scope",
+          "J_a^{-1}(1-f,-f,1)" in formal
+          and "J_a^{-4}" in formal
+          and "1-se_a\\le m_a^Z\\le sp_a" in formal
+          and "zero-covariance approximation" in formal
+          and "conditional on nondegenerate replicates" in formal
+          and "not** a three-input joint bootstrap" in formal
+          and "zero_covariance_approximation" in executor_source
+          and "covariance_matrix_psd_within_1e-12_tolerance" in executor_source
+          and "covariance_matrix_positive_semidefinite=True" not in executor_source
+          and "three_input_joint_resampling_performed" in executor_source
+          and "conditional_on_nondegenerate_replicates" in executor_source
+          and "nonidentifiable_zero_youden_zero_numerator" in executor_source
+          and "first_order_asymptotic_approximation" in executor_source
+          and "一阶渐近近似" in protocol
+          and "J_a^{-4}" in protocol
+          and "不推出独立" in protocol
+          and "不是三输入联合 bootstrap" in protocol
+          and "条件于非退化 replicate" in protocol
+          and "不能单独据此证伪真实误差模型" in protocol)
     check("evidence:v117_schemas_counts_and_no_contradiction",
           "sim/sea_sap/test_executor.py (49 tests)" in EVIDENCE_PATH.read_text(encoding="utf-8")
-          and "sea.sap-longitudinal-executor/v6" in EVIDENCE_PATH.read_text(encoding="utf-8")
-          and "sea.protocol-registry-switch-demo/v3" in EVIDENCE_PATH.read_text(encoding="utf-8")
+          and "sea.sap-longitudinal-executor/v7" in EVIDENCE_PATH.read_text(encoding="utf-8")
+          and "sea.protocol-registry-switch-demo/v4" in EVIDENCE_PATH.read_text(encoding="utf-8")
+          and "allowlist alone does not establish exogeneity" in EVIDENCE_PATH.read_text(encoding="utf-8")
+          and "conditional on nondegenerate replicates" in EVIDENCE_PATH.read_text(encoding="utf-8")
+          and "J^-2 is only the common delta-gradient scale" in EVIDENCE_PATH.read_text(encoding="utf-8")
           and "zero mutation" not in EVIDENCE_PATH.read_text(encoding="utf-8"))
     check("main:rejection_state_effect_precise",
           "zero state mutation" not in text
           and "only state change is one appended rejection audit record" in text
           and "switch_after_period" in text
           and "switch_timing_mismatch" in text and "protocol_declaration_tampered" in text
-          and "pre-declared allowed reset target" in text
+          and "allowlisted target" in text
           and "fresh independent single-version schedule" in text)
     check("supplement:rejection_and_timing_reset",
           "only one rejection audit record is appended" in formal
           and "frozen switch timing" in formal
-          and "declared protocol exception" in formal
+          and "implementation-layer exception" in formal
           and "not that the whole state is unmutated" in formal)
     check("protocol:timing_reset_preregistration",
           "switch_after_period" in protocol and "protocol_reset_targets" in protocol
@@ -452,7 +525,7 @@ def main() -> int:
               "test_s12_sensitivity_grid_reports_inadmissible_and_range",
               "test_transportability_stratified_diagnostics")))
     check("supplement:s12_dependent_inputs_and_diagnostics",
-          "Dependent inputs: covariance terms or joint bootstrap" in formal
+          "Dependent inputs: covariance terms or design-consistent resampling" in formal
           and "transportability_stratified_diagnostics" in formal
           and "completed_measurement_transport_joint_bootstrap" in formal
           and "completed_measurement_transport_sensitivity_grid" in formal
@@ -460,7 +533,7 @@ def main() -> int:
     check("protocol:s12_covariance_bootstrap_stratified_plan",
           "completed_measurement_transport_joint_bootstrap" in protocol
           and "transportability_stratified_diagnostics" in protocol
-          and "不得默认独立" in protocol
+          and "不推出独立" in protocol
           and "分层诊断" in protocol)
     check("executor:instrument_hardening_code",
           all(token in executor_source for token in (
@@ -486,12 +559,12 @@ def main() -> int:
           "P_{\\mathrm{validation}}(Z=1\\mid D=1,a)=P_{\\mathrm{deployment}}(Z=1\\mid D=1,a)" in formal
           and "P_{\\mathrm{validation}}(Z=0\\mid D=0,a)=P_{\\mathrm{deployment}}(Z=0\\mid D=0,a)" in formal
           and "Validation-to-deployment transportability" in formal
-          and "Precision warning near a zero denominator" in formal
+          and "Population feasibility and precision near a zero denominator" in formal
           and "1/J_a^2" in formal and "covariate standardization or stratified estimation" in formal)
     check("protocol:transportability_and_precision_plan",
           "可迁移性条件与完成子集代表性" in protocol
           and "P_{\\mathrm{validation}}(Z=1\\mid D=1,a)" in protocol
-          and "近零分母精度预警与敏感性网格" in protocol
+          and "近零分母、可行域与敏感性网格" in protocol
           and "completion_subset_representativeness" in protocol
           and "transportability_assumption" in protocol
           and "blinded_reference_set" in protocol)
@@ -620,7 +693,19 @@ def main() -> int:
         # (2) late attempt and outcome-motivated timing edit both rejected.
         late = _SAP(fx)
         late.run_period(0, fx["period_plans"]["0"])
-        late.run_period(1, fx["period_plans"]["1"])
+        missed_before = (late.next_period, len(late.period_results), len(late.history),
+                         len(late.governance.audit_records()), dict(late.budget_remaining))
+        try:
+            late.run_period(1, fx["period_plans"]["1"])
+            missed_boundary_rejected = False
+        except RuntimeError as exc:
+            missed_boundary_rejected = "protocol registry transition required" in str(exc)
+        missed_after = (late.next_period, len(late.period_results), len(late.history),
+                        len(late.governance.audit_records()), dict(late.budget_remaining))
+        missed_boundary_ok = missed_boundary_rejected and missed_after == missed_before
+        legacy_second = dict(late.period_results[0])
+        legacy_second["period"] = 1
+        late.period_results.append(legacy_second)
         try:
             late.continue_with_target_registry(v2)
             late_rejected = False
@@ -656,7 +741,7 @@ def main() -> int:
             and cont._sealed and not back._sealed
             and cont.registry["version"] == "targets-v2")
         check("executor:v115_review_counterexamples_functional",
-              rejection_precise and late_rejected and tamper_rejected
+              rejection_precise and missed_boundary_ok and late_rejected and tamper_rejected
               and undeclared_reset_rejected and backward_reset_ok)
     except Exception as exc:  # noqa: BLE001
         check("executor:v115_review_counterexamples_functional", False, repr(exc))
@@ -721,7 +806,7 @@ def main() -> int:
             determinant_rejected = "positive semidefinite" in str(exc)
         valid_psd = _delta17(
             0.13, 0.9, 0.95, var_m_z=0.0, var_se=1e-200, var_sp=1e200,
-            cov_se_sp=1.0)["covariance_matrix_positive_semidefinite"]
+            cov_se_sp=1.0)["covariance_matrix_psd_within_1e-12_tolerance"]
         check("executor:v116_review_counterexamples_functional",
               period_attack_closed and zero_ok and small_subblock_rejected
               and determinant_rejected and valid_psd)
@@ -760,7 +845,8 @@ def main() -> int:
             check("layout:no_edge_overflow", layout["status"] == "PASS", str(layout["findings"][:2]))
             info = subprocess.run(["pdfinfo", str(pdf)], check=True, capture_output=True, text=True).stdout
             check("layout:a4", "595.276 x 841.89 pts (A4)" in info)
-            check("layout:author_metadata", "Wen Hu" in info and "Xutong Wang" in info and "Ya Yu" in info)
+            check("layout:author_and_release_metadata", "Wen Hu" in info and "Xutong Wang" in info
+                  and "Ya Yu" in info and "Review artifact v1.17.1" in info)
 
     failed = [c for c in checks if not c["passed"]]
     report = {

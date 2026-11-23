@@ -76,6 +76,6 @@
     "retrieval_permissions": "same frozen fixture only",
     "target_registry_sha256": "d9b49926c6418689b82d6f30c04986f98994d087be855827c81cf93389472478"
   },
-  "schema": "sea.matched-implementation-fixture/v6",
+  "schema": "sea.matched-implementation-fixture/v7",
   "status": "MECHANISTIC_MATCHED_FIXTURE__NOT_A_MODEL_OR_DEPLOYMENT_EXPERIMENT"
 }

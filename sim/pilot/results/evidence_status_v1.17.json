@@ -1,6 +1,6 @@
 {
   "schema": "sea.evidence-status/v1.17",
-  "updated": "2026-11-23",
+  "updated": "2026-11-24",
   "release_route": "CONDITIONAL_COMPONENTS_GOVERNANCE_AND_EVIDENCE_AUDIT",
   "reference_manuscript": "input/sovereign_epistemic_acquisition_EN_v1.17.md",
   "global_scope": {
@@ -9,13 +9,14 @@
     "prospective_cross_corpus_confirmation": false,
     "joint_SAP_optimum_or_approximation_claimed": false,
     "independent_human_mathematical_review": "pending",
+    "independent_review_handoff_template": "docs/INDEPENDENT_REVIEW_HANDOFF_v1.17.md (blank template; not a signature or completed review)",
     "third_party_clean_environment_reproduction": "pending",
-    "public_release_status": "PUBLIC_CANDIDATE_TAG_v1.17.0__PRERELEASE__DOI_PENDING",
+    "public_release_status": "PUBLIC_CANDIDATE_TAG_v1.17.1__PRERELEASE__DOI_PENDING",
     "public_repositories": {
       "github": "https://github.com/hurrywhen/sea-nuaa",
       "gitee": "https://gitee.com/jiangsu-yunhefeng-intelligent_0/sea-nuaa"
     },
-    "public_tag": "v1.17.0",
+    "public_tag": "v1.17.1",
     "historical_v1.7_version_doi_not_covering_this_release": "10.5281/zenodo.23620920",
     "historical_recall_term_required": "retrospective selected-proxy opportunity recall under the stated target, configuration, upstream digest, population, and aggregation rule; never actual-consumption recall",
     "formal_terminal_consumption_event": "latent actual consumption D; operational attendance Z is a validated measurement, not latent comprehension",
@@ -23,7 +24,7 @@
     "independent_human_target_validation": "pending",
     "synthetic_executor_is_effectiveness_evidence": false,
     "contrast_bounds_estimand": "operational attendance omission, not latent actual consumption without measurement-error assumptions",
-    "dynamic_target_rule": "NEW_EVALUATION_COHORT__NO_CROSS_VERSION_POOLING; SAP tuple per control instance with active registry rho_t in state; registry-version transitions are exogenous frozen evaluation-protocol events (finite family Rfr with content-hash allowlist, ordered schedule, frozen switch_after_period timing fixed before any arm result is read, and strict contiguous read-only next_period), not policy actions; single-line control seals the predecessor path; full reset is a declared exception selecting pre-declared reset targets (backward versions allowed as new instances) with a fresh single-version schedule; objective rollback never restores a registry version; evaluation measure nu^(v) chosen per cohort",
+    "dynamic_target_rule": "NEW_EVALUATION_COHORT__NO_CROSS_VERSION_POOLING; SAP tuple per control instance with active registry rho_t in state; continuity registry transitions are exogenous frozen evaluation-protocol events (finite family Rfr with content-hash allowlist, ordered schedule, frozen switch_after_period timing fixed before any arm result is read, and strict contiguous read-only next_period; once a switch is due the old cohort cannot commit another period before transition and declaration integrity is rechecked at commit), not policy actions; single-line control seals the predecessor path; full reset is an implementation-layer exception and its allowlist alone does not establish exogeneity (confirmatory use additionally requires pre-frozen trigger/timing and deterministic target selection, otherwise exploratory new experiment); objective rollback never restores a registry version; evaluation measure nu^(v) is frozen per version before outcome unlock and only looked up at evaluation",
     "instrument_registry_scope": "shipped object is synthetic_instrument_fixture; validation_status=validated requires full preregistration fields (raw-event schema, true 64-hex validation-data and code hashes, measurement error with sensitivity/specificity intervals and declared transportability assumption, independent blinded reference-set construction/hash/unlock record with no overlap, completion-subset representativeness statement, alternative instruments, arm-and-model blinding); structural checks only, not completed measurement validation",
     "attendance_invalid_telemetry_rule": "non-finite, out-of-range, non-Boolean, or empty-pointer telemetry is unknown, never positive or negative",
     "retrospective_tables_single_source": "SB1-SB3 exist only in SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.17.md R5, regenerated from frozen data by tools/make_retrospective_tables.py",
@@ -62,7 +63,7 @@
       "new_real_model_calls": 0,
       "human_data": false,
       "not_supported": "General SAP optimizer, deployment effectiveness, real consumption, or human outcomes",
-      "executor_schema": "sea.sap-longitudinal-executor/v6",
+      "executor_schema": "sea.sap-longitudinal-executor/v7",
       "fixes": [
         "first_available_period longitudinal filtering",
         "staged selection linkage vs arm-independent reference evaluation truth",
@@ -78,21 +79,23 @@
         "single-line control: predecessor sealed on switch/fork; unique shared budget/history/ledger, no parallel branches",
         "non-family/tampered-hash/out-of-schedule/sealed-path rejections: registry/objective/budget/active path unchanged, only a rejection audit record appended, zero spend",
         "validated instrument registration: true hex hashes, error-rate intervals, transportability assumption, blinded reference-set record, completion-subset representativeness",
-        "S12 transport helper with Youden-denominator precision warning, delta-method propagation with optional covariance terms, joint/cluster bootstrap, pre-specified sensitivity grid, and stratified transportability/completion-representativeness diagnostics",
+        "S12 transport helper with Youden-denominator precision warning, first-order delta-method propagation with optional covariance terms, two-input joint/cluster bootstrap with m_Z fixed and nondegenerate-conditional percentiles, pre-specified sensitivity grid, and stratified diagnostics",
         "frozen switch_after_period timing per scheduled successor, enforced at transition acceptance; early/late attempts rejected (switch_timing_mismatch)",
         "protocol declaration integrity hash: post-result edits of family/schedule/timing/reset allowlist/frozen content rejected (protocol_declaration_tampered)",
         "full reset requires pre-declared protocol_reset_targets allowlist; new independent single-version schedule; declared backward reset demonstrated as a new control instance, not a rollback",
         "strict actual periods: read-only next_period derived from exact contiguous committed sequence; duplicate/regressed/skipped/noninteger periods rejected before mutation and cannot satisfy switch timing",
         "zero completed measurements return structured not_estimable shares/rates with completion and representativeness warnings, never zero share shift or pooled-rate exceptions",
-        "manual S12 covariance inputs require normalized 3x3 positive-semidefinite validation; stratified rates include denominators, per-metric heterogeneity, and unit-level Wilson 95% intervals"
+        "manual S12 covariance inputs require normalized 3x3 positive-semidefinite validation; stratified rates include denominators, per-metric heterogeneity, and unit-level Wilson 95% intervals",
+        "mandatory frozen cohort boundary: a due old-cohort path cannot skip transition and commit another period; declaration tampering cannot move the boundary; both run rejections are commit-free",
+        "S12 metadata distinguishes zero-covariance approximation from independence, common J^-2 scale from complete asymptotic order, exact population feasibility from plug-in instability, and zero-J nonidentification from incompatibility"
       ]
     },
     {
       "id": "PROTOCOL-REGISTRY-GOVERNANCE",
-      "claim": "Exogenous frozen registry-family/schedule/timing/reset declaration, single-line control sealing, and precise rejection logging for registry transitions",
+      "claim": "Exogenous frozen continuity registry-family/schedule/timing declaration, implementation-layer reset allowlist, single-line control sealing, and precise rejection logging",
       "status": "SYNTHETIC_PROTOCOL_TRANSITION_DEMO__NOT_EFFECTIVENESS_EVIDENCE",
       "artifact": "sim/pilot/results/sap_v1.17/protocol_registry_switch_demo.json",
-      "demo_schema": "sea.protocol-registry-switch-demo/v3",
+      "demo_schema": "sea.protocol-registry-switch-demo/v4",
       "tests": "sim/sea_sap/test_executor.py protocol-governance negative and positive tests",
       "semantics": {
         "registry_transition": "exogenous evaluation-protocol event, not a policy action; no objective-write authorization required or accepted",
@@ -102,7 +105,8 @@
         "rollback_interaction": "objective rollback never restores a registry version; continuity transitions append-only forward",
         "switch_timing": "frozen switch_after_period per scheduled successor, fixed before any arm result is read; transitions accepted only when read-only next_period equals switch_after_period+1; early, late, duplicate-counting, and outcome-motivated timing edits rejected",
         "period_sequence": "next_period is derived from exact contiguous committed periods 0..N-1; run_period accepts only period == next_period; duplicate/regressed/skipped/noninteger periods rejected before mutation; continuity shares the sequence and full reset starts at 0",
-        "full_reset_exception": "continuity transitions strictly advance along the schedule; full reset is an independent-control-instance exception selecting pre-declared allowed reset targets (including backward versions or family members outside the parent schedule), generating a fresh independent single-version schedule and sealing the parent",
+        "mandatory_cohort_boundary": "once a frozen switch is due, the old cohort cannot commit another period before transition; declaration integrity is rechecked at every period commit; both rejection paths are commit-free",
+        "full_reset_exception": "continuity transitions strictly advance along the schedule; full reset is an implementation-layer independent-control-instance exception selecting pre-declared allowed reset targets, generating a fresh independent single-version schedule and sealing the parent; the allowlist alone does not establish exogeneity, and confirmatory use requires separately frozen trigger/timing and deterministic target selection",
         "rejection_state_effect": "registry, objective store, budget, and active path unchanged; only a rejection audit record appended to the ledger (which is part of the SAP state); zero resource spend"
       },
       "new_real_model_calls": 0,
@@ -359,6 +363,9 @@
       "not_supported": "Any claim that SEA outperforms existing end-to-end methods or improves human outcomes",
       "attendance_decision_rule": "VALID_READING_AND_CONTENT_LINKED_CONFIRMATION (explicit AND)",
       "contrast_bounds": "operational attendance omission bounds: lower=Delta_FC-u_sea; upper=Delta_FC+u_control; not latent bounds without measurement consistency",
+      "contrast_bounds_sharpness": "for each arm M_FC-M_Z is the unknown weight assigned to operational success in [0,u_a]; opposite arm-specific assignments jointly attain both endpoints under the stated no-assumption model",
+      "interval_and_covariance_boundary": "PSD is algebraic admissibility within the declared 1e-12 tolerance, not an exact-arithmetic certificate, covariance-estimation accuracy, transportability, or interval calibration; zero covariance is only an approximation and does not establish independence; the shipped bootstrap jointly re-estimates only se/sp with m_Z fixed and its percentile interval is conditional on nondegenerate replicates (shared se/sp/m_Z units require genuine three-input resampling or full covariance); marginal Wilson intervals are non-cluster-adjusted and non-simultaneous, and inferential arm/stratum/metric families require preregistered simultaneous coverage and design-consistent cluster methods",
+      "near_zero_youden_boundary": "J^-2 is only the common delta-gradient scale, not a universal full asymptotic order when N/J varies; exact J>0 population feasibility is 1-se<=m_Z<=sp; at J=0, N=0 is nonidentification and N!=0 has no compatible population; plug-in estimates outside [0,1] can reflect constraint violation or sampling instability and are not sole proof that the true model is false",
       "misclassification_counterexample": "no unknowns collapse operational bounds to [Delta_FC, Delta_FC] (to [0,0] only when Delta_FC=0); false positive/false negative can place latent contrast outside them",
       "misclassification_validation_plan": "protocol section 1.4.1: independent blinded reference set with construction/hash/unlock record, arm-specific sensitivity/specificity with intervals, AND-rule operational false-negative rate, preregistered arm-differential error margins, validation-to-deployment transportability conditions and completion-subset representativeness with stratified estimates and heterogeneity/completion-gap diagnostics, jointly positive-semidefinite covariance matrices or joint/cluster bootstrap when error rates and omission share a validation set, per-rate Wilson intervals and structured zero-completion not_estimable diagnostics, explicit-error-model transport (S12) as sensitivity only with near-zero-denominator precision warning and pre-specified sensitivity grid; not executed"
     },

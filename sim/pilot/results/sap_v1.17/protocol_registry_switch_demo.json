@@ -2064,6 +2064,7 @@
     "fork_is_new_control_instance": true,
     "fork_seals_parent": true,
     "late_switch_after_declared_period_rejected": true,
+    "missed_switch_period_rejected_before_mutation": true,
     "non_family_version_rejected": true,
     "objective_rollback_does_not_restore_registry": true,
     "old_period_after_switch_rejected_before_mutation": true,
@@ -2138,6 +2139,12 @@
     }
   ],
   "human_data": false,
+  "missed_transition_period_probe": {
+    "committed_periods": 1,
+    "next_period": 1,
+    "reason": "protocol registry transition required before period 1: scheduled successor 'targets-v2' must be accepted at period 1; the old evaluation cohort cannot commit beyond its frozen boundary",
+    "state_unchanged": true
+  },
   "new_real_model_calls": 0,
   "protocol_declaration_sha256": "44e0ee96c15b924cb788b75679c2c36ae3e9592b2b81c5924e26ad4a9af274bd",
   "protocol_registry_schedule": [
@@ -2230,7 +2237,7 @@
     }
   ],
   "run_id": "longitudinal-v112",
-  "schema": "sea.protocol-registry-switch-demo/v3",
+  "schema": "sea.protocol-registry-switch-demo/v4",
   "seal_events": [
     {
       "control_instance_id": "3a6025e57085bf3816203be2a6b7edf3abc0d7dc529855167e25457f1f1341ad",
@@ -2255,6 +2262,7 @@
     "authorization": "no objective-write authorization required or accepted; family/schedule/timing validation instead",
     "full_reset_exception": "declared reset-target allowlist; backward or out-of-schedule family members only if pre-declared; fresh independent single-version schedule; parent sealed",
     "lifecycle": "single-line control: predecessor sealed, one active path, unique shared budget/ledger",
+    "mandatory_cohort_boundary": "once a frozen switch is due, the old cohort cannot commit another period before the scheduled exogenous transition; declaration tampering cannot move the boundary; rejected runs are commit-free",
     "period_sequence": "run_period accepts only period == next_period; unique, contiguous, increasing actual periods; continuity preserves the counter and full reset starts at 0; invalid periods change no state",
     "registry_transition": "exogenous frozen evaluation-protocol event, not a policy action",
     "rejection_state_effect": "registry, objective store, budget, and active path unchanged; only a rejection audit record appended; zero resource spend",
