@@ -1,4 +1,4 @@
-> **SUPERSEDED / 已被取代：** This is a historical version, not the current authoritative manuscript. Current version: `input/sovereign_epistemic_acquisition_EN_v1.16.md`. See `archive/README.md`. Do not cite this version’s claims without checking v1.16.
+> **SUPERSEDED / 已被取代：** This is a historical version, not the current authoritative manuscript. Current version: `input/sovereign_epistemic_acquisition_EN_v1.17.md`. See `archive/README.md`. Do not cite this version’s claims without checking v1.17.
 
 # Sovereign Epistemic Acquisition: A Conditional Framework for Active Information Acquisition and Sovereign Filtering under Bounded Agency, with Preliminary Validation
 

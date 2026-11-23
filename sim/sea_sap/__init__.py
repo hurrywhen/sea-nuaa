@@ -1,4 +1,4 @@
-"""SEA v1.16 minimal longitudinal SAP executor and synthetic fixtures."""
+"""SEA v1.17 minimal longitudinal SAP executor and synthetic fixtures."""
 
 from .executor import (
     SAPExecutor,

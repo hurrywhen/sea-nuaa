@@ -1,13 +1,16 @@
 """Minimal longitudinal SAP executor for deterministic synthetic fixtures.
 
-This is an executable *small instance* of the v1.16 SAP interface, not a general
+This is an executable *small instance* of the v1.17 SAP interface, not a general
 optimizer, an LLM experiment, or deployment-effectiveness evidence.  It keeps
 latent actual consumption unobserved.  Operational attendance, the synthetic
 machine ingestion-and-task-reference placeholder, and the failure-composite
 endpoint are distinct.  The executable ledger is operational/FC, not latent.
 
-v1.16 semantics: the SAP tuple is defined per control instance with the active
-target registry in state (main text, Section 3.2).  Registry-version transitions
+v1.17 semantics: the SAP tuple is defined per control instance with the active
+target registry in state (main text, Section 3.2).  Periods are unique,
+contiguous, and increasing: run_period accepts only period == next_period,
+continuity transitions preserve that counter, and a full reset starts at zero.
+Registry-version transitions
 are **exogenous frozen evaluation-protocol events, not policy actions**: the
 protocol declares ex ante a finite registry family (version -> content-hash
 allowlist with frozen registry content), an ordered version schedule, and a
@@ -100,8 +103,10 @@ def _parse_protocol_declaration(
     - ``protocol_switch_timing``: frozen ``switch_after_period`` for every
       scheduled successor (schedule[1:]); values are nonnegative integers,
       strictly increasing along the schedule.  A continuity transition to a
-      version is accepted only when exactly ``switch_after_period + 1``
-      periods have completed, so the switch timing cannot be chosen after
+      version is accepted only when exactly ``switch_after_period + 1`` unique,
+      contiguous actual periods have completed (the shared ``next_period``
+      counter, never a count of repeatable result rows), so neither timing
+      renegotiation nor duplicate-period counting can choose a switch after
       seeing interim results.  Required whenever the schedule has successors.
     - ``protocol_reset_targets``: pre-declared allowlist of family members
       permitted as full-reset targets (may include backward versions and
@@ -584,6 +589,52 @@ def completed_measurement_transport(m_z: float, sensitivity: float, specificity:
     }
 
 
+def _checked_s12_covariance_matrix(
+    var_m_z: float, var_se: float, var_sp: float,
+    cov_se_sp: float, cov_mz_se: float, cov_mz_sp: float,
+) -> list[list[float]]:
+    """Validate the joint 3x3 covariance matrix, not only one transported variance.
+
+    Ordering is (sensitivity, specificity, operational omission).  Validation
+    is performed on the dimensionless correlation matrix, so a large variance
+    in another coordinate cannot hide an illegal small-variance subblock.  A
+    zero-variance coordinate must have exactly zero covariances.  For three
+    positive variances, pairwise correlations and the correlation determinant
+    together check all nontrivial principal minors.  The 1e-12 tolerance is
+    only for correlation-scale roundoff; inputs are never projected or repaired.
+    """
+    matrix = [
+        [float(var_se), float(cov_se_sp), float(cov_mz_se)],
+        [float(cov_se_sp), float(var_sp), float(cov_mz_sp)],
+        [float(cov_mz_se), float(cov_mz_sp), float(var_m_z)],
+    ]
+    variances = (var_se, var_sp, var_m_z)
+    covariances = ((0, 1, cov_se_sp), (0, 2, cov_mz_se), (1, 2, cov_mz_sp))
+    correlations = []
+    for i, j, covariance in covariances:
+        if variances[i] == 0.0 or variances[j] == 0.0:
+            if covariance != 0.0:
+                raise ValueError(
+                    "covariance inputs are not jointly valid: zero-variance coordinates "
+                    "require exactly zero covariances")
+            correlations.append(None)
+            continue
+        # Sequential division avoids overflow/underflow in var_i*var_j.
+        correlation = covariance / math.sqrt(variances[i]) / math.sqrt(variances[j])
+        if not math.isfinite(correlation) or abs(correlation) > 1.0 + 1e-12:
+            raise ValueError(
+                "covariance inputs are not jointly valid: matrix must be positive semidefinite")
+        correlations.append(correlation)
+    if all(value > 0.0 for value in variances):
+        r01, r02, r12 = correlations
+        determinant = math.fsum((1.0, 2.0 * r01 * r02 * r12,
+                                 -r01 * r01, -r02 * r02, -r12 * r12))
+        if not math.isfinite(determinant) or determinant < -1e-12:
+            raise ValueError(
+                "covariance inputs are not jointly valid: matrix must be positive semidefinite")
+    return matrix
+
+
 def completed_measurement_transport_delta_method(
     m_z: float, sensitivity: float, specificity: float, *,
     var_m_z: float, var_se: float, var_sp: float,
@@ -599,7 +650,10 @@ def completed_measurement_transport_delta_method(
     corresponding covariance terms must be supplied (or a joint bootstrap used
     instead), because independence then fails by construction.  The
     normal-approximation interval is unreliable when the precision warning
-    fires (J near zero); use a sensitivity grid instead.
+    fires (J near zero); use a sensitivity grid instead.  Supplied variances
+    and covariances must form a positive-semidefinite 3x3 covariance matrix;
+    checking only the final scalar variance would accept jointly impossible
+    inputs in directions other than the S12 gradient.
     """
     base = completed_measurement_transport(
         m_z, sensitivity, specificity,
@@ -613,17 +667,20 @@ def completed_measurement_transport_delta_method(
         if (isinstance(value, bool) or not isinstance(value, (int, float))
                 or not math.isfinite(value)):
             raise ValueError(f"{name} must be a finite covariance")
+    covariance_matrix = _checked_s12_covariance_matrix(
+        var_m_z, var_se, var_sp, cov_se_sp, cov_mz_se, cov_mz_sp)
     youden = base["youden_denominator"]
     numerator = m_z - 1 + sensitivity
     d_se = (youden - numerator) / (youden * youden)
     d_sp = -numerator / (youden * youden)
     d_mz = 1.0 / youden
-    variance = (d_se * d_se * var_se + d_sp * d_sp * var_sp + d_mz * d_mz * var_m_z
-                + 2 * d_se * d_sp * cov_se_sp
-                + 2 * d_mz * d_se * cov_mz_se
-                + 2 * d_mz * d_sp * cov_mz_sp)
-    if variance < 0:
-        raise ValueError("covariance inputs imply a negative variance; they are not jointly valid")
+    variance = math.fsum((
+        d_se * d_se * var_se, d_sp * d_sp * var_sp, d_mz * d_mz * var_m_z,
+        2 * d_se * d_sp * cov_se_sp,
+        2 * d_mz * d_se * cov_mz_se,
+        2 * d_mz * d_sp * cov_mz_sp))
+    if not math.isfinite(variance) or variance < 0:
+        raise ValueError("covariance inputs imply a non-finite or negative variance; they are not jointly valid")
     half_width = 1.959963984540054 * math.sqrt(variance)
     independent = cov_se_sp == 0.0 and cov_mz_se == 0.0 and cov_mz_sp == 0.0
     return dict(
@@ -633,14 +690,31 @@ def completed_measurement_transport_delta_method(
         input_independence_assumed=independent,
         covariance_terms={"cov_se_sp": float(cov_se_sp), "cov_mz_se": float(cov_mz_se),
                           "cov_mz_sp": float(cov_mz_sp)},
+        covariance_matrix_order=["sensitivity", "specificity", "operational_omission"],
+        covariance_matrix=covariance_matrix,
+        covariance_matrix_positive_semidefinite=True,
+        covariance_psd_method="normalized_principal_minors_with_exact_zero_variance_rows",
         covariance_note=("independent inputs assumed (all covariance terms zero)" if independent
                          else "supplied covariance terms included; same-validation-set estimates "
                               "are dependent by construction and need covariances or a joint bootstrap"),
     )
 
 
-def _binary_validation_rates(records: Sequence[Mapping[str, Any]]) -> tuple[float, float, dict]:
-    """Sensitivity/specificity from paired (test, truth) binary validation records."""
+def _wilson_interval(successes: int, total: int) -> Optional[list[float]]:
+    """Unit-level Wilson 95% interval; None when the denominator is zero."""
+    if total == 0:
+        return None
+    z = 1.959963984540054
+    proportion = successes / total
+    denominator = 1.0 + z * z / total
+    center = (proportion + z * z / (2 * total)) / denominator
+    radius = (z / denominator) * math.sqrt(
+        proportion * (1.0 - proportion) / total + z * z / (4 * total * total))
+    return [max(0.0, center - radius), min(1.0, center + radius)]
+
+
+def _binary_validation_counts(records: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+    """Validate paired binary records and return their four confusion counts."""
     tp = fn = tn = fp = 0
     for record in records:
         test = record.get("test_positive")
@@ -651,10 +725,55 @@ def _binary_validation_rates(records: Sequence[Mapping[str, Any]]) -> tuple[floa
             tp, fn = (tp + 1, fn) if test else (tp, fn + 1)
         else:
             fp, tn = (fp + 1, tn) if test else (fp, tn + 1)
-    if tp + fn == 0 or tn + fp == 0:
+    return {"tp": tp, "fn": fn, "tn": tn, "fp": fp}
+
+
+def _binary_validation_diagnostic_summary(
+        records: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """Structured rates, denominators, and Wilson intervals without raising on empty classes."""
+    counts = _binary_validation_counts(records)
+    positive_n = counts["tp"] + counts["fn"]
+    negative_n = counts["tn"] + counts["fp"]
+    estimable = positive_n > 0 and negative_n > 0
+    if not records:
+        reason = "no_completed_measurements"
+    elif positive_n == 0 and negative_n == 0:
+        reason = "no_truth_positive_or_truth_negative_units"
+    elif positive_n == 0:
+        reason = "no_truth_positive_units"
+    elif negative_n == 0:
+        reason = "no_truth_negative_units"
+    else:
+        reason = None
+    return {
+        "n": len(records),
+        "counts": counts,
+        "sensitivity": counts["tp"] / positive_n if positive_n else None,
+        "sensitivity_n": positive_n,
+        "sensitivity_successes": counts["tp"],
+        "sensitivity_estimable": positive_n > 0,
+        "sensitivity_not_estimable_reason": (
+            None if positive_n else "no_completed_measurements" if not records else "no_truth_positive_units"),
+        "sensitivity_wilson_95_interval": _wilson_interval(counts["tp"], positive_n),
+        "specificity": counts["tn"] / negative_n if negative_n else None,
+        "specificity_n": negative_n,
+        "specificity_successes": counts["tn"],
+        "specificity_estimable": negative_n > 0,
+        "specificity_not_estimable_reason": (
+            None if negative_n else "no_completed_measurements" if not records else "no_truth_negative_units"),
+        "specificity_wilson_95_interval": _wilson_interval(counts["tn"], negative_n),
+        "error_rates_estimable": estimable,
+        "sensitivity_specificity_estimable": estimable,
+        "not_estimable_reason": reason,
+    }
+
+
+def _binary_validation_rates(records: Sequence[Mapping[str, Any]]) -> tuple[float, float, dict]:
+    """Sensitivity/specificity for estimators that require both truth classes."""
+    summary = _binary_validation_diagnostic_summary(records)
+    if not summary["error_rates_estimable"]:
         raise ValueError("validation records must contain both truth-positive and truth-negative units")
-    counts = {"tp": tp, "fn": fn, "tn": tn, "fp": fp}
-    return tp / (tp + fn), tn / (tn + fp), counts
+    return summary["sensitivity"], summary["specificity"], summary["counts"]
 
 
 def completed_measurement_transport_joint_bootstrap(
@@ -795,22 +914,21 @@ def transportability_stratified_diagnostics(
 ) -> dict[str, Any]:
     """Testable stratified diagnostics for the (S12) transportability conditions.
 
-    Conditional stability of error rates and completion-subset
-    representativeness cannot be certified by a textual assumption alone.
-    This helper turns them into reportable diagnostics on synthetic or real
-    stratified records:
+    Error-rate estimability and completion reporting are deliberately separate.
+    Zero completed measurements returns completion/unknown counts and Wilson
+    intervals, while sensitivity, specificity, completed-subset share shifts,
+    and unavailable heterogeneity contrasts are ``None`` with explicit
+    ``not_estimable`` reasons.  It never converts an undefined share shift to
+    zero and never lets a pooled error-rate exception suppress completion
+    diagnostics.  Strata with no completions or only one truth class remain
+    visible with their own denominators and reasons.
 
-    - validation: stratum-specific sensitivity/specificity (strata missing a
-      truth class are reported as not estimable, never pooled away), pooled
-      rates, and the maximum absolute deviation of any stratum from the pool
-      (heterogeneity warning above the declared threshold);
-    - completion: stratum-specific completion rates and the shift between the
-      completed subset's stratum shares and all assigned units, within each
-      dataset and between validation and deployment when both are supplied.
-
-    The diagnostics support, but never prove, transportability: deployment
-    error rates remain unobserved, so a pre-specified sensitivity grid is
-    still required.  No truncation, imputation, or silent exclusion.
+    Wilson 95% intervals describe unit-level binomial uncertainty for each
+    conditional rate and completion rate.  They are not cluster-adjusted or
+    simultaneous intervals and do not remove small-sample instability.  The
+    diagnostics support, but never prove, transportability: deployment error
+    rates remain unobserved, so a pre-specified sensitivity grid is still
+    required.  No truncation, imputation, or silent exclusion.
     """
     for name, value in (("heterogeneity_warning_threshold", heterogeneity_warning_threshold),
                         ("completion_warning_threshold", completion_warning_threshold)):
@@ -839,49 +957,138 @@ def transportability_stratified_diagnostics(
             assigned[stratum] = assigned.get(stratum, 0) + 1
             if status == "complete":
                 completed[stratum] = completed.get(stratum, 0) + 1
+        completed = {s: completed.get(s, 0) for s in assigned}
         total = sum(assigned.values())
         total_complete = sum(completed.values())
+        unknown = {s: n - completed[s] for s, n in assigned.items()}
         rates = {s: completed.get(s, 0) / n for s, n in assigned.items()}
+        intervals = {s: _wilson_interval(completed.get(s, 0), n)
+                     for s, n in assigned.items()}
+        share_shift_estimable = total_complete > 0
         share_shift = {
             s: abs(completed.get(s, 0) / total_complete - n / total)
             for s, n in assigned.items()
-        } if total_complete else {s: 0.0 for s in assigned}
-        return {"assigned": assigned, "completed": completed,
-                "completion_rate_by_stratum": rates,
-                "complete_subset_share_shift_by_stratum": share_shift,
-                "max_share_shift": max(share_shift.values()),
-                "overall_completion_rate": total_complete / total}
+        } if share_shift_estimable else {s: None for s in assigned}
+        return {
+            "assigned": assigned,
+            "completed": completed,
+            "unknown": unknown,
+            "n_assigned": total,
+            "n_completed": total_complete,
+            "n_unknown": total - total_complete,
+            "completion_rate_by_stratum": rates,
+            "completion_rate_wilson_95_interval_by_stratum": intervals,
+            "complete_subset_share_shift_by_stratum": share_shift,
+            "complete_subset_share_shift_estimable": share_shift_estimable,
+            "complete_subset_share_shift_status": "estimable" if share_shift_estimable else "not_estimable",
+            "complete_subset_share_shift_not_estimable_reason": (
+                None if share_shift_estimable else "no_completed_measurements"),
+            "max_share_shift": max(share_shift.values()) if share_shift_estimable else None,
+            "overall_completion_rate": total_complete / total,
+            "overall_completion_rate_wilson_95_interval": _wilson_interval(total_complete, total),
+            "completion_warning": not share_shift_estimable,
+        }
 
     validation_completion = completion_table(validation_records)
     paired = [record for record in validation_records
               if record.get("measurement_status", "complete") == "complete"]
     n_unknown_excluded = len(validation_records) - len(paired)
-    pooled_se, pooled_sp, pooled_counts = _binary_validation_rates(paired)
-    strata: dict[Any, list] = {}
+    pooled = _binary_validation_diagnostic_summary(paired)
+    # Include assigned strata even when every measurement is unknown; silently
+    # dropping them would conceal exactly the representativeness failure here.
+    strata: dict[Any, list] = {s: [] for s in validation_completion["assigned"]}
     for record in paired:
-        strata.setdefault(stratum_of(record), []).append(record)
+        strata[stratum_of(record)].append(record)
     per_stratum = {}
-    deviations = []
+    metric_deviations = {"sensitivity": [], "specificity": []}
+    metric_counts = {"sensitivity": 0, "specificity": 0}
+    fully_estimable_strata = 0
     for stratum, records in sorted(strata.items(), key=lambda item: str(item[0])):
-        truths = {record["truth_positive"] for record in records}
-        if len(truths) < 2:
-            per_stratum[stratum] = {"n": len(records), "not_estimable": "stratum lacks one truth class"}
-            continue
-        se, sp, counts = _binary_validation_rates(records)
-        per_stratum[stratum] = {"n": len(records), "sensitivity": se, "specificity": sp,
-                                "counts": counts}
-        deviations.extend((abs(se - pooled_se), abs(sp - pooled_sp)))
-    heterogeneity = max(deviations) if deviations else 0.0
+        summary = _binary_validation_diagnostic_summary(records)
+        summary.update({
+            "n_assigned": validation_completion["assigned"][stratum],
+            "n_completed": len(records),
+            "n_unknown": validation_completion["unknown"][stratum],
+        })
+        if not summary["error_rates_estimable"]:
+            # Backward-compatible explicit marker plus the machine-readable reason.
+            summary["not_estimable"] = summary["not_estimable_reason"]
+        per_stratum[stratum] = summary
+        if summary["error_rates_estimable"]:
+            fully_estimable_strata += 1
+        # Each rate is clinically/statistically meaningful on its own.  A
+        # stratum lacking one truth class can still inform the other rate.
+        for metric in ("sensitivity", "specificity"):
+            if pooled[metric] is not None and summary[metric] is not None:
+                metric_counts[metric] += 1
+                metric_deviations[metric].append(abs(summary[metric] - pooled[metric]))
+    heterogeneity_by_metric = {}
+    comparable_deviations = []
+    for metric in ("sensitivity", "specificity"):
+        estimable = metric_counts[metric] >= 2
+        if pooled[metric] is None:
+            metric_reason = f"pooled_{metric}_not_estimable"
+        elif not estimable:
+            metric_reason = "fewer_than_two_estimable_strata"
+        else:
+            metric_reason = None
+        maximum = max(metric_deviations[metric]) if estimable else None
+        heterogeneity_by_metric[metric] = {
+            "n_estimable_strata": metric_counts[metric],
+            "heterogeneity_estimable": estimable,
+            "max_abs_deviation": maximum,
+            "not_estimable_reason": metric_reason,
+        }
+        if estimable:
+            comparable_deviations.extend(metric_deviations[metric])
+    # One stratum is trivially equal to the pool; that zero is not a
+    # cross-stratum heterogeneity estimate.  Require two per metric.
+    heterogeneity_estimable = bool(comparable_deviations)
+    heterogeneity = max(comparable_deviations) if heterogeneity_estimable else None
+    if heterogeneity_estimable:
+        heterogeneity_reason = None
+    elif pooled["sensitivity"] is None and pooled["specificity"] is None:
+        heterogeneity_reason = "pooled_error_rates_not_estimable"
+    else:
+        heterogeneity_reason = "fewer_than_two_estimable_strata_for_each_rate"
+    max_shift = validation_completion["max_share_shift"]
+    completion_warning = (
+        not validation_completion["complete_subset_share_shift_estimable"]
+        or (max_shift is not None and max_shift > completion_warning_threshold))
+    if not pooled["error_rates_estimable"]:
+        reason = pooled["not_estimable_reason"]
+    elif completion_warning:
+        reason = "completion_subset_share_shift_not_estimable_or_above_threshold"
+    else:
+        reason = None
     result: dict[str, Any] = {
         "scope": "diagnostics support, never prove, validation-to-deployment transportability",
         "stratum_key": stratum_key,
+        "interval_method": "Wilson 95% unit-level binomial intervals; not cluster-adjusted or simultaneous",
+        "completion_rate": validation_completion["overall_completion_rate"],
+        "completion_subset_share_shift": validation_completion["complete_subset_share_shift_status"],
+        "completion_subset_share_shift_estimable": validation_completion["complete_subset_share_shift_estimable"],
+        "sensitivity_specificity_estimable": pooled["sensitivity_specificity_estimable"],
+        "error_rates_estimable": pooled["error_rates_estimable"],
+        "completion_warning": completion_warning,
+        "representativeness_warning": completion_warning,
+        "reason": reason,
         "validation": {
-            "pooled": {"sensitivity": pooled_se, "specificity": pooled_sp, "counts": pooled_counts},
+            "pooled": pooled,
             "strata": per_stratum,
             "n_unknown_excluded_from_error_estimation": n_unknown_excluded,
             "heterogeneity_max_abs_deviation": heterogeneity,
-            "heterogeneity_warning": heterogeneity > heterogeneity_warning_threshold,
+            "heterogeneity_by_metric": heterogeneity_by_metric,
+            "heterogeneity_estimable": heterogeneity_estimable,
+            "heterogeneity_n_fully_estimable_strata": fully_estimable_strata,
+            "heterogeneity_not_estimable_reason": heterogeneity_reason,
+            "heterogeneity_warning": (
+                heterogeneity is not None and heterogeneity > heterogeneity_warning_threshold),
             "heterogeneity_warning_threshold": heterogeneity_warning_threshold,
+            "error_rates_estimable": pooled["error_rates_estimable"],
+            "sensitivity_specificity_estimable": pooled["sensitivity_specificity_estimable"],
+            "completion_warning": completion_warning,
+            "representativeness_warning": completion_warning,
             "completion": validation_completion,
         },
         "deployment": None,
@@ -898,7 +1105,30 @@ def transportability_stratified_diagnostics(
         gaps = {s: abs(validation_rates[s] - deployment_rates[s]) for s in common}
         missing_in_deployment = sorted(set(validation_rates) - set(deployment_rates), key=str)
         missing_in_validation = sorted(set(deployment_rates) - set(validation_rates), key=str)
-        max_gap = max(gaps.values()) if gaps else 0.0
+        max_gap = max(gaps.values()) if gaps else None
+        share_shifts = (validation_completion["max_share_shift"],
+                        deployment_completion["max_share_shift"])
+        share_shift_not_estimable = any(value is None for value in share_shifts)
+        warning = (
+            (max_gap is not None and max_gap > completion_warning_threshold)
+            or bool(missing_in_deployment) or bool(missing_in_validation)
+            or share_shift_not_estimable
+            or any(value is not None and value > completion_warning_threshold
+                   for value in share_shifts))
+        representativeness_reasons = []
+        if not validation_completion["complete_subset_share_shift_estimable"]:
+            representativeness_reasons.append("validation:no_completed_measurements")
+        if not deployment_completion["complete_subset_share_shift_estimable"]:
+            representativeness_reasons.append("deployment:no_completed_measurements")
+        if missing_in_deployment:
+            representativeness_reasons.append("strata_missing_in_deployment")
+        if missing_in_validation:
+            representativeness_reasons.append("strata_missing_in_validation")
+        if not common:
+            representativeness_reasons.append("no_common_strata")
+        representativeness_reason = (
+            ";".join(representativeness_reasons) if representativeness_reasons
+            else "completion_diagnostic_threshold_exceeded" if warning else None)
         result["deployment"] = {"completion": deployment_completion}
         result["completion_representativeness"] = {
             "completion_rate_gap_by_stratum": gaps,
@@ -907,19 +1137,24 @@ def transportability_stratified_diagnostics(
             "strata_missing_in_validation": missing_in_validation,
             "max_complete_subset_share_shift_validation": validation_completion["max_share_shift"],
             "max_complete_subset_share_shift_deployment": deployment_completion["max_share_shift"],
-            "warning": (max_gap > completion_warning_threshold
-                        or bool(missing_in_deployment) or bool(missing_in_validation)
-                        or validation_completion["max_share_shift"] > completion_warning_threshold
-                        or deployment_completion["max_share_shift"] > completion_warning_threshold),
+            "complete_subset_share_shift_estimable": not share_shift_not_estimable,
+            "reason": representativeness_reason,
+            "reasons": representativeness_reasons,
+            "warning": warning,
+            "completion_warning": warning,
             "completion_warning_threshold": completion_warning_threshold,
         }
+        result["completion_warning"] = result["completion_warning"] or warning
+        result["representativeness_warning"] = result["representativeness_warning"] or warning
+        if result["reason"] is None and warning:
+            result["reason"] = representativeness_reason
     return result
 
 
 class SAPExecutor:
     """Execute a small target registry under one control history and evaluation cohort.
 
-    Under the v1.16 tuple, the SAP control instance spans evaluation cohorts:
+    Under the v1.17 tuple, the SAP control instance spans evaluation cohorts:
     the active registry is part of state, and a registry-version transition is
     an **exogenous frozen evaluation-protocol event, not a policy action**.
     The protocol declares ex ante a finite registry family (content-hash
@@ -961,12 +1196,31 @@ class SAPExecutor:
         self.budget_spent = {name: 0 for name in RESOURCE_NAMES}
         self.history: list[dict[str, Any]] = []
         self.period_results: list[dict[str, Any]] = []
+        # Actual protocol time is derived from the committed contiguous result
+        # sequence by the read-only next_period property below.  Continuity
+        # transitions share that sequence; full-reset instances start empty.
         self.updated_candidates: dict[str, list[dict[str, Any]]] = {}
         self._sealed = False
         self._seal_reason: Optional[str] = None
         self._document_by_id = {
             doc["document_id"]: doc for doc in self.registry["reference_corpus"]["documents"]
         }
+
+    @property
+    def next_period(self) -> int:
+        """Next actual period derived from committed history, never a writable clock.
+
+        The exact sequence 0..N-1 is required, so this is not merely
+        ``len(period_results)``: duplicate, regressed, skipped, or manually
+        corrupted result sequences fail integrity validation.  Because a
+        continuity successor shares this list, predecessor and successor views
+        cannot drift into inconsistent clocks.  A full reset has an empty list.
+        """
+        periods = [row.get("period") for row in self.period_results]
+        if periods != list(range(len(periods))):
+            raise RuntimeError(
+                f"period history integrity violation: expected {list(range(len(periods)))}, got {periods}")
+        return len(periods)
 
     def _declaration_hash(self) -> str:
         return _sha({
@@ -1125,7 +1379,10 @@ class SAPExecutor:
         if self._schedule_index + 1 >= len(schedule) or schedule[self._schedule_index + 1] != version:
             self._reject_switch(registry, "version_not_next_in_protocol_schedule", attempted_hash)
         declared_after = self.protocol_switch_timing[version]
-        completed_periods = len(self.period_results)
+        # run_period enforces period == next_period, so this is exactly the
+        # number of unique contiguous actual periods 0..next_period-1.  It is
+        # impossible to satisfy the boundary by repeating one actual period.
+        completed_periods = self.next_period
         if completed_periods != declared_after + 1:
             self._reject_switch(
                 registry, "switch_timing_mismatch", attempted_hash,
@@ -1473,13 +1730,21 @@ class SAPExecutor:
     def run_period(self, period: int, plan: Mapping[str, Any]) -> dict[str, Any]:
         """Run precheck + dry run → observation → update → link → select → terminal → ledger.
 
-        All structural plan validation runs before any state mutation: known
-        candidates and opened ⊆ delivered are checked directly, the conservative
-        whole-period resource precheck is computed purely, and delivered ⊆
-        selected is checked by a commit-free selection dry run.  An infeasible
-        plan therefore leaves budgets, ledgers, and audit records untouched.
+        All structural plan validation runs before any state mutation: the
+        period must equal ``next_period`` (unique, contiguous, increasing actual
+        time), known candidates and opened ⊆ delivered are checked directly,
+        the conservative whole-period resource precheck is computed purely,
+        and delivered ⊆ selected is checked by a commit-free selection dry run.
+        An invalid period or infeasible plan therefore leaves next_period,
+        budgets, ledgers, and audit records untouched.  Repeated, regressed,
+        and skipped periods cannot manufacture a frozen switch boundary.
         """
         self._assert_active()
+        expected_period = self.next_period
+        if isinstance(period, bool) or not isinstance(period, int) or period != expected_period:
+            raise ValueError(
+                f"period sequence rejected: expected period {expected_period}, got {period!r}; "
+                "periods must be unique, contiguous, and increasing")
         candidate_ids = {item["candidate_id"] for item in self.fixture["candidates"]}
         delivered = set(plan.get("delivered", []))
         opened = set(plan.get("opened", []))
@@ -1530,6 +1795,7 @@ class SAPExecutor:
         self.governance.append_record("period_outcome", _detached(result),
                                       evidence=[f"fixture:{self.fixture['run_id']}:outcome:{period}"])
         self.history.append({"period": period, "observation": f"fixture-observation-{period}"})
+        # next_period is derived from the just-committed contiguous result row.
         return result
 
     def write_after_period(self, patch: Mapping[str, Any], *, authorization_id: str,
@@ -1564,7 +1830,7 @@ class SAPExecutor:
     def result(self) -> dict[str, Any]:
         verification = self.governance.verify_audit(anchor=self.governance.audit_anchor())
         return {
-            "schema": "sea.sap-longitudinal-executor/v5",
+            "schema": "sea.sap-longitudinal-executor/v6",
             "status": "SYNTHETIC_IMPLEMENTATION_RUN__NOT_EFFECTIVENESS_EVIDENCE",
             "run_id": self.fixture["run_id"], "arm": self.arm,
             "control_instance_id": self.control_instance_id,
@@ -1576,6 +1842,8 @@ class SAPExecutor:
             "sap_tuple_scope": "control_instance_registry_in_state__exogenous_protocol_single_line__cohort_separated",
             "control_path_status": "sealed" if self._sealed else "active",
             "seal_reason": self._seal_reason,
+            "next_period": self.next_period,
+            "period_sequence_rule": "period == next_period; unique, contiguous, increasing; reset starts at 0",
             "registry_family_sha256": _sha(self.registry_family),
             "protocol_registry_schedule": list(self.protocol_registry_schedule),
             "protocol_schedule_index": self._schedule_index,
@@ -1662,7 +1930,7 @@ def run_matched_implementation_demo() -> dict[str, Any]:
             "evaluation_link_rule": "reference_link_truth_arm_independent",
         }
     return {
-        "schema": "sea.matched-implementation-fixture/v5",
+        "schema": "sea.matched-implementation-fixture/v6",
         "status": "MECHANISTIC_MATCHED_FIXTURE__NOT_A_MODEL_OR_DEPLOYMENT_EXPERIMENT",
         "matching": {
             "mock_scorer": "symmetric_binary/1 + GovernanceReference integer ranking",
@@ -1680,13 +1948,15 @@ def run_matched_implementation_demo() -> dict[str, Any]:
 def run_protocol_registry_switch_demo() -> dict[str, Any]:
     """Exogenous protocol transition, frozen timing, single-line sealing, resets.
 
-    Demonstrates the v1.16 registry governance semantics on the shipped frozen
+    Demonstrates the v1.17 registry governance semantics on the shipped frozen
     family/schedule/timing/reset declaration: a protocol event advances the
     single control path at the declared switch_after_period boundary and seals
     the predecessor; non-family, tampered-hash, out-of-schedule, mistimed
     (early/late), declaration-tampered, and sealed-path attempts are rejected
     with the registry/objective/budget/active path unchanged and only a
-    rejection audit record appended; a full reset forks a new control instance
+    rejection audit record appended; duplicate, regressed, and skipped actual
+    periods are rejected before any state mutation, so repeated rows cannot
+    satisfy a frozen boundary; a full reset forks a new control instance
     from the declared reset-target allowlist (including a declared backward
     reset with a fresh single-version schedule) and seals its parent;
     objective rollback does not restore the registry version.
@@ -1724,6 +1994,17 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
                     and payload["rejection_audit_record_appended"] is True
                     and payload["resources_spent"] == 0
                     and dict(budget_from.budget_remaining) == before_budget)
+        return False
+
+    def expect_period_rejection(probe, period, plan):
+        before = (probe.next_period, len(probe.period_results), len(probe.history),
+                  len(probe.governance.audit_records()), dict(probe.budget_remaining))
+        try:
+            probe.run_period(period, plan)
+        except ValueError as exc:
+            after = (probe.next_period, len(probe.period_results), len(probe.history),
+                     len(probe.governance.audit_records()), dict(probe.budget_remaining))
+            return str(exc).startswith("period sequence rejected:") and after == before
         return False
 
     arbitrary = _detached(registry_v2)
@@ -1771,6 +2052,32 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
     # rejection records live in their own ledgers, reported separately.
     probe_rejections = [probe.governance.audit_records()[-1]["payload"]
                         for probe in (early, late, tamper)]
+    # Adversarial period-boundary probes.  With a declared boundary after
+    # period 1, repeating period 0 cannot create a second actual period.  The
+    # subsequent switch remains early; only genuine period 1 completes it.
+    duplicate_fixture = _detached(fixture)
+    duplicate_fixture["protocol_switch_timing"]["targets-v2"] = 1
+    duplicate = SAPExecutor(duplicate_fixture, arm="sea")
+    duplicate.run_period(0, plans[0])
+    duplicate_period_rejected = expect_period_rejection(duplicate, 0, plans[0])
+    duplicate_switch_still_early = expect_rejection(
+        duplicate.continue_with_target_registry, registry_v2, "switch_timing_mismatch",
+        records_from=duplicate, budget_from=duplicate)
+    duplicate_switch_payload = duplicate.governance.audit_records()[-1]["payload"]
+    duplicate.run_period(1, plans[1])
+    duplicate_continued = duplicate.continue_with_target_registry(registry_v2)
+    regressed = SAPExecutor(fixture, arm="sea")
+    regressed.run_period(0, plans[0])
+    regressed.run_period(1, plans[1])
+    regressed_period_rejected = expect_period_rejection(regressed, 0, plans[0])
+    skipped = SAPExecutor(fixture, arm="sea")
+    skipped.run_period(0, plans[0])
+    skipped_period_rejected = expect_period_rejection(skipped, 2, plans[1])
+    old_after_switch = SAPExecutor(fixture, arm="sea")
+    old_after_switch.run_period(0, plans[0])
+    old_after_switch_continued = old_after_switch.continue_with_target_registry(registry_v2)
+    old_period_after_switch_rejected = expect_period_rejection(
+        old_after_switch_continued, 0, plans[0])
     sealed_reuse = {}
     for name, call in (
         ("run_period", lambda: executor.run_period(1, plans[1])),
@@ -1792,6 +2099,15 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
     reset_backward = forked.fork_for_target_registry(registry_v1)
     checks = {
         **negatives,
+        "duplicate_period_rejected_before_mutation": duplicate_period_rejected,
+        "duplicate_period_cannot_satisfy_switch_boundary": duplicate_switch_still_early
+        and duplicate_switch_payload["completed_periods"] == 1
+        and duplicate.next_period == 2 and len(duplicate.period_results) == 2
+        and duplicate_continued.next_period == 2,
+        "regressed_period_rejected_before_mutation": regressed_period_rejected,
+        "skipped_period_rejected_before_mutation": skipped_period_rejected,
+        "old_period_after_switch_rejected_before_mutation": old_period_after_switch_rejected
+        and old_after_switch_continued.next_period == 1,
         "sealed_predecessor_run_rejected": sealed_reuse["run_period"],
         "sealed_predecessor_write_rejected": sealed_reuse["objective_write"],
         "sealed_predecessor_rollback_rejected": sealed_reuse["objective_rollback"],
@@ -1814,6 +2130,7 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
         "backward_reset_is_new_instance_not_rollback": reset_backward.control_instance_id != forked.control_instance_id
         and reset_backward.registry["version"] == "targets-v1"
         and reset_backward.protocol_registry_schedule == ["targets-v1"]
+        and reset_backward.next_period == 0 and not reset_backward.period_results
         and reset_backward.budget_spent == {name: 0 for name in RESOURCE_NAMES}
         and reset_backward.governance is not forked.governance
         and forked.registry["version"] == "targets-v2",
@@ -1827,13 +2144,14 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
         raise AssertionError(f"protocol registry-switch demo checks failed: {checks}")
     records = continued.governance.audit_records()
     return {
-        "schema": "sea.protocol-registry-switch-demo/v2",
+        "schema": "sea.protocol-registry-switch-demo/v3",
         "status": "SYNTHETIC_PROTOCOL_TRANSITION_DEMO__NOT_EFFECTIVENESS_EVIDENCE",
         "run_id": fixture["run_id"],
         "semantics": {
             "registry_transition": "exogenous frozen evaluation-protocol event, not a policy action",
             "authorization": "no objective-write authorization required or accepted; family/schedule/timing validation instead",
-            "switch_timing": "frozen switch_after_period per scheduled successor, fixed before any arm result is read; early, late, and tampered-timing attempts rejected",
+            "switch_timing": "frozen switch_after_period per scheduled successor, fixed before any arm result is read; early, late, duplicate-counting, and tampered-timing attempts rejected",
+            "period_sequence": "run_period accepts only period == next_period; unique, contiguous, increasing actual periods; continuity preserves the counter and full reset starts at 0; invalid periods change no state",
             "lifecycle": "single-line control: predecessor sealed, one active path, unique shared budget/ledger",
             "full_reset_exception": "declared reset-target allowlist; backward or out-of-schedule family members only if pre-declared; fresh independent single-version schedule; parent sealed",
             "rejection_state_effect": "registry, objective store, budget, and active path unchanged; only a rejection audit record appended; zero resource spend",
@@ -1848,6 +2166,7 @@ def run_protocol_registry_switch_demo() -> dict[str, Any]:
         "rejection_events": [record["payload"] for record in records
                              if record["event"] == "registry_switch_rejected"],
         "timing_and_declaration_rejection_events": probe_rejections,
+        "duplicate_period_switch_rejection_events": [duplicate_switch_payload],
         "seal_events": [record["payload"] for record in records
                         if record["event"] == "control_path_sealed"],
         "full_reset_seal_events": [record["payload"] for record in forked.governance.audit_records()

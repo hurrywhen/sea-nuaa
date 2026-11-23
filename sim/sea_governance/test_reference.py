@@ -1,4 +1,4 @@
-"""Synthetic conformance and negative tests for SEA v1.16 governance S1--S4.
+"""Synthetic conformance and negative tests for SEA v1.17 governance S1--S4.
 
 Run from ``sim``::
 
@@ -80,7 +80,7 @@ class TestS1Inspectability(unittest.TestCase):
         self.assertEqual(inspected["version"], 0)
         self.assertEqual(inspected["version_token"], governance.version_token())
         self.assertEqual(len(inspected["objective_sha256"]), 64)
-        self.assertEqual(inspected["versions"][0]["evidence"], ["defaults:sea-v1.16"])
+        self.assertEqual(inspected["versions"][0]["evidence"], ["defaults:sea-v1.17"])
         self.assertIn("defaults_source", inspected["provenance"])
         self.assertIn("objective_expression", inspected["provenance"])
         self.assertIn("time_source", inspected["provenance"])

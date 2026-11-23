@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Reproduce v1.16 synthetic SAP executor, matched fixture and target audit.
+"""Reproduce v1.17 synthetic SAP executor, matched fixture and target audit.
 
 Default: print a compact summary. ``--write`` emits dedicated JSON artifacts under
-``sim/pilot/results/sap_v1.16/``; replacement requires ``--force``. No LLM calls,
+``sim/pilot/results/sap_v1.17/``; replacement requires ``--force``. No LLM calls,
 network access, or human data are created.
 """
 from __future__ import annotations
@@ -22,7 +22,7 @@ from sea_sap import (
 from sea_sap.target_construction import audit_target_construction
 
 ROOT = Path(__file__).resolve().parents[2]
-OUTDIR = ROOT / "sim" / "pilot" / "results" / "sap_v1.16"
+OUTDIR = ROOT / "sim" / "pilot" / "results" / "sap_v1.17"
 ARTIFACTS = {
     "longitudinal.json": run_longitudinal_fixture,
     "matched_implementation_demo.json": run_matched_implementation_demo,

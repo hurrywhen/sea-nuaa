@@ -1,4 +1,4 @@
-> **SUPERSEDED / 已被取代：** This is a historical version, not the current authoritative manuscript. Current version: `input/sovereign_epistemic_acquisition_EN_v1.16.md`. See `archive/README.md`. Do not cite this version’s claims without checking v1.16.
+> **SUPERSEDED / 已被取代：** This is a historical version, not the current authoritative manuscript. Current version: `input/sovereign_epistemic_acquisition_EN_v1.17.md`. See `archive/README.md`. Do not cite this version’s claims without checking v1.17.
 
 ---
 title: "Sovereign Acquisition under Bounded Attention: Unifying Push–Pull Filtering, Coverage, and Value of Information"

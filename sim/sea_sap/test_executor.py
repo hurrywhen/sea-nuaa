@@ -1,4 +1,4 @@
-"""Tests for the v1.16 minimal longitudinal SAP executor and measurement rules."""
+"""Tests for the v1.17 minimal longitudinal SAP executor and measurement rules."""
 from __future__ import annotations
 
 import copy
@@ -622,6 +622,97 @@ class LongitudinalExecutorTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             SAPExecutor(bad)  # frozen content no longer matches the family hash
 
+    def _assert_period_sequence_rejected_before_mutation(self, executor, period, plan):
+        before = (executor.next_period, copy.deepcopy(executor.period_results),
+                  copy.deepcopy(executor.history), executor.governance.audit_records(),
+                  copy.deepcopy(executor.budget_remaining), copy.deepcopy(executor.budget_spent))
+        with self.assertRaises(ValueError) as caught:
+            executor.run_period(period, plan)
+        self.assertIn("period sequence rejected", str(caught.exception))
+        after = (executor.next_period, executor.period_results, executor.history,
+                 executor.governance.audit_records(), executor.budget_remaining, executor.budget_spent)
+        self.assertEqual(after, before)
+
+    def test_duplicate_period_cannot_advance_frozen_switch_boundary(self):
+        fixture = load_fixture()
+        fixture["protocol_switch_timing"]["targets-v2"] = 1
+        registry_v2 = fixture["protocol_registries"]["targets-v2"]
+        executor = SAPExecutor(fixture)
+        executor.run_period(0, fixture["period_plans"]["0"])
+        self._assert_period_sequence_rejected_before_mutation(
+            executor, 0, fixture["period_plans"]["0"])
+        self.assertEqual(executor.next_period, 1)
+        self.assertEqual(len(executor.period_results), 1)
+        # The old counterexample stopped here: two period-0 result rows used to
+        # satisfy switch_after_period=1.  Now the switch is still early.
+        with self.assertRaises(ValueError) as caught:
+            executor.continue_with_target_registry(registry_v2)
+        self.assertIn("switch_timing_mismatch", str(caught.exception))
+        payload = executor.governance.audit_records()[-1]["payload"]
+        self.assertEqual(payload["completed_periods"], 1)
+        self.assertEqual(payload["declared_switch_after_period"], 1)
+        executor.run_period(1, fixture["period_plans"]["1"])
+        continued = executor.continue_with_target_registry(registry_v2)
+        self.assertEqual(continued.next_period, 2)
+        self.assertEqual([row["period"] for row in continued.period_results], [0, 1])
+
+    def test_regressed_period_is_rejected_before_mutation(self):
+        fixture = load_fixture()
+        executor = SAPExecutor(fixture)
+        executor.run_period(0, fixture["period_plans"]["0"])
+        executor.run_period(1, fixture["period_plans"]["1"])
+        self._assert_period_sequence_rejected_before_mutation(
+            executor, 0, fixture["period_plans"]["0"])
+        self.assertEqual(executor.next_period, 2)
+
+    def test_skipped_period_is_rejected_before_mutation(self):
+        fixture = load_fixture()
+        executor = SAPExecutor(fixture)
+        for invalid in (-1, 1, True, 0.0, "0"):
+            self._assert_period_sequence_rejected_before_mutation(
+                executor, invalid, fixture["period_plans"]["0"])
+        executor.run_period(0, fixture["period_plans"]["0"])
+        for invalid in (2, 1.0, "1"):
+            self._assert_period_sequence_rejected_before_mutation(
+                executor, invalid, fixture["period_plans"]["1"])
+        self.assertEqual(executor.next_period, 1)
+
+    def test_old_period_after_switch_is_rejected_before_mutation(self):
+        fixture = load_fixture()
+        executor = SAPExecutor(fixture)
+        executor.run_period(0, fixture["period_plans"]["0"])
+        continued = executor.continue_with_target_registry(
+            fixture["protocol_registries"]["targets-v2"])
+        self._assert_period_sequence_rejected_before_mutation(
+            continued, 0, fixture["period_plans"]["0"])
+        self.assertEqual(continued.next_period, 1)
+        continued.run_period(1, fixture["period_plans"]["1"])
+        self.assertEqual(continued.next_period, 2)
+
+    def test_period_clock_is_read_only_and_shared_history_cannot_drift(self):
+        fixture = load_fixture()
+        executor = SAPExecutor(fixture)
+        # A caller cannot manufacture a completed period by assigning a clock.
+        with self.assertRaises(AttributeError):
+            setattr(executor, "next_period", 1)
+        with self.assertRaises(ValueError):
+            executor.continue_with_target_registry(fixture["protocol_registries"]["targets-v2"])
+        executor.run_period(0, fixture["period_plans"]["0"])
+        continued = executor.continue_with_target_registry(
+            fixture["protocol_registries"]["targets-v2"])
+        continued.run_period(1, fixture["period_plans"]["1"])
+        self.assertEqual(continued.next_period, 2)
+        self.assertEqual(executor.next_period, 2)  # sealed predecessor shares history
+        self.assertEqual(len(executor.period_results), 2)
+        # Directly corrupted duplicate rows are not a valid substitute for a clock.
+        corrupt = SAPExecutor(fixture)
+        corrupt.run_period(0, fixture["period_plans"]["0"])
+        corrupt.period_results.append(copy.deepcopy(corrupt.period_results[0]))
+        with self.assertRaisesRegex(RuntimeError, "period history integrity violation"):
+            _ = corrupt.next_period
+        with self.assertRaisesRegex(RuntimeError, "period history integrity violation"):
+            corrupt.continue_with_target_registry(fixture["protocol_registries"]["targets-v2"])
+
     def test_switch_timing_is_frozen_and_enforced(self):
         fixture = load_fixture()
         registry_v2 = fixture["protocol_registries"]["targets-v2"]
@@ -707,6 +798,7 @@ class LongitudinalExecutorTest(unittest.TestCase):
         self.assertEqual(reset.registry["version"], "targets-v1")
         self.assertEqual(reset.protocol_registry_schedule, ["targets-v1"])
         self.assertEqual(reset.protocol_switch_timing, {})
+        self.assertEqual(reset.next_period, 0)
         self.assertNotEqual(reset.control_instance_id, continued.control_instance_id)
         self.assertIsNot(reset.governance, continued.governance)
         self.assertEqual(reset.budget_spent, {name: 0 for name in reset.budget_spent})
@@ -761,11 +853,15 @@ class LongitudinalExecutorTest(unittest.TestCase):
 
     def test_protocol_registry_switch_demo_passes_all_checks(self):
         result = run_protocol_registry_switch_demo()
+        self.assertEqual(result["schema"], "sea.protocol-registry-switch-demo/v3")
         self.assertEqual(result["status"], "SYNTHETIC_PROTOCOL_TRANSITION_DEMO__NOT_EFFECTIVENESS_EVIDENCE")
         self.assertTrue(all(result["checks"].values()))
         self.assertTrue(result["audit"]["verification"]["valid"])
         self.assertEqual(len(result["rejection_events"]), 5)
         self.assertEqual(len(result["timing_and_declaration_rejection_events"]), 3)
+        self.assertEqual(len(result["duplicate_period_switch_rejection_events"]), 1)
+        self.assertEqual(result["duplicate_period_switch_rejection_events"][0]["completed_periods"], 1)
+        self.assertIn("period == next_period", result["semantics"]["period_sequence"])
         self.assertEqual(len(result["seal_events"]), 2)
         self.assertEqual(len(result["full_reset_seal_events"]), 1)
         self.assertEqual(result["full_reset_seal_events"][0]["reason"],
@@ -831,6 +927,9 @@ class LongitudinalExecutorTest(unittest.TestCase):
                     + 2 * d_mz * d_sp * (-0.0001))
         self.assertAlmostEqual(dependent["delta_method_variance"], expected)
         self.assertFalse(dependent["input_independence_assumed"])
+        self.assertTrue(dependent["covariance_matrix_positive_semidefinite"])
+        self.assertEqual(dependent["covariance_matrix_order"],
+                         ["sensitivity", "specificity", "operational_omission"])
         self.assertNotAlmostEqual(dependent["delta_method_variance"],
                                   independent["delta_method_variance"])
         # Invalid covariance inputs are rejected, never silently corrected.
@@ -839,6 +938,37 @@ class LongitudinalExecutorTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             completed_measurement_transport_delta_method(0.13, 0.9, 0.95,
                                                          cov_se_sp=float("nan"), **kwargs)
+        # Every pairwise 2x2 minor is nonnegative here, but det(Sigma)<0.
+        # The S12 directional variance is positive, so the old scalar-only
+        # check would incorrectly accept this jointly impossible matrix.
+        with self.assertRaisesRegex(ValueError, "positive semidefinite"):
+            completed_measurement_transport_delta_method(
+                0.13, 0.9, 0.95, var_m_z=1.0, var_se=1.0, var_sp=1.0,
+                cov_se_sp=0.9, cov_mz_se=0.9, cov_mz_sp=-0.9)
+        # A large unrelated variance must not hide an illegal small subblock,
+        # and a zero-variance coordinate cannot carry nonzero covariance.
+        with self.assertRaisesRegex(ValueError, "positive semidefinite"):
+            completed_measurement_transport_delta_method(
+                0.13, 0.9, 0.95, var_m_z=1.0, var_se=1e-8, var_sp=1e-8,
+                cov_se_sp=2e-8)
+        with self.assertRaisesRegex(ValueError, "zero-variance"):
+            completed_measurement_transport_delta_method(
+                0.13, 0.9, 0.95, var_m_z=1.0, var_se=0.0, var_sp=0.0,
+                cov_se_sp=1e-7)
+        all_zero = completed_measurement_transport_delta_method(
+            0.13, 0.9, 0.95, var_m_z=0.0, var_se=0.0, var_sp=0.0)
+        self.assertEqual(all_zero["delta_method_variance"], 0.0)
+        # Normalization, not raw products, preserves this extreme-scale valid
+        # singular correlation (sqrt(1e-200 * 1e200) = 1).
+        extreme = completed_measurement_transport_delta_method(
+            0.13, 0.9, 0.95, var_m_z=0.0, var_se=1e-200, var_sp=1e200,
+            cov_se_sp=1.0)
+        self.assertTrue(extreme["covariance_matrix_positive_semidefinite"])
+        # A singular but valid PSD boundary remains admissible.
+        singular = completed_measurement_transport_delta_method(
+            0.13, 0.9, 0.95, var_m_z=0.0, var_se=0.002, var_sp=0.002,
+            cov_se_sp=0.002)
+        self.assertTrue(singular["covariance_matrix_positive_semidefinite"])
 
     def test_s12_joint_bootstrap_preserves_dependence_and_is_deterministic(self):
         records = ([{"test_positive": True, "truth_positive": True}] * 90
@@ -914,9 +1044,37 @@ class LongitudinalExecutorTest(unittest.TestCase):
                       + [{"stratum": "b", "measurement_status": "unknown"}] * 50)
         diag = transportability_stratified_diagnostics(validation, deployment)
         self.assertTrue(diag["validation"]["heterogeneity_warning"])
-        self.assertAlmostEqual(diag["validation"]["heterogeneity_max_abs_deviation"], 8 / 45)
+        # Sensitivity is estimable in all three strata (including c, which
+        # lacks truth-negative units); specificity is estimable in a and b.
+        self.assertAlmostEqual(diag["validation"]["heterogeneity_max_abs_deviation"], 2 / 9)
+        by_metric = diag["validation"]["heterogeneity_by_metric"]
+        self.assertEqual(by_metric["sensitivity"]["n_estimable_strata"], 3)
+        self.assertAlmostEqual(by_metric["sensitivity"]["max_abs_deviation"], 2 / 9)
+        self.assertEqual(by_metric["specificity"]["n_estimable_strata"], 2)
+        self.assertAlmostEqual(by_metric["specificity"]["max_abs_deviation"], 0.125)
         self.assertIn("not_estimable", diag["validation"]["strata"]["c"])
+        self.assertEqual(diag["validation"]["strata"]["c"]["not_estimable_reason"],
+                         "no_truth_negative_units")
         self.assertEqual(diag["validation"]["n_unknown_excluded_from_error_estimation"], 2)
+        pooled = diag["validation"]["pooled"]
+        self.assertTrue(pooled["error_rates_estimable"])
+        self.assertEqual(pooled["sensitivity_n"], 90)
+        self.assertEqual(pooled["specificity_n"], 80)
+        for metric in ("sensitivity", "specificity"):
+            low, high = pooled[f"{metric}_wilson_95_interval"]
+            self.assertLess(low, pooled[metric])
+            self.assertGreater(high, pooled[metric])
+        stratum_a = diag["validation"]["strata"]["a"]
+        self.assertEqual(stratum_a["n_completed"], 80)
+        self.assertEqual(stratum_a["n_assigned"], 82)
+        self.assertEqual(stratum_a["n_unknown"], 2)
+        self.assertEqual(stratum_a["sensitivity_n"], 40)
+        self.assertIn("not cluster-adjusted", diag["interval_method"])
+        completion = diag["validation"]["completion"]
+        self.assertTrue(completion["complete_subset_share_shift_estimable"])
+        low, high = completion["overall_completion_rate_wilson_95_interval"]
+        self.assertLessEqual(low, completion["overall_completion_rate"])
+        self.assertGreaterEqual(high, completion["overall_completion_rate"])
         representativeness = diag["completion_representativeness"]
         self.assertTrue(representativeness["warning"])
         self.assertAlmostEqual(representativeness["max_completion_rate_gap"], 0.5)
@@ -930,6 +1088,108 @@ class LongitudinalExecutorTest(unittest.TestCase):
             transportability_stratified_diagnostics([])
         with self.assertRaises(ValueError):
             transportability_stratified_diagnostics([{"test_positive": True, "truth_positive": True}])
+
+    def test_stratified_zero_completion_returns_structured_not_estimable(self):
+        # Unknown-only records need not contain paired test/truth fields: no
+        # pooled estimator should run and suppress the completion diagnostics.
+        records = [
+            {"stratum": "a", "measurement_status": "unknown"},
+            {"stratum": "a", "measurement_status": "unknown"},
+            {"stratum": "b", "measurement_status": "unknown"},
+        ]
+        diag = transportability_stratified_diagnostics(records)
+        self.assertEqual(diag["completion_rate"], 0.0)
+        self.assertEqual(diag["completion_subset_share_shift"], "not_estimable")
+        self.assertFalse(diag["completion_subset_share_shift_estimable"])
+        self.assertFalse(diag["sensitivity_specificity_estimable"])
+        self.assertFalse(diag["error_rates_estimable"])
+        self.assertTrue(diag["completion_warning"])
+        self.assertTrue(diag["representativeness_warning"])
+        self.assertEqual(diag["reason"], "no_completed_measurements")
+        completion = diag["validation"]["completion"]
+        self.assertEqual(completion["assigned"], {"a": 2, "b": 1})
+        self.assertEqual(completion["unknown"], {"a": 2, "b": 1})
+        self.assertEqual(completion["completed"], {"a": 0, "b": 0})
+        self.assertEqual(completion["n_completed"], 0)
+        self.assertIsNone(completion["max_share_shift"])
+        self.assertEqual(completion["complete_subset_share_shift_by_stratum"],
+                         {"a": None, "b": None})
+        low, high = completion["overall_completion_rate_wilson_95_interval"]
+        self.assertEqual(low, 0.0)
+        self.assertGreater(high, 0.0)
+        pooled = diag["validation"]["pooled"]
+        self.assertEqual(pooled["n"], 0)
+        self.assertIsNone(pooled["sensitivity"])
+        self.assertIsNone(pooled["specificity"])
+        self.assertEqual(pooled["not_estimable_reason"], "no_completed_measurements")
+        self.assertIsNone(diag["validation"]["heterogeneity_max_abs_deviation"])
+        self.assertFalse(diag["validation"]["heterogeneity_estimable"])
+        for stratum in ("a", "b"):
+            self.assertEqual(diag["validation"]["strata"][stratum]["not_estimable_reason"],
+                             "no_completed_measurements")
+        # A zero-completion deployment table likewise cannot block diagnostics.
+        both = transportability_stratified_diagnostics(records, records)
+        self.assertTrue(both["completion_representativeness"]["warning"])
+        self.assertFalse(both["completion_representativeness"]["complete_subset_share_shift_estimable"])
+        self.assertIsNone(both["completion_representativeness"]
+                          ["max_complete_subset_share_shift_validation"])
+        self.assertEqual(both["reason"], "no_completed_measurements")
+        self.assertEqual(both["completion_representativeness"]["reason"],
+                         "validation:no_completed_measurements;deployment:no_completed_measurements")
+        single = transportability_stratified_diagnostics(
+            [{"stratum": "solo", "measurement_status": "unknown"}])
+        low, high = single["validation"]["completion"]["overall_completion_rate_wilson_95_interval"]
+        z = 1.959963984540054
+        self.assertEqual(low, 0.0)
+        self.assertAlmostEqual(high, z * z / (1 + z * z))
+
+    def test_stratified_single_truth_class_is_not_estimable_not_exception(self):
+        records = [{"stratum": "only", "measurement_status": "complete",
+                    "test_positive": True, "truth_positive": True}] * 4
+        diag = transportability_stratified_diagnostics(records)
+        pooled = diag["validation"]["pooled"]
+        self.assertFalse(diag["error_rates_estimable"])
+        self.assertEqual(diag["reason"], "no_truth_negative_units")
+        self.assertEqual(pooled["sensitivity"], 1.0)
+        self.assertIsNone(pooled["specificity"])
+        self.assertIsNone(pooled["specificity_wilson_95_interval"])
+        self.assertEqual(pooled["sensitivity_n"], 4)
+        self.assertEqual(pooled["specificity_n"], 0)
+        self.assertTrue(pooled["sensitivity_estimable"])
+        self.assertFalse(pooled["specificity_estimable"])
+        self.assertEqual(pooled["specificity_not_estimable_reason"], "no_truth_negative_units")
+        self.assertIsNone(diag["validation"]["heterogeneity_max_abs_deviation"])
+        negative_only = transportability_stratified_diagnostics([
+            {"stratum": "only", "measurement_status": "complete",
+             "test_positive": False, "truth_positive": False}] * 4)
+        negative_pooled = negative_only["validation"]["pooled"]
+        self.assertIsNone(negative_pooled["sensitivity"])
+        self.assertEqual(negative_pooled["specificity"], 1.0)
+        self.assertFalse(negative_pooled["sensitivity_estimable"])
+        self.assertTrue(negative_pooled["specificity_estimable"])
+        self.assertEqual(negative_pooled["sensitivity_not_estimable_reason"], "no_truth_positive_units")
+
+    def test_stratified_single_completed_stratum_and_missing_stratum_remain_visible(self):
+        validation = [
+            {"stratum": "a", "measurement_status": "complete",
+             "test_positive": True, "truth_positive": True},
+            {"stratum": "a", "measurement_status": "complete",
+             "test_positive": False, "truth_positive": False},
+            {"stratum": "b", "measurement_status": "unknown",
+             "test_positive": True, "truth_positive": True},
+        ]
+        deployment = [{"stratum": "a", "measurement_status": "unknown"}]
+        diag = transportability_stratified_diagnostics(validation, deployment)
+        self.assertTrue(diag["validation"]["pooled"]["error_rates_estimable"])
+        self.assertEqual(diag["validation"]["strata"]["b"]["n_completed"], 0)
+        self.assertEqual(diag["validation"]["strata"]["b"]["n_unknown"], 1)
+        self.assertEqual(diag["validation"]["strata"]["b"]["not_estimable_reason"],
+                         "no_completed_measurements")
+        self.assertIsNone(diag["validation"]["heterogeneity_max_abs_deviation"])
+        representativeness = diag["completion_representativeness"]
+        self.assertEqual(representativeness["strata_missing_in_deployment"], ["b"])
+        self.assertTrue(representativeness["warning"])
+        self.assertTrue(diag["representativeness_warning"])
 
     def test_open_world_absence_cannot_be_asserted_from_closed_snapshot(self):
         fixture = load_fixture()

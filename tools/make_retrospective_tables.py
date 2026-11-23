@@ -3,7 +3,7 @@
 
 The SB.1–SB.3 tables (Supplementary Tables SB1–SB3) exist in exactly one
 authoritative location: section R5 of
-``docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.16.md``.  This tool regenerates that
+``docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.17.md``.  This tool regenerates that
 section from the frozen data files instead of hand-copying numbers:
 
 - ``sim/pilot/results/v110_consumption_caliber/scenario_effects.csv``
@@ -13,7 +13,7 @@ section from the frozen data files instead of hand-copying numbers:
 
 Default: read-only verification that the supplement's R5 section equals the
 regenerated text (exit 1 on any drift).  ``--write`` additionally emits the
-dedicated artifact ``sim/pilot/results/retrospective_tables_v1.16/``;
+dedicated artifact ``sim/pilot/results/retrospective_tables_v1.17/``;
 replacement requires ``--force``.  No LLM calls, network access, or new data.
 """
 from __future__ import annotations
@@ -27,8 +27,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCENARIO_CSV = ROOT / "sim/pilot/results/v110_consumption_caliber/scenario_effects.csv"
 TRADEOFF_JSON = ROOT / "sim/pilot/results/v19_recall_value_tradeoff/summary.json"
-SUPPLEMENT = ROOT / "docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.16.md"
-OUTDIR = ROOT / "sim/pilot/results/retrospective_tables_v1.16"
+SUPPLEMENT = ROOT / "docs/SUPPLEMENT_RETROSPECTIVE_AUDITS_v1.17.md"
+OUTDIR = ROOT / "sim/pilot/results/retrospective_tables_v1.17"
 FAMILIES = ("O", "C", "Q", "G")
 MINUS = "\u2212"  # typographic minus used by the supplement tables
 

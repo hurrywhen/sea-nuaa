@@ -40,7 +40,20 @@ def main() -> int:
     pdf, src = sys.argv[1], sys.argv[2]
     captions = list(CAPTIONS)
     keystrings = list(KEYSTRINGS)
-    if "v1.16" in os.path.basename(pdf):
+    if "v1.17" in os.path.basename(pdf):
+        captions = [f"Table {i}." for i in range(1, 8)]
+        keystrings = ["4.389337888", "71,970", "72,000", "18/18", "77.27%",
+                      "v1.17.0", "Frozen Retrospective Sensitivity Audits",
+                      "operational attendance omission", "commit-free selection dry run",
+                      "synthetic_instrument_fixture", "evaluation cohort",
+                      "exogenous", "single-line", "unregistered-arbitrary",
+                      "transportability", "precision warning",
+                      "switch_after_period", "switch_timing_mismatch",
+                      "protocol_declaration_tampered", "covariance terms",
+                      "joint (cluster) bootstrap", "next_period",
+                      "no_completed_measurements", "positive semidefinite",
+                      "Wilson"]
+    elif "v1.16" in os.path.basename(pdf):
         captions = [f"Table {i}." for i in range(1, 8)]
         keystrings = ["4.389337888", "71,970", "72,000", "18/18", "77.27%",
                       "v1.16.0", "Frozen Retrospective Sensitivity Audits",

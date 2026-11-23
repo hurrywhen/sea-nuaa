@@ -1,0 +1,15 @@
+{
+  "schema": "sea.retrospective-tables-single-source/v1",
+  "inputs": {
+    "scenario_effects_csv": "sim/pilot/results/v110_consumption_caliber/scenario_effects.csv",
+    "recall_value_tradeoff_summary": "sim/pilot/results/v19_recall_value_tradeoff/summary.json"
+  },
+  "rule_a_totals": {
+    "n_recall": 71573,
+    "n_return": 70676,
+    "n_sign": 71618
+  },
+  "strict_singleton_common_keys": 70306,
+  "supplement_section_matches_generated": true,
+  "status": "FROZEN_RETROSPECTIVE_DESCRIPTION__NOT_EFFECT_EVIDENCE"
+}
